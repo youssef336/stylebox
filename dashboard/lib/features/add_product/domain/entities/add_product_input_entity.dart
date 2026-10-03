@@ -1,0 +1,44 @@
+import 'dart:io';
+import 'package:stylebox_dashboard/features/manage_data/domain/entities/restaurant_entity.dart';
+
+class AddProductInputEntity {
+  final String? docId;
+  final bool isAvailable;
+  final String title;
+  final double price;
+  final double? oldPrice;
+  final int bagsLeft;
+  final List<String>? detectedItems;
+  final File? image;
+  String? imageUrl;
+  String? userEmail;
+  String? restaurantId;
+  String? restaurantName;
+  final String? pickupTime;
+  final String? productId;
+  final List<ReviewEntity> reviews;
+  final double avgRating;
+  final List<String> sizes; // e.g. ['S', 'M', 'L']
+  final String? category; // men | women | kids | unisex
+
+  AddProductInputEntity({
+    this.docId,
+    this.productId,
+    required this.isAvailable,
+    required this.title,
+    required this.price,
+    this.oldPrice,
+    required this.bagsLeft,
+    this.detectedItems,
+    this.image,
+    this.imageUrl,
+    this.userEmail,
+    this.restaurantId,
+    this.restaurantName,
+    this.pickupTime,
+    this.reviews = const [],
+    this.avgRating = 0.0,
+    this.sizes = const [],
+    this.category,
+  });
+}

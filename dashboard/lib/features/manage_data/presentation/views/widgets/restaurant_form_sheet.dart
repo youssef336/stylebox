@@ -1,0 +1,616 @@
+// ignore_for_file: deprecated_member_use
+
+import 'dart:io';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:flutter/services.dart';
+import 'package:stylebox_dashboard/core/services/user_session.dart';
+import 'package:stylebox_dashboard/core/utils/app_colors.dart';
+import 'package:stylebox_dashboard/features/manage_data/domain/entities/restaurant_entity.dart';
+import 'package:stylebox_dashboard/features/manage_data/presentation/cubit/restaurant_cubit.dart';
+import 'package:stylebox_dashboard/features/manage_data/presentation/views/widgets/store_location_picker_page.dart';
+import 'package:stylebox_dashboard/core/localization/app_localizations.dart';
+
+/// Single bottom sheet used for both Add and Edit flows.
+/// Pass [existing] to enter edit mode.
+class RestaurantFormSheet extends StatefulWidget {
+  const RestaurantFormSheet({super.key, this.existing});
+  final RestaurantEntity? existing;
+
+  @override
+  State<RestaurantFormSheet> createState() => _RestaurantFormSheetState();
+}
+
+class _RestaurantFormSheetState extends State<RestaurantFormSheet> {
+  final _formKey = GlobalKey<FormState>();
+
+  late final TextEditingController _nameCtrl;
+  late final TextEditingController _branchesCountCtrl;
+  final List<TextEditingController> _branchLocationCtrls = [];
+  // Map pin per branch, same order as _branchLocationCtrls
+  final List<StorePin?> _branchPins = [];
+
+  bool _isOpend = false;
+  bool _isAvailable = false;
+  File? _pickedImage;
+  bool _isSubmitting = false;
+  // ignore: unused_field
+  int _branchCount = 1;
+  bool _isPickingImage = false;
+
+  bool get _isEdit => widget.existing != null;
+
+  @override
+  void initState() {
+    super.initState();
+    final e = widget.existing;
+    _nameCtrl = TextEditingController(text: e?.name ?? '');
+
+    // For edit mode, use the existing branch info
+    if (_isEdit && e != null) {
+      _branchCount = e.totalBranches;
+      _branchesCountCtrl = TextEditingController(
+        text: e.totalBranches.toString(),
+      );
+      // Add one controller for this branch's location
+      _branchLocationCtrls.add(TextEditingController(text: e.branchLocation));
+      _branchPins.add(
+        e.hasPin ? (latitude: e.latitude!, longitude: e.longitude!) : null,
+      );
+    } else {
+      _branchesCountCtrl = TextEditingController(text: '1');
+      _branchCount = 1;
+      _branchLocationCtrls.add(TextEditingController());
+      _branchPins.add(null);
+    }
+
+    _isOpend = e?.isOpend ?? false;
+    _isAvailable = e?.isAvailable ?? false;
+  }
+
+  @override
+  void dispose() {
+    _nameCtrl.dispose();
+    _branchesCountCtrl.dispose();
+    for (final ctrl in _branchLocationCtrls) {
+      ctrl.dispose();
+    }
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocListener<RestaurantCubit, RestaurantState>(
+      listener: (context, state) {
+        if (state is RestaurantOperationSuccess) {
+          Navigator.pop(context); // close sheet
+        }
+        if (state is RestaurantError) {
+          setState(() => _isSubmitting = false);
+        }
+      },
+      child: DraggableScrollableSheet(
+        initialChildSize: 0.9,
+        minChildSize: 0.5,
+        maxChildSize: 0.95,
+        expand: false,
+        builder: (_, controller) => Container(
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+          ),
+          child: Column(
+            children: [
+              // ── Handle ─────────────────────────────────────────────────
+              const SizedBox(height: 12),
+              Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              const SizedBox(height: 12),
+
+              // ── Title ──────────────────────────────────────────────────
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Row(
+                  children: [
+                    Text(
+                      _isEdit
+                          ? AppLocalizations.of(context)!.editRestaurant
+                          : AppLocalizations.of(context)!.addRestaurant,
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 4),
+              const Divider(),
+
+              // ── Form ───────────────────────────────────────────────────
+              Expanded(
+                child: SingleChildScrollView(
+                  controller: controller,
+                  padding: EdgeInsets.fromLTRB(
+                    20,
+                    12,
+                    20,
+                    MediaQuery.of(context).viewInsets.bottom + 20,
+                  ),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildField(
+                          controller: _nameCtrl,
+                          label: AppLocalizations.of(context)!.restaurantName,
+                          hint: 'e.g. Layla Boutique',
+                          icon: Icons.storefront_rounded,
+                        ),
+                        const SizedBox(height: 14),
+                        _buildField(
+                          controller: _branchesCountCtrl,
+                          label: AppLocalizations.of(context)!.numberOfBranches,
+                          hint: 'e.g. 2',
+                          icon: Icons.store_mall_directory_outlined,
+                          keyboardType: TextInputType.number,
+                          onChanged: _onBranchCountChanged,
+                        ),
+                        const SizedBox(height: 14),
+
+                        // ── Dynamic Branch Location Fields ──────────────
+                        ..._buildBranchLocationFields(),
+                        const SizedBox(height: 16),
+
+                        // ── Toggles ───────────────────────────────────────
+                        _buildToggleRow(
+                          label: AppLocalizations.of(context)!.openNow,
+                          icon: Icons.access_time_rounded,
+                          value: _isOpend,
+                          onChanged: (v) => setState(() => _isOpend = v),
+                        ),
+                        const SizedBox(height: 10),
+                        _buildToggleRow(
+                          label: AppLocalizations.of(context)!.available,
+                          icon: Icons.check_circle_outline_rounded,
+                          value: _isAvailable,
+                          onChanged: (v) => setState(() => _isAvailable = v),
+                        ),
+                        const SizedBox(height: 20),
+
+                        // ── Image picker ──────────────────────────────────
+                        _buildImagePicker(),
+                        const SizedBox(height: 24),
+
+                        // ── Submit ────────────────────────────────────────
+                        _buildSubmitButton(),
+                        const SizedBox(height: 8),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildField({
+    required TextEditingController controller,
+    required String label,
+    required String hint,
+    required IconData icon,
+    TextInputType keyboardType = TextInputType.text,
+    ValueChanged<String>? onChanged,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: const TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+            color: Color(0xFF424242),
+          ),
+        ),
+        const SizedBox(height: 6),
+        TextFormField(
+          controller: controller,
+          keyboardType: keyboardType,
+          onChanged: onChanged,
+          validator: (v) =>
+              (v == null || v.trim().isEmpty) ? '$label is required' : null,
+          decoration: InputDecoration(
+            hintText: hint,
+            prefixIcon: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              child: Icon(icon, size: 20, color: AppColors.primaryColor),
+            ),
+            hintStyle: TextStyle(color: Colors.grey[400], fontSize: 14),
+            filled: true,
+            fillColor: const Color(0xFFF9FAFA),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(color: Color(0xFFE0E0E0)),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(color: Color(0xFFE0E0E0)),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(
+                color: AppColors.primaryColor,
+                width: 2,
+              ),
+            ),
+            errorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(color: AppColors.errorColor),
+            ),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 14,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildToggleRow({
+    required String label,
+    required IconData icon,
+    required bool value,
+    required ValueChanged<bool> onChanged,
+  }) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF9FAFA),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: const Color(0xFFE0E0E0)),
+      ),
+      child: Row(
+        children: [
+          Icon(icon, size: 18, color: AppColors.primaryColor),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              label,
+              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+            ),
+          ),
+          Switch.adaptive(
+            value: value,
+            onChanged: onChanged,
+            activeColor: AppColors.primaryColor,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildImagePicker() {
+    final existingUrl = widget.existing?.RestaurantimageUrl;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Store Image',
+          style: TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+            color: Color(0xFF424242),
+          ),
+        ),
+        const SizedBox(height: 8),
+        GestureDetector(
+          onTap: _pickImage,
+          child: Container(
+            height: 150,
+            width: double.infinity,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(
+                color: AppColors.primaryColor.withOpacity(0.4),
+                width: 1.5,
+                style: BorderStyle.solid,
+              ),
+              color: AppColors.primaryColor.withOpacity(0.03),
+            ),
+            child: _pickedImage != null
+                ? ClipRRect(
+                    borderRadius: BorderRadius.circular(13),
+                    child: Image.file(_pickedImage!, fit: BoxFit.cover),
+                  )
+                : existingUrl != null && existingUrl.isNotEmpty
+                ? ClipRRect(
+                    borderRadius: BorderRadius.circular(13),
+                    child: Stack(
+                      fit: StackFit.expand,
+                      children: [
+                        Image.network(
+                          existingUrl,
+                          fit: BoxFit.cover,
+                          errorBuilder: (_, _, _) => _imagePlaceholder(),
+                        ),
+                        Positioned(
+                          bottom: 8,
+                          right: 8,
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Colors.black54,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Text(
+                              AppLocalizations.of(context)!.tapToChange,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 11,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  )
+                : _imagePlaceholder(),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _imagePlaceholder() {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Icon(
+          Icons.add_photo_alternate_outlined,
+          size: 40,
+          color: AppColors.primaryColor.withOpacity(0.5),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          AppLocalizations.of(context)!.tapToSelectImage,
+          style: TextStyle(fontSize: 13, color: Colors.grey[500]),
+        ),
+      ],
+    );
+  }
+
+  Future<void> _pickImage() async {
+    if (_isPickingImage) return;
+    _isPickingImage = true;
+    final picker = ImagePicker();
+    XFile? xfile;
+    try {
+      xfile = await picker.pickImage(
+        source: ImageSource.gallery,
+        imageQuality: 80,
+      );
+    } on PlatformException catch (e) {
+      debugPrint('ImagePicker platform error: ${e.code} ${e.message}');
+    } catch (e) {
+      debugPrint('ImagePicker error: $e');
+    } finally {
+      _isPickingImage = false;
+    }
+
+    if (xfile != null) {
+      setState(() => _pickedImage = File(xfile!.path));
+    }
+  }
+
+  Widget _buildSubmitButton() {
+    return SizedBox(
+      width: double.infinity,
+      height: 52,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          gradient: AppColors.primaryGradient,
+          borderRadius: BorderRadius.circular(14),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.primaryColor.withOpacity(0.3),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.transparent,
+            shadowColor: Colors.transparent,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(14),
+            ),
+          ),
+          onPressed: _isSubmitting ? null : _submit,
+          child: _isSubmitting
+              ? const SizedBox(
+                  width: 22,
+                  height: 22,
+                  child: CircularProgressIndicator(
+                    color: Colors.white,
+                    strokeWidth: 2.5,
+                  ),
+                )
+              : Text(
+                  _isEdit
+                      ? AppLocalizations.of(context)!.saveChanges
+                      : AppLocalizations.of(context)!.addRestaurant,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+        ),
+      ),
+    );
+  }
+
+  void _onBranchCountChanged(String value) {
+    final count = int.tryParse(value) ?? 1;
+    if (count < 1) return;
+
+    setState(() {
+      // Adjust the number of controllers
+      if (count > _branchLocationCtrls.length) {
+        // Add new controllers
+        for (int i = _branchLocationCtrls.length; i < count; i++) {
+          _branchLocationCtrls.add(TextEditingController());
+          _branchPins.add(null);
+        }
+      } else if (count < _branchLocationCtrls.length) {
+        // Remove excess controllers
+        for (int i = _branchLocationCtrls.length - 1; i >= count; i--) {
+          _branchLocationCtrls[i].dispose();
+          _branchLocationCtrls.removeAt(i);
+          _branchPins.removeAt(i);
+        }
+      }
+      _branchCount = count;
+    });
+  }
+
+  List<Widget> _buildBranchLocationFields() {
+    return List.generate(_branchLocationCtrls.length, (index) {
+      return Column(
+        children: [
+          _buildField(
+            controller: _branchLocationCtrls[index],
+            label: 'Branch ${index + 1} Location',
+            hint: 'e.g. Zamalek, 2 Taha Hussein',
+            icon: Icons.location_on_outlined,
+          ),
+          const SizedBox(height: 8),
+          _buildPinButton(index),
+          const SizedBox(height: 12),
+        ],
+      );
+    });
+  }
+
+  Widget _buildPinButton(int index) {
+    final pin = _branchPins[index];
+    return SizedBox(
+      width: double.infinity,
+      child: OutlinedButton.icon(
+        style: OutlinedButton.styleFrom(
+          foregroundColor: pin == null ? AppColors.primaryColor : Colors.green,
+          side: BorderSide(
+            color: pin == null ? AppColors.primaryColor : Colors.green,
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+          alignment: AlignmentDirectional.centerStart,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
+        onPressed: () async {
+          final picked = await StoreLocationPickerPage.open(
+            context,
+            initial: pin,
+            title: 'Branch ${index + 1} on the map',
+          );
+          if (picked != null && mounted) {
+            setState(() => _branchPins[index] = picked);
+          }
+        },
+        icon: Icon(
+          pin == null ? Icons.add_location_alt_outlined : Icons.check_circle,
+          size: 20,
+        ),
+        label: Text(
+          pin == null
+              ? 'Pin on map (shows the store to customers)'
+              : 'Pinned ${pin.latitude.toStringAsFixed(4)}, '
+                    '${pin.longitude.toStringAsFixed(4)} · tap to change',
+          style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+        ),
+      ),
+    );
+  }
+
+  void _submit() {
+    if (!_formKey.currentState!.validate()) return;
+
+    // Check if logo is selected for new restaurants or if image is required for editing
+    if (_pickedImage == null && !_isEdit) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Row(
+            children: [
+              const Icon(Icons.error_outline, color: Colors.white, size: 18),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  AppLocalizations.of(context)!.restaurantLogoRequired,
+                ),
+              ),
+            ],
+          ),
+          backgroundColor: AppColors.errorColor,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
+      );
+      return;
+    }
+
+    setState(() => _isSubmitting = true);
+
+    final cubit = context.read<RestaurantCubit>();
+    final name = _nameCtrl.text.trim();
+    final totalBranches = int.tryParse(_branchesCountCtrl.text) ?? 1;
+
+    if (_isEdit) {
+      // Update single branch
+      cubit.updateRestaurant(
+        existing: widget.existing!,
+        name: name,
+        branchLocation: _branchLocationCtrls[0].text.trim(),
+        totalBranches: totalBranches,
+        isOpend: _isOpend,
+        isAvailable: _isAvailable,
+        newImageFile: _pickedImage,
+        pin: _branchPins[0],
+      );
+    } else {
+      // Add multiple restaurants - one for each branch
+      final branchLocations = _branchLocationCtrls
+          .map((ctrl) => ctrl.text.trim())
+          .toList();
+
+      cubit.addRestaurantsWithBranches(
+        name: name,
+        branchLocations: branchLocations,
+        isOpend: _isOpend,
+        isAvailable: _isAvailable,
+        userEmail: UserSession.instance.currentEmail,
+        imageFile: _pickedImage,
+        branchPins: List.of(_branchPins),
+      );
+    }
+  }
+}

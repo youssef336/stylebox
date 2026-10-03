@@ -1,0 +1,363 @@
+{
+  "onBoardingSkip": "Skip",
+  "onBoardingTitle": "Reduce Waste. Discover Style.",
+  "onBoardingSubtitle": "Reserve discounted Style Boxes of surplus clothes from local stores and refresh your wardrobe for a fraction of the price.",
+  "onBoardingTitle2": "Smart Fashion. Zero Waste.",
+  "onBoardingSubtitle2": "Discover overstock and end-of-season clothes at lower prices, and get styling tips with StyleBox’s AI style scan.",
+
+    "onBoardingButtomText": "Start now",
+
+
+    "onLoginLogin": "Login",
+    "onLoginEmail": "Email",
+    "onLoginPassword": "Password",
+    "onLoginForgotPassword": "Forgot Password?",
+    "onLoginCreateAccount": "Create Account",
+    "onLoginCreateAccountText": "Don't have an account?",
+    "onLoginLoginOrDivider": "or",
+    "onLoginLoginWithGoogle": "Login with Google",
+    "onLoginLoginWithFacebook": "Login with Facebook",
+    "onLoginLoginWithApple": "Login with Apple",
+
+
+    "onSignupSignup": "Sign Up",
+    "onSignupName": "Name",
+    "onSignupEmail": "Email",
+    "onSignupPassword": "Password",
+    "onSignupTermsandConditions": "By creating an account, you agree to ",
+    "onSignupTermsandConditionsText": "Terms and Conditions",
+    "onSignupTermsandConditionsText2": "and",
+    "onSignupTermsandConditionsText3": "Privacy Policy",
+    "onSignupTermsandConditionsErrorBar": "Please accept the Terms and Conditions and Privacy Policy",
+    "onSignupCreateNewAccount": "Create New Account",
+    "onSignupCreateNewAccountText": "Already have an account?",
+    "onSignupCreateNewAccountText2": "Login",
+    "onSignupTextFeils": "Please fill in all fields",
+
+
+    "homeViewWelcomeAppbar": "Good Morning !..",
+    "homeBestSellersTitle": "Best Sellers",
+    "homeBestSellersViewAll": "View All",
+    "homeFeaturedItemTitle": "Featured Item",
+    "homeFeaturedItemSubtitle": "Special Offer",
+    "homeFeaturedItemShopNow": "Shop Now",
+  
+
+
+    "buttonNavigationBarEntityHome": "Home",
+    "buttonNavigationBarEntityProducts": "products",
+    "buttonNavigationBarEntityCart": "Cart",
+    "buttonNavigationBarEntityProfile": "Profile",
+
+
+    "cartViewHeader": "Cart",
+
+
+    "checkOutViewTitle": "Checkout",
+    "checkOutViewAddress": "Address",
+    "checkOutViewPayment": "Payment",
+    "checkOutViewShipingTitle1": "Cash On Delivery",
+    "checkOutViewShipingSubtitle1": "Delivery From Location",
+    "checkOutViewShipingTitle2": "Online Payment",
+    "checkOutViewShipingPrice": " EGP",
+    "checkOutViewShipingError": "Please Select Payment Method",
+    "checkOutViewShipingSubtitle2": "Select Payment Method",
+    "checkOutViewPaymentMethodTitle": "Payment method",
+    "checkOutViewSavedCardTitle": "Saved card",
+    "checkOutViewUseSavedCard": "Use saved card",
+    "checkOutViewDeleteCard": "Delete card",
+    "checkOutViewCardHolderName": "Cardholder name",
+    "checkOutViewEnterCardHolderName": "Enter cardholder name",
+    "checkOutViewCardNumberOrSaved": "Card number or saved card",
+    "checkOutViewCardNumber": "Card number",
+    "checkOutViewInvalidCardNumber": "Enter a valid card number",
+    "checkOutViewInvalidExpiryDate": "Enter a valid expiry date",
+    "checkOutViewInvalidCvv": "Enter a valid CVV",
+    "checkOutViewOnlySaveLast4": "Only the last 4 digits are stored on this device.",
+    "checkOutViewPayWithPayPal": "Pay with PayPal",
+    "checkOutViewPayWithVisa": "Pay with Visa",
+    "checkOutViewPlaceOrder": "Place Order",
+    "checkOutViewNext": "Next",
+    "checkOutViewShipingTitle3": "Pay with Visa",
+    "checkOutViewShipingSubtitle3": "Card saved on this device only",
+    "checkOutViewConfirmPaymentVisa": "Confirm payment",
+    "checkOutViewConfirmPaymentVisaMessage": "Are you sure you want to pay with Visa?",
+    "checkOutViewConfirmOrderCash": "Place order",
+    "checkOutViewVisaMissing": "Save your Visa card before paying.",
+    "visaDetailsTitle": "Visa details",
+    "visaDetailsCardNumber": "Card number",
+    "visaDetailsCardHolder": "Name on card",
+    "visaDetailsExpiry": "Expiry (MM/YY)",
+    "visaDetailsCvv": "CVV",
+    "visaDetailsSave": "Save and continue",
+    "visaDetailsDelete": "Delete",
+    "visaDetailsSavedLabel": "Saved card",
+    "visaDetailsEndsWith": "Ends with {last4}",
+    "@visaDetailsEndsWith": {
+        "placeholders": {
+            "last4": {
+                "type": "String"
+            }
+        }
+    },
+
+
+    "paymentSectionVisaHint": "You will confirm with your saved Visa card (not PayPal).",
+    "orderSummaryWidgetTitle": "Order Summary :",
+    "orderSummaryWidgetSubtotal": "Subtotal :",
+    "orderSummaryWidgetShipping": "Shipping :",
+    "orderSummaryWidgetTotal": "Total",
+    "orderCashSuccessMessage": "Cash on delivery order placed successfully",
+    "orderVisaSuccessMessage": "Visa payment completed successfully",
+
+
+    "addressSummaryWidgetTitle": "Delivery Address :",
+    "addressSummaryWidgetChange": "Change",
+    "addressInputSectionName": "Full Name",
+    "addressInputSectionEmail": "Email",
+    "addressInputSectionPhone": "Phone Number",
+    "addressInputSectionAddress": "Address",
+    "addressInputSectionCity": "City",
+    "addressInputSectionFloor": "Floor Number , Apartment Number ..",
+
+
+    "profileViewLanguage": "Language",
+    "profileViewLanguageValueItem": "Arabic Language",
+    "profileViewLanguageValueItem2": "English Language",
+    "profileViewProfileImage": "Profile Image",
+  "profileViewTheme": "Theme",
+  "profileViewFavourites": "Favourites",
+    "profileViewLogout": "Logout",
+    "profileViewLogoutText": "Are you sure you want to logout?",
+    "profileViewLogoutText2": "Logout",
+    "profileViewLogoutText3": "Cancel",
+    "profileViewPoints": "Points",
+
+
+    "pointsPageYourPoints": "Your Points",
+    "pointsPagePts": "pts",
+    "pointsPageRewardsTitle": "Rewards & Discounts",
+    "pointsPageDiscount": "Discount",
+    "pointsPagePointsRequired": "points required",
+    "pointsPageUnlocked": "UNLOCKED",
+    "pointsPageProgress": "Progress",
+    "pointsPagePointsToGo": "points to go!",
+    "pointsPageAdd": "Add",
+    "pointsPageDelete": "Delete",
+    "productGridViewPlaceholder": "Product",
+    "searchProductsHint": "Search products",
+    "loadDemoDataButton": "Load Demo Data",
+    "demoDataLoadedMessage": "Demo data loaded! Go to Cart to test checkout.",
+    "homeViewTitle": "Home",
+    "logoutErrorMessage": "Error occurred during logout",
+    "couponDiscountApplied": "Discount applied: {discount} EGP",
+  "@couponDiscountApplied": {
+    "description": "Message shown when coupon discount is successfully applied",
+    "placeholders": {
+      "discount": {
+        "type": "String"
+      }
+    }
+  },
+    "invalidCouponError": "Invalid or expired coupon code",
+    "couponCodeHint": "Coupon code",
+    "errorPageNotFound": "404 Not Found",
+    "paymentSuccessMessage": "Payment successful",
+    "paymentErrorMessage": "Payment error",
+    "weakPasswordError": "The password provided is too weak.",
+    "emailAlreadyInUseError": "The email address is already in use by another account.",
+    "networkRequestFailedError": "Network request failed, please check your internet connection.",
+    "invalidEmailError": "The email address is not valid.",
+    "unknownErrorMessage": "An unknown error occurred please try again later.",
+    "emailPasswordProblemError": "There is a problem in email or password",
+    "signInCancelledError": "Sign-in cancelled by user",
+    "googleSignInFailedError": "Google Sign-In failed",
+    "availableBagsSwipeHint": "Swipe →",
+    "bagCurrencySuffix": "EGP",
+    "bagCardReserve": "Reserve",
+    "bagCardBagsLeft": "{count} Boxes left",
+  "@bagCardBagsLeft": {
+    "description": "Number of Style Boxes still available",
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+    "bagDetailsTitle": "Denim Style Box",
+    "bagDetailsPriceLabel": "Price",
+    "bagDetailsCurrentPrice": "350 EGP",
+    "bagDetailsOldPrice": "700 EGP",
+    "bagDetailsWhatInsideTitle": "What's in the box?",
+    "bagDetailsDescription": "A surprise mix of 3–4 denim pieces, like jeans, a denim jacket or a shirt, in new-with-tags or like-new condition.",
+    "bagDetailsReservePickup": "Reserve for pickup",
+    "productsViewTitle": "Products",
+    "availableBagsTitle": "Available boxes",
+    "restaurantNameMadbinaZamalek": "Cotton Corner - Zamalek",
+    "restaurantBranchesCount": "{count} branch",
+  "@restaurantBranchesCount": {
+    "description": "Store branch count label",
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+    "restaurantDistanceKilometers": "{distance} kilometers",
+  "@restaurantDistanceKilometers": {
+    "description": "Distance to store in kilometers",
+    "placeholders": {
+      "distance": {
+        "type": "String"
+      }
+    }
+  },
+    "bagTitleAroussaSandwich": "Denim Box",
+    "bagTitleMasrawy": "Casual Box",
+    "statusBadgeAvailable": "Available",
+    "statusBadgeUnavailable": "Unavailable",
+    "statusBadgeNow": "Open now",
+    "statusBadgeClosed": "Closed",
+    "productViewResults": "{count} results",
+  "@productViewResults": {
+    "description": "Number of results displayed in product header",
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "couponPageTitle": "Your Coupon",
+  "couponCodeLabel": "Your Coupon Code",
+  "couponPageDescription": "Use this code to redeem your points",
+  "couponCopyButton": "Copy Code",
+  "couponCopiedMessage": "Coupon code copied!",
+  "couponUniqueText": "This code is unique to your account",
+  "bagelMysteryBagPickupOnlyBadge": "🛍️  Pickup Only",
+  "bagelMysteryBagStoreName": "Urban Threads - Sheikh Zayed",
+  "bagelMysteryBagTitle": "Style Box",
+  "bagelMysteryBagAvailableCount": "{count} available",
+  "@bagelMysteryBagAvailableCount": {
+    "description": "Availability label for the Style Box",
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "bagelMysteryBagDescription": "Surplus and end-of-season pieces with a surprise twist! Each Style Box contains 3–5 items, such as tops, jeans and accessories, in new or like-new condition - perfect for refreshing your wardrobe for less.",
+  "bagelMysteryBagPickupTimeLabel": "Pickup Time",
+  "bagelMysteryBagPickupTimeValue": "4:00 PM - 11:00 PM",
+  "bagelMysteryBagLocationLabel": "Location",
+  "bagelMysteryBagLocationValue": "Arkan Plaza, Sheikh Zayed, Giza",
+  "bagelMysteryBagContactLabel": "Contact",
+  "bagelMysteryBagIngredientsAndAllergens": "What's Inside & Sizes",
+  "bagelMysteryBagAllergenNotice": "Items and sizes vary in each box. The store did not specify sizes, please contact them to make sure.",
+  "bagelMysteryBagCustomerReviews": "Customer Reviews",
+  "bagelMysteryBagComingSoon": "Coming Soon",
+  "bagelMysteryBagReviewsComingSoon": "Customer reviews will be available soon to help you make informed decisions.",
+  "bagelMysteryBagReservedState": "✓  Reserved! See you at pickup",
+  "bagSizesLabel": "Sizes",
+  "bagCategoryLabel": "Category",
+  "categoryMen": "Men",
+  "categoryWomen": "Women",
+  "categoryKids": "Kids",
+  "categoryUnisex": "Unisex",
+  "bagSizesNotSpecified": "Sizes not specified — contact the store",
+  "aiChatClearButton": "Clear Chat",
+  "aiChatClearDialogTitle": "Clear all chat?",
+  "aiChatClearDialogMessage": "This will permanently remove all chat messages for this account.",
+  "aiChatActionCancel": "Cancel",
+  "aiChatActionClear": "Clear",
+  "aiChatClearSuccess": "All chat messages were cleared.",
+  "aiChatClearFailed": "Could not clear chat. Please try again.",
+  "aiChatTitle": "Style Assistant",
+  "aiChatInputHint": "Ask about style & Style Boxes...",
+  "foodScanTitle": "Style Scan",
+  "foodScanCameraButton": "Camera",
+  "foodScanGalleryButton": "Gallery",
+  "foodScanHeroTitle": "Take a photo of a clothing item to analyze",
+  "foodScanHeroSubtitle": "Camera or Gallery",
+  "foodScanTipsTitle": "Tips for better results:",
+  "foodScanTipGoodLighting": "Good lighting",
+  "foodScanTipMoveCloser": "Move closer",
+  "foodScanTipSimpleBackground": "Simple background",
+  "foodScanTipNoBlur": "No blur",
+  "foodScanAfterPickHint": "After selecting an image you can:",
+  "foodScanFeatureNutrition": "Styling Tips",
+  "foodScanFeatureFreshness": "Condition Check",
+  "foodScanDetectedLabel": "Detected",
+  "foodScanConfidenceLabel": "Confidence: {value}",
+  "@foodScanConfidenceLabel": {
+    "description": "Confidence percentage for clothing item detection",
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "foodScanCheckingFreshness": "Checking condition…",
+  "foodScanFreshnessSpoilageCheck": "Condition / Quality Check",
+  "foodScanLowConfidenceMessage": "Result is not confident enough. Try another photo with better lighting.",
+  "reviewComposerTitle": "Share your experience",
+  "reviewComposerSubtitle": "Tell others what was in your Style Box and how the pickup went.",
+  "reviewComposerEditTitle": "Edit Review",
+  "reviewComposerEditSubtitle": "Update your review",
+  "reviewComposerRatingLabel": "Your rating",
+  "reviewComposerCommentLabel": "Your comment",
+  "reviewComposerCommentHint": "Tell others what you thought...",
+  "reviewComposerSubmitButton": "Submit review",
+  "reviewComposerUpdateButton": "Update",
+  "reviewComposerSelectRatingError": "Please choose a star rating.",
+  "reviewComposerCommentRequiredError": "Please write a comment before submitting.",
+  "reviewComposerSuccessMessage": "Your review was submitted.",
+  "reviewComposerFailureMessage": "Could not submit your review. Please try again.",
+  "reviewComposerEditButton": "Edit",
+  "reviewComposerDeleteButton": "Delete",
+  "reviewComposerDeleteConfirmTitle": "Delete Review?",
+  "reviewComposerDeleteConfirmMessage": "Are you sure you want to delete your review?",
+  "reviewComposerDeleteConfirmCancel": "Cancel",
+  "reviewComposerDeleteConfirmDelete": "Delete",
+  "reviewComposerDeleteError": "Error deleting review",
+  "reviewComposerDeleteSuccess": "Review deleted successfully",
+  "reviewComposerNoReviewsTitle": "No reviews yet",
+  "reviewComposerNoReviewsSubtitle": "Be the first to share your experience!",
+  "navScan": "Scan",
+  "emptyHomeTitle": "No Style Boxes yet",
+  "emptyHomeSubtitle": "Stores near you will post their surprise boxes here soon.",
+  "emptyCartTitle": "Your cart is empty",
+  "emptyCartSubtitle": "Reserve a Style Box and it will show up here.",
+  "profileViewSettingsTitle": "Settings",
+  "homeHeroTitle": "Style for less",
+  "homeHeroSubtitle": "Surprise clothing boxes from stores near you, up to 70% off.",
+  "homeStoresTitle": "Stores near you",
+  "bagCardOff": "{percent}% OFF",
+  "@bagCardOff": {"placeholders": {"percent": {"type": "String"}}},
+  "demoBoxNotice": "This is a demo box. Real boxes show up once stores add them from the dashboard.",
+  "mapTitle": "Stores map",
+  "mapPreviewTitle": "Find stores on the map",
+  "mapPreviewSubtitle": "{count} stores · tap to get directions",
+  "@mapPreviewSubtitle": {"placeholders": {"count": {"type": "String"}}},
+  "mapNoStoresTitle": "No stores on the map yet",
+  "mapNoStoresSubtitle": "Stores appear here once they pin their location from the dashboard.",
+  "mapDemoBanner": "Sample stores. Real ones appear once they're added from the dashboard.",
+  "mapDirections": "Directions",
+  "mapGoogleMaps": "Google Maps",
+  "mapOpenNow": "Open",
+  "mapClosedNow": "Closed",
+  "mapBoxesCount": "{count} boxes",
+  "@mapBoxesCount": {"placeholders": {"count": {"type": "String"}}},
+  "mapDistanceKm": "{distance} km",
+  "@mapDistanceKm": {"placeholders": {"distance": {"type": "String"}}},
+  "mapRouteMinutes": "{minutes} min",
+  "@mapRouteMinutes": {"placeholders": {"minutes": {"type": "String"}}},
+  "mapRouteStraightLine": "straight line",
+  "mapRouteLoading": "Finding the best route...",
+  "mapLocationDenied": "Allow location access so we can show the route from where you are.",
+  "mapLocationServiceOff": "Turn on location (GPS) to see the route.",
+  "mapLocationUnavailable": "Couldn't get your location. Try again or open Google Maps.",
+  "mapOpenSettings": "Settings",
+  "mapGoogleMapsFailed": "Couldn't open Google Maps.",
+  "mapShowAll": "Show all stores",
+  "mapMyLocation": "My location"
+}

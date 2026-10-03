@@ -1,0 +1,45 @@
+rules_version = '2';
+
+// Shared by the StyleBox app (customers) and the StyleBox dashboard (store owners).
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function myEmail() {
+      return request.auth.token.email;
+    }
+
+    // Customer profile: only its owner.
+    match /users/{uid} {
+      allow read, create, update: if signedIn() && request.auth.uid == uid;
+    }
+
+    // Store (one doc per branch) with its products embedded in `products`.
+    // The owner (dashboard) manages the whole doc; customers can only change
+    // the `products` array (reserving a bag, writing reviews).
+    match /resturants/{storeId} {
+      allow read: if true;
+      allow create: if signedIn() && request.resource.data.userEmail == myEmail();
+      allow update: if signedIn() && (
+        (resource.data.userEmail == myEmail()
+          && request.resource.data.userEmail == myEmail())
+        || request.resource.data.diff(resource.data).affectedKeys().hasOnly(['products'])
+      );
+      allow delete: if signedIn() && resource.data.userEmail == myEmail();
+    }
+
+    // Orders: a customer creates and reads only their own.
+    match /orders/{orderId} {
+      allow create: if signedIn() && request.resource.data.uID == request.auth.uid;
+      allow read: if signedIn() && resource.data.uID == request.auth.uid;
+    }
+
+    // AI chat history per user.
+    match /chats/{uid}/messages/{messageId} {
+      allow read, write: if signedIn() && request.auth.uid == uid;
+    }
+  }
+}

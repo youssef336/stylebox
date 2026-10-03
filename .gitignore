@@ -1,0 +1,20 @@
+# Build outputs and tool caches (each Flutter project also has its own .gitignore)
+build/
+.dart_tool/
+node_modules/
+*.apk
+*.aab
+*.log
+
+# Local machine / signing files
+local.properties
+key.properties
+*.jks
+*.keystore
+.env
+
+# Editors / OS
+.idea/
+*.iml
+.DS_Store
+Thumbs.db

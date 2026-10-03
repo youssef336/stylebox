@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">StyleBox</string>
+
+    <!-- Replace with your Facebook App ID -->
+    <string name="facebook_app_id">1931385300789455</string>
+
+    <!-- Replace with your Facebook Client Token -->
+    <string name="facebook_client_token">871ab3d43f03d00b38ee1bc3f08cf1c7</string>
+
+    <!-- Replace with fb + your Facebook App ID -->
+    <string name="fb_login_protocol_scheme">fb1931385300789455</string>
+</resources>

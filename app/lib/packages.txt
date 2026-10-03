@@ -1,0 +1,55 @@
+flutter pub add modal_progress_hud_nsn
+
+
+
+
+
+dart pub add get_it
+
+
+
+
+Either
+dart pub add dartz
+
+
+
+
+
+
+
+flutter build apk --release
+
+
+
+
+
+
+
+
+dart pub add get_it
+flutter pub add modal_progress_hud_nsn
+flutter pub add firebase_auth
+flutter pub add shared_preferences
+dart pub add dartz
+dart pub add bloc
+flutter pub add flutter_bloc
+
+
+
+
+
+
+
+   prefer_const_constructors: true
+
+
+
+
+
+
+
+
+Sihn1 in with google go to android file then open cmd 
+write 
+gradlew signingReport

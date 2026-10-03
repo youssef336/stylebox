@@ -1,0 +1,1309 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:stylebox_dashboard/core/repos/product_repo/products_repo.dart';
+import 'package:stylebox_dashboard/core/services/get_it_services.dart';
+import 'package:stylebox_dashboard/core/services/user_session.dart';
+import 'package:stylebox_dashboard/core/utils/app_colors.dart';
+import 'package:stylebox_dashboard/features/add_product/domain/entities/add_product_input_entity.dart';
+import 'package:stylebox_dashboard/features/manage_data/domain/entities/restaurant_entity.dart';
+import 'package:stylebox_dashboard/features/manage_data/presentation/cubit/restaurant_cubit.dart';
+import 'package:stylebox_dashboard/features/manage_data/presentation/views/widgets/restaurant_form_sheet.dart';
+import 'package:stylebox_dashboard/features/manage_data/presentation/views/widgets/sample_collection_action.dart';
+import 'package:stylebox_dashboard/core/localization/app_localizations.dart';
+
+class ManageRestaurantsWithBagsBody extends StatefulWidget {
+  const ManageRestaurantsWithBagsBody({super.key});
+
+  @override
+  State<ManageRestaurantsWithBagsBody> createState() =>
+      _ManageRestaurantsWithBagsBodyState();
+}
+
+class _ManageRestaurantsWithBagsBodyState
+    extends State<ManageRestaurantsWithBagsBody> {
+  final ProductsRepo _productsRepo = getIt<ProductsRepo>();
+  Map<String, List<AddProductInputEntity>> _restaurantBags = {};
+  bool _isLoadingBags = false;
+
+  bool _bagsLoaded = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // Don't load bags here - wait for restaurants to load in build
+  }
+
+  Future<void> _loadBagsForRestaurants(
+    List<RestaurantEntity> restaurants,
+  ) async {
+    if (_bagsLoaded) return; // Already loaded
+
+    setState(() => _isLoadingBags = true);
+
+    final bagsMap = <String, List<AddProductInputEntity>>{};
+
+    for (final restaurant in restaurants) {
+      if (restaurant.docId != null) {
+        final result = await _productsRepo.getProductsByRestaurant(
+          restaurantId: restaurant.docId!,
+        );
+        result.fold(
+          (failure) => bagsMap[restaurant.docId!] = [],
+          (bags) => bagsMap[restaurant.docId!] = bags,
+        );
+      }
+    }
+
+    if (mounted) {
+      setState(() {
+        _restaurantBags = bagsMap;
+        _isLoadingBags = false;
+        _bagsLoaded = true;
+      });
+    }
+  }
+
+  Future<void> _refresh(List<RestaurantEntity> restaurants) async {
+    setState(() => _bagsLoaded = false); // Reset to reload bags
+    context.read<RestaurantCubit>().fetchRestaurants(
+      UserSession.instance.currentEmail,
+    );
+    await _loadBagsForRestaurants(restaurants);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocConsumer<RestaurantCubit, RestaurantState>(
+      listener: (context, state) {
+        if (state is RestaurantOperationSuccess) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Row(
+                children: [
+                  const Icon(
+                    Icons.check_circle_rounded,
+                    color: Colors.white,
+                    size: 18,
+                  ),
+                  const SizedBox(width: 8),
+                  Text(state.message),
+                ],
+              ),
+              backgroundColor: AppColors.successColor,
+              behavior: SnackBarBehavior.floating,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+          );
+          // Reload bags after successful operation
+          setState(() => _bagsLoaded = false);
+        }
+        if (state is RestaurantError && state.message.isNotEmpty) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(state.message),
+              backgroundColor: AppColors.errorColor,
+              behavior: SnackBarBehavior.floating,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+          );
+        }
+      },
+      builder: (context, state) {
+        if (state is RestaurantLoading) {
+          return const Center(
+            child: CircularProgressIndicator(color: AppColors.primaryColor),
+          );
+        }
+
+        if (state is RestaurantEmpty) {
+          return _EmptyState(onAdd: () => _showAddSheet(context));
+        }
+
+        final restaurants = switch (state) {
+          RestaurantLoaded s => s.restaurants,
+          RestaurantOperationLoading s => s.restaurants,
+          RestaurantOperationSuccess s => s.restaurants,
+          RestaurantError s => s.restaurants,
+          _ => <RestaurantEntity>[],
+        };
+
+        if (state is RestaurantError && restaurants.isEmpty) {
+          return _ErrorState(
+            message: state.message,
+            onRetry: () => _refresh(restaurants),
+          );
+        }
+
+        final busyId = state is RestaurantOperationLoading
+            ? state.operationId
+            : null;
+
+        // Load bags when restaurants are first loaded
+        if (restaurants.isNotEmpty && !_bagsLoaded && !_isLoadingBags) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            _loadBagsForRestaurants(restaurants);
+          });
+        }
+
+        return RefreshIndicator(
+          color: AppColors.primaryColor,
+          onRefresh: () => _refresh(restaurants),
+          child: ListView.builder(
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
+            itemCount: restaurants.length,
+            itemBuilder: (_, index) {
+              final restaurant = restaurants[index];
+              final bags = _restaurantBags[restaurant.docId] ?? [];
+
+              return _RestaurantWithBagsCard(
+                restaurant: restaurant,
+                bags: bags,
+                isBusy: busyId == restaurant.docId,
+                isLoadingBags: _isLoadingBags,
+                onEdit: () => _showEditSheet(context, restaurant),
+                onDelete: () => _confirmDelete(context, restaurant),
+                onDeleteProduct: _deleteProduct,
+                onEditBag: _showEditBagDialog,
+                onRestockBag: _restockBag,
+              );
+            },
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _restockBag(
+    BuildContext context,
+    String? restaurantId,
+    AddProductInputEntity bag,
+  ) async {
+    final currentBagsLeft = bag.bagsLeft;
+    final newBagsLeft = currentBagsLeft + 5; // Add 5 bags by default
+
+    final updatedBag = AddProductInputEntity(
+      docId: bag.docId,
+      productId: bag.productId,
+      isAvailable: bag.isAvailable,
+      title: bag.title,
+      price: bag.price,
+      oldPrice: bag.oldPrice,
+      bagsLeft: newBagsLeft,
+      detectedItems: bag.detectedItems,
+      imageUrl: bag.imageUrl,
+      userEmail: bag.userEmail,
+      restaurantId: bag.restaurantId,
+      restaurantName: bag.restaurantName,
+      pickupTime: bag.pickupTime,
+      reviews: bag.reviews,
+      avgRating: bag.avgRating,
+      sizes: bag.sizes,
+      category: bag.category,
+    );
+
+    // Optimistic update
+    setState(() {
+      final list = _restaurantBags[restaurantId] ?? [];
+      final index = list.indexWhere((b) => b.productId == bag.productId);
+      if (index != -1) {
+        list[index] = updatedBag;
+        _restaurantBags[restaurantId!] = List.from(list);
+      }
+    });
+
+    final docId = bag.productId ?? bag.docId;
+    if (docId != null) {
+      final updateResult = await _productsRepo.updateProduct(docId, updatedBag);
+      updateResult.fold(
+        (failure) {
+          // Revert on failure
+          setState(() {
+            final list = _restaurantBags[restaurantId] ?? [];
+            final index = list.indexWhere((b) => b.productId == bag.productId);
+            if (index != -1) {
+              list[index] = bag;
+              _restaurantBags[restaurantId!] = List.from(list);
+            }
+          });
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Failed to restock: ${failure.message}'),
+              backgroundColor: AppColors.errorColor,
+            ),
+          );
+        },
+        (_) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Restocked! Added 5 boxes (Total: $newBagsLeft)'),
+              backgroundColor: AppColors.successColor,
+            ),
+          );
+        },
+      );
+    }
+  }
+
+  Future<void> _showEditBagDialog(
+    BuildContext context,
+    String? restaurantId,
+    AddProductInputEntity bag,
+  ) async {
+    final titleCtrl = TextEditingController(text: bag.title);
+    final priceCtrl = TextEditingController(
+      text: bag.price > 0 ? bag.price.toStringAsFixed(2) : '',
+    );
+    final oldPriceCtrl = TextEditingController(
+      text: bag.oldPrice != null && bag.oldPrice! > 0
+          ? bag.oldPrice!.toStringAsFixed(2)
+          : '',
+    );
+    final bagsLeftCtrl = TextEditingController(
+      text: bag.bagsLeft > 0 ? bag.bagsLeft.toString() : '',
+    );
+    bool isAvailable = bag.isAvailable;
+
+    // Helper to parse price (handles both comma and dot as decimal separator)
+    double? parsePrice(String text) {
+      if (text.trim().isEmpty) return null;
+      // Replace comma with dot for Arabic locale compatibility
+      final normalized = text.trim().replaceAll(',', '.');
+      return double.tryParse(normalized);
+    }
+
+    final result = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) {
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            return AlertDialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              title: const Row(
+                children: [
+                  Icon(Icons.edit, color: AppColors.primaryColor, size: 24),
+                  SizedBox(width: 10),
+                  Text('Edit Style Box'),
+                ],
+              ),
+              content: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    TextField(
+                      controller: titleCtrl,
+                      decoration: const InputDecoration(
+                        labelText: 'Title',
+                        prefixIcon: Icon(Icons.shopping_bag_outlined),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: TextField(
+                            controller: oldPriceCtrl,
+                            keyboardType: TextInputType.number,
+                            decoration: const InputDecoration(
+                              labelText: 'Old Price',
+                              prefixIcon: Icon(Icons.attach_money),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: TextField(
+                            controller: priceCtrl,
+                            keyboardType: TextInputType.number,
+                            decoration: const InputDecoration(
+                              labelText: 'New Price *',
+                              prefixIcon: Icon(Icons.local_offer_outlined),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    TextField(
+                      controller: bagsLeftCtrl,
+                      keyboardType: TextInputType.number,
+                      decoration: const InputDecoration(
+                        labelText: 'Boxes Left *',
+                        prefixIcon: Icon(Icons.inventory_2_outlined),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Row(
+                      children: [
+                        const Icon(Icons.check_circle_outline, size: 20),
+                        const SizedBox(width: 8),
+                        const Text('Available'),
+                        const Spacer(),
+                        Switch(
+                          value: isAvailable,
+                          onChanged: (v) =>
+                              setDialogState(() => isAvailable = v),
+                          activeThumbColor: AppColors.primaryColor,
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(dialogContext, false),
+                  child: const Text('Cancel'),
+                ),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primaryColor,
+                    foregroundColor: Colors.white,
+                  ),
+                  onPressed: () => Navigator.pop(dialogContext, true),
+                  child: const Text('Save'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+
+    if (result == true) {
+      final price = parsePrice(priceCtrl.text) ?? 0.0;
+      final oldPrice = parsePrice(oldPriceCtrl.text);
+      final bagsLeft = int.tryParse(bagsLeftCtrl.text) ?? 0;
+
+      if (price <= 0 || bagsLeft <= 0) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Price and boxes left must be greater than 0'),
+            backgroundColor: AppColors.errorColor,
+          ),
+        );
+        return;
+      }
+
+      final updatedBag = AddProductInputEntity(
+        docId: bag.docId,
+        productId: bag.productId,
+        isAvailable: isAvailable,
+        title: titleCtrl.text.trim(),
+        price: price,
+        oldPrice: oldPrice != null && oldPrice > 0 ? oldPrice : null,
+        bagsLeft: bagsLeft,
+        detectedItems: bag.detectedItems,
+        imageUrl: bag.imageUrl,
+        userEmail: bag.userEmail,
+        restaurantId: bag.restaurantId,
+        restaurantName: bag.restaurantName,
+        pickupTime: bag.pickupTime,
+        reviews: bag.reviews,
+        avgRating: bag.avgRating,
+        sizes: bag.sizes,
+        category: bag.category,
+      );
+
+      // Optimistic update
+      setState(() {
+        final list = _restaurantBags[restaurantId] ?? [];
+        final index = list.indexWhere((b) => b.productId == bag.productId);
+        if (index != -1) {
+          list[index] = updatedBag;
+          _restaurantBags[restaurantId!] = List.from(list);
+        }
+      });
+
+      final docId = bag.productId ?? bag.docId;
+      if (docId != null) {
+        final updateResult = await _productsRepo.updateProduct(
+          docId,
+          updatedBag,
+        );
+        updateResult.fold(
+          (failure) {
+            // Revert on failure
+            setState(() {
+              final list = _restaurantBags[restaurantId] ?? [];
+              final index = list.indexWhere(
+                (b) => b.productId == bag.productId,
+              );
+              if (index != -1) {
+                list[index] = bag;
+                _restaurantBags[restaurantId!] = List.from(list);
+              }
+            });
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Failed to update: ${failure.message}'),
+                backgroundColor: AppColors.errorColor,
+              ),
+            );
+          },
+          (_) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Style Box updated successfully'),
+                backgroundColor: AppColors.successColor,
+              ),
+            );
+          },
+        );
+      }
+    }
+
+    titleCtrl.dispose();
+    priceCtrl.dispose();
+    oldPriceCtrl.dispose();
+    bagsLeftCtrl.dispose();
+  }
+
+  void _showAddSheet(BuildContext context) {
+    final cubit = context.read<RestaurantCubit>();
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) =>
+          BlocProvider.value(value: cubit, child: const RestaurantFormSheet()),
+    );
+  }
+
+  void _showEditSheet(BuildContext context, RestaurantEntity entity) {
+    final cubit = context.read<RestaurantCubit>();
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => BlocProvider.value(
+        value: cubit,
+        child: RestaurantFormSheet(existing: entity),
+      ),
+    );
+  }
+
+  void _confirmDelete(BuildContext context, RestaurantEntity entity) {
+    final cubit = context.read<RestaurantCubit>();
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Row(
+          children: [
+            const Icon(
+              Icons.warning_amber_rounded,
+              color: AppColors.errorColor,
+              size: 24,
+            ),
+            const SizedBox(width: 10),
+            Text(AppLocalizations.of(context)!.deleteRestaurant),
+          ],
+        ),
+        content: Text(
+          AppLocalizations.of(context)!.delete_restaurant_confirm(entity.name),
+          style: const TextStyle(fontSize: 14),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(
+              AppLocalizations.of(context)!.cancel,
+              style: const TextStyle(color: AppColors.primaryColor),
+            ),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.errorColor,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+            onPressed: () {
+              Navigator.pop(context);
+              if (entity.docId != null) cubit.deleteRestaurant(entity.docId!);
+            },
+            child: Text(AppLocalizations.of(context)!.delete),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _deleteProduct(
+    BuildContext context,
+    String? restaurantId,
+    String? productId,
+  ) async {
+    if (productId == null) return;
+    if (restaurantId == null) return;
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: Text(AppLocalizations.of(context)!.deleteProduct),
+        content: Text(AppLocalizations.of(context)!.deleteProductConfirm),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text(AppLocalizations.of(context)!.cancel),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: Text(AppLocalizations.of(context)!.delete),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true) return;
+
+    final previous = Map<String, List<AddProductInputEntity>>.from(
+      _restaurantBags,
+    );
+
+    setState(() {
+      final list = _restaurantBags[restaurantId] ?? [];
+      _restaurantBags[restaurantId] = list
+          .where((b) => b.productId != productId)
+          .toList();
+    });
+
+    final result = await _productsRepo.deleteProduct(productId);
+    result.fold(
+      (failure) {
+        if (!mounted) return;
+        setState(() => _restaurantBags = previous);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(failure.message),
+            backgroundColor: AppColors.errorColor,
+          ),
+        );
+      },
+      (_) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.productDeleted),
+            backgroundColor: AppColors.successColor,
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _RestaurantWithBagsCard extends StatelessWidget {
+  final RestaurantEntity restaurant;
+  final List<AddProductInputEntity> bags;
+  final bool isBusy;
+  final bool isLoadingBags;
+  final VoidCallback onEdit;
+  final VoidCallback onDelete;
+  final Future<void> Function(
+    BuildContext context,
+    String? restaurantId,
+    String? productId,
+  )
+  onDeleteProduct;
+  final void Function(BuildContext, String?, AddProductInputEntity) onEditBag;
+  final void Function(BuildContext, String?, AddProductInputEntity)
+  onRestockBag;
+
+  const _RestaurantWithBagsCard({
+    required this.restaurant,
+    required this.bags,
+    required this.isBusy,
+    this.isLoadingBags = false,
+    required this.onEdit,
+    required this.onDelete,
+    required this.onDeleteProduct,
+    required this.onEditBag,
+    required this.onRestockBag,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      margin: const EdgeInsets.only(bottom: 20),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      elevation: 2,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // ── Restaurant Header ─────────────────────────────────────
+          _RestaurantHeader(
+            restaurant: restaurant,
+            isBusy: isBusy,
+            onEdit: onEdit,
+            onDelete: onDelete,
+          ),
+
+          // ── Available Bags Section ─────────────────────────────────
+          if (isLoadingBags) ...[
+            // Loading indicator
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Center(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const SizedBox(
+                      width: 16,
+                      height: 16,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: AppColors.primaryColor,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      'Loading Style Boxes...',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey.shade600,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ] else if (bags.isNotEmpty) ...[
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+              child: Row(
+                children: [
+                  const Text(
+                    'Available Style Boxes',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF14121F),
+                    ),
+                  ),
+                  const Spacer(),
+                  Text(
+                    '${bags.length} box${bags.length > 1 ? 'es' : ''}',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.orange.shade600,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            // ── Vertical List of Bag Cards ───────────────────────────
+            ...bags.map(
+              (bag) => _BagCard(
+                bag: bag,
+                onDelete: () =>
+                    onDeleteProduct(context, restaurant.docId, bag.productId),
+                onEdit: () => onEditBag(context, restaurant.docId, bag),
+                onRestock: () => onRestockBag(context, restaurant.docId, bag),
+              ),
+            ),
+
+            const SizedBox(height: 12),
+          ] else ...[
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade100,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.inventory_2_outlined,
+                      color: Colors.grey.shade400,
+                    ),
+                    const SizedBox(width: 12),
+                    Text(
+                      'No Style Boxes available yet',
+                      style: TextStyle(color: Colors.grey.shade600),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _RestaurantHeader extends StatelessWidget {
+  final RestaurantEntity restaurant;
+  final bool isBusy;
+  final VoidCallback onEdit;
+  final VoidCallback onDelete;
+
+  const _RestaurantHeader({
+    required this.restaurant,
+    required this.isBusy,
+    required this.onEdit,
+    required this.onDelete,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+        image: restaurant.RestaurantimageUrl != null
+            ? DecorationImage(
+                image: NetworkImage(restaurant.RestaurantimageUrl!),
+                fit: BoxFit.cover,
+                colorFilter: ColorFilter.mode(
+                  Colors.black.withValues(alpha: 0.3),
+                  BlendMode.darken,
+                ),
+              )
+            : null,
+        gradient: restaurant.RestaurantimageUrl == null
+            ? const LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [Color(0xFF5B3DF5), Color(0xFF9B6BFF)],
+              )
+            : null,
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // ── Badges Row ────────────────────────────────────────────
+            Row(
+              children: [
+                // Available Badge
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
+                  decoration: BoxDecoration(
+                    color: restaurant.isAvailable ? Colors.green : Colors.grey,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(
+                        Icons.check_circle,
+                        color: Colors.white,
+                        size: 14,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        restaurant.isAvailable ? 'Available' : 'Unavailable',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 8),
+                // Now Badge (Open/Closed)
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
+                  decoration: BoxDecoration(
+                    color: restaurant.isOpend
+                        ? Colors.orange
+                        : Colors.grey.shade700,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        restaurant.isOpend
+                            ? Icons.access_time_filled
+                            : Icons.access_time,
+                        color: Colors.white,
+                        size: 14,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        restaurant.isOpend ? 'Now' : 'Closed',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+
+            // ── Logo + Name Row ───────────────────────────────────────
+            Row(
+              children: [
+                // Logo placeholder or actual logo
+                Container(
+                  width: 50,
+                  height: 50,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(8),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.1),
+                        blurRadius: 4,
+                      ),
+                    ],
+                  ),
+                  child: restaurant.RestaurantimageUrl != null
+                      ? ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: Image.network(
+                            restaurant.RestaurantimageUrl!,
+                            fit: BoxFit.cover,
+                            width: 50,
+                            height: 50,
+                          ),
+                        )
+                      : const Icon(Icons.restaurant, color: Color(0xFF2C3E50)),
+                ),
+                const SizedBox(width: 12),
+                // Name and Info
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        restaurant.displayName,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Row(
+                        children: [
+                          const Icon(
+                            Icons.store,
+                            color: Colors.white70,
+                            size: 14,
+                          ),
+                          const SizedBox(width: 4),
+                          Flexible(
+                            child: Text(
+                              restaurant.branchesDisplay,
+                              style: const TextStyle(
+                                color: Colors.white70,
+                                fontSize: 12,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          const Icon(
+                            Icons.location_on,
+                            color: Colors.white70,
+                            size: 14,
+                          ),
+                          const SizedBox(width: 4),
+                          Flexible(
+                            child: Text(
+                              restaurant.branchLocation,
+                              style: const TextStyle(
+                                color: Colors.white70,
+                                fontSize: 12,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                // Actions
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    IconButton(
+                      onPressed: isBusy ? null : onEdit,
+                      icon: const Icon(
+                        Icons.edit,
+                        color: Colors.white70,
+                        size: 20,
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: isBusy ? null : onDelete,
+                      icon: const Icon(
+                        Icons.delete_outline,
+                        color: Colors.white70,
+                        size: 20,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _BagCard extends StatelessWidget {
+  final AddProductInputEntity bag;
+  final VoidCallback? onDelete;
+  final VoidCallback? onEdit;
+  final VoidCallback? onRestock;
+
+  const _BagCard({
+    required this.bag,
+    this.onDelete,
+    this.onEdit,
+    this.onRestock,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final oldPrice = bag.oldPrice;
+
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          // ── Bag Image ─────────────────────────────────────────────
+          ClipRRect(
+            borderRadius: BorderRadius.circular(12),
+            child: bag.imageUrl != null
+                ? Image.network(
+                    bag.imageUrl!,
+                    width: 80,
+                    height: 80,
+                    fit: BoxFit.cover,
+                  )
+                : Container(
+                    width: 80,
+                    height: 80,
+                    color: Colors.grey.shade200,
+                    child: const Icon(Icons.fastfood, color: Colors.grey),
+                  ),
+          ),
+          const SizedBox(width: 12),
+
+          // ── Bag Info ──────────────────────────────────────────────
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Title
+                Text(
+                  bag.title,
+                  style: const TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF14121F),
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 4),
+
+                // Pickup Time
+                Row(
+                  children: [
+                    Icon(
+                      Icons.access_time,
+                      size: 12,
+                      color: Colors.grey.shade500,
+                    ),
+                    const SizedBox(width: 4),
+                    Expanded(
+                      child: Text(
+                        bag.pickupTime ?? 'Pickup 9:00 AM - 11:59 PM',
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: Colors.grey.shade600,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+
+                // ── Price & Bags Left Row ────────────────────────────
+                Row(
+                  children: [
+                    // Bags Left Badge
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 6,
+                        vertical: 3,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.orange.shade50,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.shopping_bag_outlined,
+                            size: 12,
+                            color: Colors.orange.shade600,
+                          ),
+                          const SizedBox(width: 2),
+                          Text(
+                            '${bag.bagsLeft} left',
+                            style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.orange.shade700,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+
+                    // Old Price
+                    if (oldPrice != null && oldPrice > bag.price)
+                      Flexible(
+                        child: Padding(
+                          padding: const EdgeInsets.only(right: 4),
+                          child: Text(
+                            oldPrice.toStringAsFixed(0),
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey.shade500,
+                              decoration: TextDecoration.lineThrough,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ),
+
+                    // New Price
+                    Flexible(
+                      child: Text(
+                        '${bag.price.toStringAsFixed(0)} EGP',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.green.shade700,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+
+          // ── Actions ──────────────────────────────────────────────
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              // Quick Restock Button
+              if (onRestock != null)
+                InkWell(
+                  onTap: onRestock,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.green.shade50,
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: Colors.green.shade200),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.add_circle_outline,
+                          size: 14,
+                          color: Colors.green.shade700,
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          'Restock',
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.green.shade700,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              const SizedBox(height: 4),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  IconButton(
+                    tooltip: 'Edit Style Box',
+                    onPressed: onEdit,
+                    icon: const Icon(
+                      Icons.edit_outlined,
+                      color: AppColors.primaryColor,
+                      size: 20,
+                    ),
+                  ),
+                  IconButton(
+                    tooltip: 'Delete product',
+                    onPressed: onDelete,
+                    icon: const Icon(
+                      Icons.delete_outline,
+                      color: Colors.redAccent,
+                      size: 20,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _EmptyState extends StatelessWidget {
+  final VoidCallback onAdd;
+  const _EmptyState({required this.onAdd});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            width: 100,
+            height: 100,
+            decoration: BoxDecoration(
+              color: AppColors.primaryColor.withValues(alpha: 0.1),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              Icons.store_outlined,
+              size: 50,
+              color: AppColors.primaryColor.withValues(alpha: 0.5),
+            ),
+          ),
+          const SizedBox(height: 20),
+          const Text(
+            'No Stores Yet',
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Add your first store to start selling Style Boxes.',
+            style: TextStyle(color: Colors.grey.shade600),
+          ),
+          const SizedBox(height: 20),
+          ElevatedButton.icon(
+            onPressed: onAdd,
+            icon: const Icon(Icons.add),
+            label: const Text('Add Store'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.primaryColor,
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+            ),
+          ),
+          const SizedBox(height: 8),
+          TextButton.icon(
+            onPressed: () => addSampleCollection(context),
+            icon: const Icon(Icons.auto_awesome_rounded),
+            label: const Text('Or add a sample collection'),
+            style: TextButton.styleFrom(
+              foregroundColor: AppColors.primaryColor,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ErrorState extends StatelessWidget {
+  final String message;
+  final VoidCallback onRetry;
+  const _ErrorState({required this.message, required this.onRetry});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.error_outline,
+            size: 60,
+            color: AppColors.errorColor.withValues(alpha: 0.5),
+          ),
+          const SizedBox(height: 16),
+          Text(
+            message,
+            textAlign: TextAlign.center,
+            style: TextStyle(color: Colors.grey.shade600),
+          ),
+          const SizedBox(height: 16),
+          ElevatedButton.icon(
+            onPressed: onRetry,
+            icon: const Icon(Icons.refresh),
+            label: const Text('Retry'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.primaryColor,
+              foregroundColor: Colors.white,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}

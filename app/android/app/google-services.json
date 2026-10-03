@@ -1,0 +1,98 @@
+{
+  "project_info": {
+    "project_number": "351864218835",
+    "project_id": "l-final-8f472",
+    "storage_bucket": "l-final-8f472.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:351864218835:android:49f88cdcc9c5342f442026",
+        "android_client_info": {
+          "package_name": "com.stylebox.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "351864218835-h080b19jma3m98s08rphs498ajub1re2.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.stylebox.app",
+            "certificate_hash": "ad07c6d99d8df1b4d9536144fb1115a002ccb05c"
+          }
+        },
+        {
+          "client_id": "351864218835-ivc4ah3rapu06hcq1nofs0mf53gqoj14.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA8vXwdDL-M2tFMHGFfnliBp-IyS0KOf-Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "351864218835-ivc4ah3rapu06hcq1nofs0mf53gqoj14.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "351864218835-ao35ri2rphuttdh7gjsh1ao3o10ai1ne.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.stylebox.app"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:351864218835:android:ad7715903fb13178442026",
+        "android_client_info": {
+          "package_name": "com.stylebox.dashboard"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "351864218835-0ralq5g4986h091m8afq9g53dh6vcd4p.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.stylebox.dashboard",
+            "certificate_hash": "ad07c6d99d8df1b4d9536144fb1115a002ccb05c"
+          }
+        },
+        {
+          "client_id": "351864218835-ivc4ah3rapu06hcq1nofs0mf53gqoj14.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA8vXwdDL-M2tFMHGFfnliBp-IyS0KOf-Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "351864218835-ivc4ah3rapu06hcq1nofs0mf53gqoj14.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "351864218835-ao35ri2rphuttdh7gjsh1ao3o10ai1ne.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.stylebox.app"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
