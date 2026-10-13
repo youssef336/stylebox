@@ -14,6 +14,11 @@
   <img src="https://img.shields.io/badge/Platform-Android%20%7C%20iOS-3DDC84?style=for-the-badge&logo=android&logoColor=white" alt="Platform"/>
 </p>
 
+<p align="center">
+  <img src="docs/screens.jpg" alt="App screens" width="100%"/>
+  <br/><sub>Home · Style scan · AI style assistant</sub>
+</p>
+
 ---
 
 ## 📖 About
