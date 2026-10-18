@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:stylebox_dashboard/core/utils/app_colors.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 // dart:async is not required here
+import 'package:stylebox_dashboard/core/localization/app_localizations.dart';
 
 class SplashWrapper extends StatelessWidget {
   final String initialRoute;
@@ -85,6 +87,9 @@ class _AppSplashScreenState extends State<AppSplashScreen>
 
   @override
   Widget build(BuildContext context) {
+    final title =
+        AppLocalizations.of(context)?.appTitle ?? 'StyleBox Dashboard';
+
     return Stack(
       children: [
         // App content underneath
@@ -95,7 +100,7 @@ class _AppSplashScreenState extends State<AppSplashScreen>
           child: FadeTransition(
             opacity: Tween<double>(begin: 1.0, end: 0.0).animate(_fade),
             child: Container(
-              color: const Color(0xFFF7F6FB),
+              color: AppColors.background,
               child: Stack(
                 children: [
                   // Background gradient SVG
@@ -122,7 +127,7 @@ class _AppSplashScreenState extends State<AppSplashScreen>
                               shape: BoxShape.circle,
                               boxShadow: [
                                 BoxShadow(
-                                  color: Color.fromRGBO(0, 0, 0, 0.25),
+                                  color: Color.fromRGBO(94, 26, 47, 0.22),
                                   blurRadius: 24,
                                   offset: Offset(0, 8),
                                 ),
@@ -133,6 +138,34 @@ class _AppSplashScreenState extends State<AppSplashScreen>
                                 'assets/icons/Dashboard_App_Icon.jpeg',
                                 fit: BoxFit.cover,
                               ),
+                            ),
+                          ),
+                          const SizedBox(height: 28),
+                          const Text(
+                            'STYLEBOX',
+                            textDirection: TextDirection.ltr,
+                            style: TextStyle(
+                              color: AppColors.black,
+                              fontSize: 26,
+                              fontWeight: FontWeight.w600,
+                              letterSpacing: 7,
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          Container(
+                            width: 40,
+                            height: 1.5,
+                            color: AppColors.accentColor,
+                          ),
+                          const SizedBox(height: 10),
+                          Text(
+                            title,
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                              color: AppColors.textSecondary,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
+                              letterSpacing: 0.6,
                             ),
                           ),
                         ],

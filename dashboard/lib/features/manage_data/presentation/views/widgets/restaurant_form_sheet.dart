@@ -221,7 +221,7 @@ class _RestaurantFormSheetState extends State<RestaurantFormSheet> {
           style: const TextStyle(
             fontSize: 13,
             fontWeight: FontWeight.w600,
-            color: Color(0xFF424242),
+            color: AppColors.black,
           ),
         ),
         const SizedBox(height: 6),
@@ -239,14 +239,14 @@ class _RestaurantFormSheetState extends State<RestaurantFormSheet> {
             ),
             hintStyle: TextStyle(color: Colors.grey[400], fontSize: 14),
             filled: true,
-            fillColor: const Color(0xFFF9FAFA),
+            fillColor: AppColors.lightGrey,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: Color(0xFFE0E0E0)),
+              borderSide: const BorderSide(color: AppColors.divider),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: Color(0xFFE0E0E0)),
+              borderSide: const BorderSide(color: AppColors.divider),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
@@ -278,9 +278,9 @@ class _RestaurantFormSheetState extends State<RestaurantFormSheet> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
       decoration: BoxDecoration(
-        color: const Color(0xFFF9FAFA),
+        color: AppColors.lightGrey,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFFE0E0E0)),
+        border: Border.all(color: AppColors.divider),
       ),
       child: Row(
         children: [
@@ -312,7 +312,7 @@ class _RestaurantFormSheetState extends State<RestaurantFormSheet> {
           style: TextStyle(
             fontSize: 13,
             fontWeight: FontWeight.w600,
-            color: Color(0xFF424242),
+            color: AppColors.black,
           ),
         ),
         const SizedBox(height: 8),

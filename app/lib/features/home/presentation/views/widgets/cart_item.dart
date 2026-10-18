@@ -36,7 +36,11 @@ class CartItem extends StatelessWidget {
               Container(
                 width: 73,
                 height: 92,
-                decoration: const BoxDecoration(color: Color(0xFFF3F5F7)),
+                clipBehavior: Clip.antiAlias,
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.primaryContainer,
+                  borderRadius: BorderRadius.circular(KradiusSmall),
+                ),
                 child: Builder(
                   builder: (context) {
                     final url = cartItemEntity.productEntity.imageUrl;
@@ -95,8 +99,11 @@ class CartItem extends StatelessWidget {
                     BlocBuilder<LocaleCubit, LocaleState>(
                       builder: (context, localeState) {
                         final isAr = localeState is LocaleChangedtoArabic;
-                        final isDark = Theme.of(context).brightness == Brightness.dark;
-                        final weightColor = isDark ? KdarkModeTextSecondary : KlightModeTextSecondary;
+                        final isDark =
+                            Theme.of(context).brightness == Brightness.dark;
+                        final weightColor = isDark
+                            ? KdarkModeTextSecondary
+                            : KlightModeTextSecondary;
                         return Text.rich(
                           TextSpan(
                             children: [
@@ -129,8 +136,11 @@ class CartItem extends StatelessWidget {
                         BlocBuilder<LocaleCubit, LocaleState>(
                           builder: (context, localeState) {
                             final isAr = localeState is LocaleChangedtoArabic;
-                            final isDark = Theme.of(context).brightness == Brightness.dark;
-                            final priceColor = isDark ? KsecondaryColor : KprimaryColor;
+                            final isDark =
+                                Theme.of(context).brightness == Brightness.dark;
+                            final priceColor = isDark
+                                ? KsecondaryColor
+                                : KprimaryColor;
                             return Text.rich(
                               TextSpan(
                                 children: [

@@ -18,20 +18,15 @@ class SocialTextButtom extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final backgroundColor = isDark ? KdarkModeCardColor : KlightModeCardColor;
-    final borderColor = isDark
-        ? KprimaryColorLight.withValues(alpha: 0.25)
-        : const Color(0xFFDCDEDE);
-    final textColor = isDark ? KdarkModeTextColor : const Color(0xFF0C0D0D);
+    final borderColor = isDark ? KdarkModeDivider : KdisabledColor;
+    final textColor = isDark ? KdarkModeTextColor : KlightModeTextColor;
 
     return SizedBox(
       width: double.infinity,
       child: TextButton(
         style: TextButton.styleFrom(
           backgroundColor: backgroundColor,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-            side: BorderSide(color: borderColor, width: 1),
-          ),
+          shape: StadiumBorder(side: BorderSide(color: borderColor, width: 1)),
         ),
         onPressed: onPressed,
 

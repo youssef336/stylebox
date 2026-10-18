@@ -1,6 +1,7 @@
 // ignore_for_file: deprecated_member_use
 
 import 'package:flutter/material.dart';
+import 'package:stylebox_dashboard/core/utils/app_colors.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:stylebox_dashboard/core/widgets/custom_text_field.dart';
 import 'package:stylebox_dashboard/core/widgets/special_login_button.dart';
@@ -74,46 +75,35 @@ class _LoginViewBodyState extends State<LoginViewBody> {
   Widget _buildHeader() {
     return Column(
       children: [
-        Container(
-          width: 70,
-          height: 70,
-          decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              colors: [Color(0xFF5B3DF5), Color(0xFF7C63FF)],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-            borderRadius: BorderRadius.circular(20),
-            boxShadow: [
-              BoxShadow(
-                color: const Color(0xFF5B3DF5).withOpacity(0.3),
-                blurRadius: 12,
-                offset: const Offset(0, 6),
-              ),
-            ],
-          ),
-          child: const Icon(
-            Icons.lock_open_rounded,
-            color: Colors.white,
-            size: 40,
+        const Text(
+          'STYLEBOX',
+          textDirection: TextDirection.ltr,
+          style: TextStyle(
+            fontSize: 22,
+            fontWeight: FontWeight.w600,
+            letterSpacing: 6.5,
+            color: AppColors.black,
           ),
         ),
-        const SizedBox(height: 20),
+        const SizedBox(height: 8),
+        Container(width: 36, height: 1.5, color: AppColors.accentColor),
+        const SizedBox(height: 28),
         const Text(
           'Welcome Back',
           style: TextStyle(
             fontSize: 28,
             fontWeight: FontWeight.w700,
-            color: Color(0xFF5B3DF5),
+            letterSpacing: -0.5,
+            color: AppColors.black,
           ),
         ),
-        const SizedBox(height: 8),
-        Text(
+        const SizedBox(height: 6),
+        const Text(
           'Sign in to continue to your dashboard',
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w500,
-            color: Colors.grey[600],
+            color: AppColors.textSecondary,
           ),
         ),
       ],
@@ -125,9 +115,9 @@ class _LoginViewBodyState extends State<LoginViewBody> {
       width: double.infinity,
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: const Color(0xFFF9FAFA),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFFE6E9E9)),
+        color: AppColors.lightGrey,
+        borderRadius: BorderRadius.circular(AppColors.radiusField),
+        border: Border.all(color: AppColors.divider),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -137,7 +127,7 @@ class _LoginViewBodyState extends State<LoginViewBody> {
             style: TextStyle(
               fontSize: 13,
               fontWeight: FontWeight.w700,
-              color: Color(0xFF5B3DF5),
+              color: AppColors.primaryColor,
             ),
           ),
           const SizedBox(height: 8),
@@ -157,7 +147,7 @@ class _LoginViewBodyState extends State<LoginViewBody> {
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: const Color(0xFFE6E9E9)),
+                      border: Border.all(color: AppColors.divider),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -167,7 +157,7 @@ class _LoginViewBodyState extends State<LoginViewBody> {
                           style: const TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w600,
-                            color: Color(0xFF5B3DF5),
+                            color: AppColors.primaryColor,
                           ),
                         ),
                         if (accountPassword.isNotEmpty) ...[
@@ -177,7 +167,7 @@ class _LoginViewBodyState extends State<LoginViewBody> {
                             style: const TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.w600,
-                              color: Color(0xFF5B3DF5),
+                              color: AppColors.primaryColor,
                             ),
                           ),
                         ],
@@ -191,7 +181,7 @@ class _LoginViewBodyState extends State<LoginViewBody> {
           const SizedBox(height: 2),
           const Text(
             'Tap any account to auto-fill credentials',
-            style: TextStyle(fontSize: 12, color: Color(0xFF6B7475)),
+            style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
           ),
         ],
       ),
@@ -211,7 +201,7 @@ class _LoginViewBodyState extends State<LoginViewBody> {
       obscureText: false,
       suffixIcon: const Icon(
         Icons.email_outlined,
-        color: Color(0xFF5B3DF5),
+        color: AppColors.primaryColor,
         size: 20,
       ),
       maxLines: 1,
@@ -238,7 +228,7 @@ class _LoginViewBodyState extends State<LoginViewBody> {
       obscureText: true,
       suffixIcon: const Icon(
         Icons.lock_outline,
-        color: Color(0xFF5B3DF5),
+        color: AppColors.primaryColor,
         size: 20,
       ),
       maxLines: 1,

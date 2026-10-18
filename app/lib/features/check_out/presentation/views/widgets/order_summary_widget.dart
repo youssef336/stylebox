@@ -22,7 +22,7 @@ class OrderSummaryWidget extends StatelessWidget {
               Text(
                 S.of(context)!.orderSummaryWidgetSubtotal,
                 style: AppTextStyles.cairoRegular.copyWith(
-                  color: const Color(0xFF4E5556),
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
               ),
               const Spacer(),
@@ -36,13 +36,13 @@ class OrderSummaryWidget extends StatelessWidget {
                           .calculateTotalPrice()
                           .toString(),
                       style: AppTextStyles.bodyBaseSemibold.copyWith(
-                        color: const Color(0xFF0C0D0D),
+                        color: Theme.of(context).colorScheme.onSurface,
                       ),
                     ),
                     TextSpan(
                       text: S.of(context)!.checkOutViewShipingPrice,
                       style: AppTextStyles.bodyBaseSemibold.copyWith(
-                        color: const Color(0xFF0C0D0D),
+                        color: Theme.of(context).colorScheme.onSurface,
                       ),
                     ),
                   ],
@@ -56,7 +56,7 @@ class OrderSummaryWidget extends StatelessWidget {
               Text(
                 S.of(context)!.orderSummaryWidgetShipping,
                 style: AppTextStyles.cairoRegular.copyWith(
-                  color: const Color(0xFF4E5556),
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
               ),
               const Spacer(),
@@ -69,13 +69,13 @@ class OrderSummaryWidget extends StatelessWidget {
                           .calculateShipingCost()
                           .toString(),
                       style: AppTextStyles.cairoRegular.copyWith(
-                        color: const Color(0xFF4E5556),
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
                     ),
                     TextSpan(
                       text: S.of(context)!.checkOutViewShipingPrice,
                       style: AppTextStyles.cairoRegular.copyWith(
-                        color: const Color(0xFF4E5556),
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
                     ),
                   ],
@@ -92,7 +92,7 @@ class OrderSummaryWidget extends StatelessWidget {
                 Text(
                   "discount :",
                   style: AppTextStyles.cairoRegular.copyWith(
-                    color: const Color(0xFF4E5556),
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
                 ),
                 const Spacer(),
@@ -103,7 +103,7 @@ class OrderSummaryWidget extends StatelessWidget {
                         text: "-",
 
                         style: AppTextStyles.cairoRegular.copyWith(
-                          color: Colors.red,
+                          color: Theme.of(context).colorScheme.error,
                         ),
                       ),
                       TextSpan(
@@ -113,13 +113,13 @@ class OrderSummaryWidget extends StatelessWidget {
                             .toString(),
 
                         style: AppTextStyles.cairoRegular.copyWith(
-                          color: Colors.red,
+                          color: Theme.of(context).colorScheme.error,
                         ),
                       ),
                       TextSpan(
                         text: S.of(context)!.checkOutViewShipingPrice,
                         style: AppTextStyles.cairoRegular.copyWith(
-                          color: Colors.red,
+                          color: Theme.of(context).colorScheme.error,
                         ),
                       ),
                     ],
@@ -130,7 +130,11 @@ class OrderSummaryWidget extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 8),
-          const Divider(color: Color(0xFFCACECE), indent: 32, endIndent: 32),
+          Divider(
+            color: Theme.of(context).dividerColor,
+            indent: 32,
+            endIndent: 32,
+          ),
           const SizedBox(height: 8),
           Row(
             children: [
@@ -138,7 +142,7 @@ class OrderSummaryWidget extends StatelessWidget {
                 S.of(context)!.orderSummaryWidgetTotal,
                 style: AppTextStyles.cairoBold.copyWith(
                   fontSize: 16,
-                  color: const Color(0xFF0C0D0D),
+                  color: Theme.of(context).colorScheme.onSurface,
                 ),
               ),
               const Spacer(),
@@ -152,14 +156,14 @@ class OrderSummaryWidget extends StatelessWidget {
                           .toString(),
                       style: AppTextStyles.cairoBold.copyWith(
                         fontSize: 16,
-                        color: const Color(0xFF0C0D0D),
+                        color: Theme.of(context).colorScheme.onSurface,
                       ),
                     ),
                     TextSpan(
                       text: S.of(context)!.checkOutViewShipingPrice,
                       style: AppTextStyles.cairoBold.copyWith(
                         fontSize: 16,
-                        color: const Color(0xFF0C0D0D),
+                        color: Theme.of(context).colorScheme.onSurface,
                       ),
                     ),
                   ],

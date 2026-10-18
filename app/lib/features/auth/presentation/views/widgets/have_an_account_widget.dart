@@ -15,13 +15,13 @@ Text HaveAnAcoountWidget(BuildContext context) {
         TextSpan(
           text: S.of(context)!.onSignupCreateNewAccountText,
           style: AppTextStyles.bodyBaseSemibold.copyWith(
-            color: const Color(0xFF949D9E) /* Grayscale-600 */,
+            color: KlightModeTextSecondary /* Grayscale-600 */,
           ),
         ),
         TextSpan(
           text: ' ',
           style: AppTextStyles.bodyBaseSemibold.copyWith(
-            color: const Color(0xFF616A6B),
+            color: KlightModeTextSecondary,
           ),
         ),
 

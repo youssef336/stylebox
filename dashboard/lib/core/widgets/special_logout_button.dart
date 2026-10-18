@@ -1,6 +1,7 @@
 // ignore_for_file: deprecated_member_use
 
 import 'package:flutter/material.dart';
+import 'package:stylebox_dashboard/core/utils/app_colors.dart';
 import 'package:stylebox_dashboard/core/localization/app_localizations.dart';
 
 class SpecialLogoutButton extends StatefulWidget {
@@ -80,14 +81,14 @@ class _SpecialLogoutButtonState extends State<SpecialLogoutButton>
                     shape: BoxShape.circle,
                     gradient: LinearGradient(
                       colors: [
-                        const Color(0xFFE53935).withOpacity(0.1),
-                        const Color(0xFFFFA726).withOpacity(0.1),
+                        AppColors.errorColor.withOpacity(0.1),
+                        AppColors.warningColor.withOpacity(0.1),
                       ],
                     ),
                   ),
                   child: const Icon(
                     Icons.logout_rounded,
-                    color: Color(0xFFE53935),
+                    color: AppColors.errorColor,
                     size: 36,
                   ),
                 ),
@@ -97,7 +98,7 @@ class _SpecialLogoutButtonState extends State<SpecialLogoutButton>
                   style: const TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.w700,
-                    color: Color(0xFF5B3DF5),
+                    color: AppColors.primaryColor,
                   ),
                 ),
                 const SizedBox(height: 8),
@@ -130,7 +131,7 @@ class _SpecialLogoutButtonState extends State<SpecialLogoutButton>
                             child: Text(
                               l10n.cancel,
                               style: const TextStyle(
-                                color: Color(0xFF424242),
+                                color: AppColors.black,
                                 fontSize: 15,
                                 fontWeight: FontWeight.w600,
                               ),
@@ -150,14 +151,14 @@ class _SpecialLogoutButtonState extends State<SpecialLogoutButton>
                           height: 48,
                           decoration: BoxDecoration(
                             gradient: const LinearGradient(
-                              colors: [Color(0xFFE53935), Color(0xFFF44336)],
+                              colors: [AppColors.errorColor, Color(0xFFD9574F)],
                               begin: Alignment.topLeft,
                               end: Alignment.bottomRight,
                             ),
                             borderRadius: BorderRadius.circular(12),
                             boxShadow: [
                               BoxShadow(
-                                color: const Color(0xFFE53935).withOpacity(0.3),
+                                color: AppColors.errorColor.withOpacity(0.3),
                                 blurRadius: 8,
                                 offset: const Offset(0, 4),
                               ),
@@ -200,18 +201,18 @@ class _SpecialLogoutButtonState extends State<SpecialLogoutButton>
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(16),
             gradient: const LinearGradient(
-              colors: [Color(0xFFE53935), Color(0xFFF44336)],
+              colors: [AppColors.errorColor, Color(0xFFD9574F)],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
             boxShadow: [
               BoxShadow(
-                color: const Color(0xFFE53935).withOpacity(0.3),
+                color: AppColors.errorColor.withOpacity(0.3),
                 blurRadius: 12,
                 offset: const Offset(0, 6),
               ),
               BoxShadow(
-                color: const Color(0xFFE53935).withOpacity(0.1),
+                color: AppColors.errorColor.withOpacity(0.1),
                 blurRadius: 24,
                 offset: const Offset(0, 12),
               ),

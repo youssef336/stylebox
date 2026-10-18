@@ -1,8 +1,10 @@
 // ignore_for_file: deprecated_member_use
 
 import 'package:flutter/material.dart';
+import 'package:stylebox_dashboard/core/utils/app_colors.dart';
 import 'dart:math' show min;
-import 'package:stylebox_dashboard/core/services/get_it_services.dart' show getIt;
+import 'package:stylebox_dashboard/core/services/get_it_services.dart'
+    show getIt;
 import 'package:stylebox_dashboard/core/repos/product_repo/products_repo.dart';
 import 'package:stylebox_dashboard/features/manage_data/domain/usecases/restaurant_usecases.dart';
 import 'package:stylebox_dashboard/features/manage_data/domain/entities/restaurant_entity.dart';
@@ -415,7 +417,7 @@ class _AnalyticsViewState extends State<AnalyticsView> {
                             restaurant.displayName,
                             style: const TextStyle(
                               fontWeight: FontWeight.w700,
-                              color: Color(0xFF14121F),
+                              color: AppColors.black,
                             ),
                           ),
                           const SizedBox(height: 4),
@@ -499,7 +501,7 @@ class _AnalyticsViewState extends State<AnalyticsView> {
                   'Product Performance:',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFF14121F),
+                    color: AppColors.black,
                   ),
                 ),
                 Text(
@@ -664,7 +666,7 @@ class _AnalyticsViewState extends State<AnalyticsView> {
                             product.title,
                             style: const TextStyle(
                               fontWeight: FontWeight.w700,
-                              color: Color(0xFF14121F),
+                              color: AppColors.black,
                             ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
@@ -753,7 +755,7 @@ class _AnalyticsViewState extends State<AnalyticsView> {
                             product.title,
                             style: const TextStyle(
                               fontWeight: FontWeight.w700,
-                              color: Color(0xFF14121F),
+                              color: AppColors.black,
                             ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,

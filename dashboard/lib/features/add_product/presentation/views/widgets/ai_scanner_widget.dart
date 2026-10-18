@@ -208,7 +208,7 @@ class _AiScannerWidgetState extends State<AiScannerWidget>
           child: Container(
             height: 280,
             decoration: BoxDecoration(
-              color: const Color(0xFF14121F),
+              color: AppColors.black,
               borderRadius: BorderRadius.circular(20),
               border: Border.all(
                 color: _isScanning ? AppColors.secoundryColor : Colors.white12,

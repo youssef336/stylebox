@@ -14,67 +14,83 @@ class HomeHeroBanner extends StatelessWidget {
 
     return Container(
       width: double.infinity,
-      height: 148,
+      height: 152,
       decoration: BoxDecoration(
         gradient: KbrandGradient,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(KradiusCard),
         boxShadow: [
           BoxShadow(
-            color: KprimaryColor.withOpacity(0.3),
-            blurRadius: 24,
+            color: KprimaryColorDark.withOpacity(0.22),
+            blurRadius: 22,
             offset: const Offset(0, 10),
           ),
         ],
       ),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(KradiusCard),
         child: Stack(
           children: [
+            // Champagne hairline rings: a quiet, boutique-style ornament.
             PositionedDirectional(
-              end: -24,
-              bottom: -30,
-              child: Icon(
-                Icons.checkroom_rounded,
-                size: 170,
-                color: Colors.white.withOpacity(0.14),
+              end: -40,
+              top: -40,
+              child: Container(
+                width: 170,
+                height: 170,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: KaccentColor.withOpacity(0.45),
+                    width: 1,
+                  ),
+                ),
               ),
             ),
             PositionedDirectional(
-              end: 70,
-              top: -40,
+              end: -10,
+              top: -10,
               child: Container(
                 width: 110,
                 height: 110,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: Colors.white.withOpacity(0.08),
+                  border: Border.all(
+                    color: KaccentColor.withOpacity(0.3),
+                    width: 1,
+                  ),
                 ),
               ),
             ),
+            PositionedDirectional(
+              end: 18,
+              bottom: 14,
+              child: Icon(
+                Icons.checkroom_outlined,
+                size: 76,
+                color: Colors.white.withOpacity(0.16),
+              ),
+            ),
             Padding(
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 3,
-                    ),
-                    decoration: BoxDecoration(
-                      color: KaccentColor,
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: const Text(
-                      'StyleBox',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 11,
-                        fontWeight: FontWeight.w800,
-                        letterSpacing: 0.4,
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(width: 18, height: 1.5, color: KaccentColor),
+                      const SizedBox(width: 8),
+                      const Text(
+                        'STYLEBOX',
+                        style: TextStyle(
+                          color: KaccentColor,
+                          fontSize: 11,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: 3,
+                        ),
                       ),
-                    ),
+                    ],
                   ),
                   const SizedBox(height: 10),
                   Text(
@@ -82,11 +98,12 @@ class HomeHeroBanner extends StatelessWidget {
                     style: const TextStyle(
                       color: Colors.white,
                       fontSize: 22,
-                      fontWeight: FontWeight.w800,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: -0.3,
                       height: 1.2,
                     ),
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: 6),
                   SizedBox(
                     width: MediaQuery.of(context).size.width * 0.6,
                     child: Text(
@@ -94,9 +111,9 @@ class HomeHeroBanner extends StatelessWidget {
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
-                        color: Colors.white.withOpacity(0.88),
+                        color: Colors.white.withOpacity(0.85),
                         fontSize: 13,
-                        height: 1.4,
+                        height: 1.45,
                       ),
                     ),
                   ),

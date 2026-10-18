@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:stylebox/constant.dart';
 import 'package:stylebox/core/cubits/locale/locale_cubit.dart';
 
 import 'package:stylebox/features/home/presentation/manager/cubits/cart/cart_cubit.dart';
@@ -19,8 +18,8 @@ class CartViewHeader extends StatelessWidget {
         width: double.infinity,
         padding: const EdgeInsets.symmetric(vertical: 16),
 
-        decoration: const BoxDecoration(
-          color: Color(0xFFEBF9F1) /* Green1-50 */,
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.primaryContainer,
         ),
         child: BlocBuilder<CartItemCubit, CartItemState>(
           builder: (context, state) {
@@ -34,7 +33,8 @@ class CartViewHeader extends StatelessWidget {
                         : ' You have ${context.watch<CartCubit>().cartEntites.calculateTotalCount()} items in your cart',
                     style: AppTextStyles.cairoRegular.copyWith(
                       height: 1.60,
-                      color: KprimaryColor,
+                      fontWeight: FontWeight.w600,
+                      color: Theme.of(context).colorScheme.primary,
                     ),
                     textDirection: isAr ? TextDirection.rtl : TextDirection.ltr,
                   );

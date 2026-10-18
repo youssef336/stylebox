@@ -51,7 +51,7 @@ class BagCard extends StatelessWidget {
         : 0;
     final soldOut = bagsLeft <= 0;
     final lowStock = !soldOut && bagsLeft <= 3;
-    final stockColor = soldOut || lowStock ? KaccentColor : scheme.primary;
+    final stockColor = soldOut || lowStock ? scheme.error : scheme.primary;
 
     return GestureDetector(
       onTap: () => _openDetails(context),
@@ -61,15 +61,17 @@ class BagCard extends StatelessWidget {
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
           color: Theme.of(context).cardColor,
-          borderRadius: BorderRadius.circular(22),
-          border: Border.all(color: Theme.of(context).dividerColor),
+          borderRadius: BorderRadius.circular(KradiusCard),
+          border: isDark
+              ? Border.all(color: Theme.of(context).dividerColor)
+              : null,
           boxShadow: [
             BoxShadow(
               color: isDark
                   ? Colors.black.withOpacity(0.25)
-                  : KprimaryColor.withOpacity(0.07),
-              blurRadius: 20,
-              offset: const Offset(0, 8),
+                  : KprimaryColorDark.withOpacity(0.06),
+              blurRadius: 18,
+              offset: const Offset(0, 6),
             ),
           ],
         ),
@@ -84,7 +86,7 @@ class BagCard extends StatelessWidget {
                   height: 40,
                   decoration: BoxDecoration(
                     color: scheme.primaryContainer,
-                    borderRadius: BorderRadius.circular(12),
+                    shape: BoxShape.circle,
                   ),
                   child: Icon(
                     Icons.checkroom_rounded,
@@ -101,6 +103,7 @@ class BagCard extends StatelessWidget {
                     style: TextStyle(
                       fontWeight: FontWeight.w700,
                       fontSize: 16,
+                      letterSpacing: -0.2,
                       color: textColor,
                     ),
                   ),
@@ -112,15 +115,17 @@ class BagCard extends StatelessWidget {
                       vertical: 3,
                     ),
                     decoration: BoxDecoration(
-                      color: KaccentColor,
-                      borderRadius: BorderRadius.circular(8),
+                      color: scheme.secondaryContainer,
+                      borderRadius: BorderRadius.circular(6),
+                      border: Border.all(color: KaccentColor.withOpacity(0.6)),
                     ),
                     child: Text(
                       locale.bagCardOff('$discount'),
-                      style: const TextStyle(
-                        color: Colors.white,
+                      style: TextStyle(
+                        color: scheme.onSecondaryContainer,
                         fontSize: 11,
-                        fontWeight: FontWeight.w800,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 0.4,
                       ),
                     ),
                   ),
@@ -138,8 +143,9 @@ class BagCard extends StatelessWidget {
                   '${_money(price)} ${locale.bagCurrencySuffix}',
                   style: TextStyle(
                     fontSize: 22,
-                    fontWeight: FontWeight.w800,
-                    color: scheme.primary,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: -0.4,
+                    color: textColor,
                   ),
                 ),
                 const SizedBox(width: 8),
@@ -167,8 +173,8 @@ class BagCard extends StatelessWidget {
                     vertical: 4,
                   ),
                   decoration: BoxDecoration(
-                    color: stockColor.withOpacity(0.12),
-                    borderRadius: BorderRadius.circular(20),
+                    color: stockColor.withOpacity(0.10),
+                    borderRadius: BorderRadius.circular(KradiusSmall),
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
@@ -192,11 +198,7 @@ class BagCard extends StatelessWidget {
                 ),
                 const Spacer(),
                 if (rating > 0) ...[
-                  const Icon(
-                    Icons.star_rounded,
-                    size: 18,
-                    color: Color(0xFFFFB020),
-                  ),
+                  const Icon(Icons.star_rounded, size: 18, color: KaccentColor),
                   const SizedBox(width: 2),
                   Text(
                     rating.toStringAsFixed(1),
@@ -220,8 +222,9 @@ class BagCard extends StatelessWidget {
                 child: Text(
                   locale.bagCardReserve,
                   style: const TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w700,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: 0.6,
                   ),
                 ),
               ),

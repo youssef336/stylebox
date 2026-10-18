@@ -14,7 +14,7 @@ AppBar buildAppbar(
     leading: Visibility(
       visible: showBackButton,
       child: IconButton(
-        icon: const Icon(Icons.arrow_back_ios_new),
+        icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20),
         onPressed: () {
           Navigator.pop(context);
         },
@@ -29,7 +29,13 @@ AppBar buildAppbar(
         ),
       ),
     ],
-    title: Text(title, style: AppTextStyles.cairoBold19),
+    title: Text(
+      title,
+      style: AppTextStyles.cairoBold19.copyWith(
+        fontSize: 18,
+        letterSpacing: 0.2,
+      ),
+    ),
     centerTitle: true,
     backgroundColor: Colors.transparent,
     elevation: 0,

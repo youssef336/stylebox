@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:stylebox/constant.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:stylebox/generated/l10n.dart';
@@ -18,7 +19,8 @@ class _ProductGridViewBlocBuilderState
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final textColor = isDark ? Colors.white : const Color(0xFF2B2B2B);
+    final scheme = Theme.of(context).colorScheme;
+    final textColor = scheme.onSurface;
     return BlocBuilder<ProductsCubit, ProductsState>(
       builder: (context, state) {
         if (state is ProductsLoading || state is ProductsInitial) {
@@ -33,7 +35,7 @@ class _ProductGridViewBlocBuilderState
             padding: const EdgeInsets.symmetric(vertical: 24),
             child: Text(
               state.failure.message,
-              style: TextStyle(color: isDark ? Colors.white70 : Colors.black87),
+              style: TextStyle(color: scheme.onSurfaceVariant),
             ),
           );
         }
@@ -45,9 +47,7 @@ class _ProductGridViewBlocBuilderState
               padding: const EdgeInsets.symmetric(vertical: 24),
               child: Text(
                 S.of(context)!.productGridViewPlaceholder,
-                style: TextStyle(
-                  color: isDark ? Colors.white70 : Colors.black87,
-                ),
+                style: TextStyle(color: scheme.onSurfaceVariant),
               ),
             );
           }
@@ -69,57 +69,69 @@ class _ProductGridViewBlocBuilderState
                   : product.nameEn;
 
               return Container(
-                padding: const EdgeInsets.all(14),
+                padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: isDark ? const Color(0xFF1D1D1D) : Colors.white,
-                  borderRadius: BorderRadius.circular(20),
+                  color: Theme.of(context).cardColor,
+                  borderRadius: BorderRadius.circular(KradiusCard),
+                  border: isDark
+                      ? Border.all(color: Theme.of(context).dividerColor)
+                      : null,
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.08),
+                      color: KprimaryColorDark.withValues(
+                        alpha: isDark ? 0 : 0.06,
+                      ),
                       blurRadius: 18,
-                      offset: const Offset(0, 8),
+                      offset: const Offset(0, 6),
                     ),
                   ],
                 ),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Expanded(
                       child: Container(
                         width: double.infinity,
                         decoration: BoxDecoration(
-                          color: isDark
-                              ? Colors.white.withValues(alpha: 0.05)
-                              : const Color(0xFFF7F7F7),
-                          borderRadius: BorderRadius.circular(16),
+                          color: scheme.primaryContainer,
+                          borderRadius: BorderRadius.circular(KradiusCard - 6),
                         ),
-                        child: const Center(
-                          child: Icon(Icons.shopping_bag_outlined, size: 34),
+                        child: Center(
+                          child: Icon(
+                            Icons.checkroom_outlined,
+                            size: 36,
+                            color: scheme.primary,
+                          ),
                         ),
                       ),
                     ),
-                    const SizedBox(height: 12),
-                    Text(
-                      title,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      textAlign: TextAlign.end,
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w800,
-                        color: textColor,
+                    const SizedBox(height: 10),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 4),
+                      child: Text(
+                        title,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                          color: textColor,
+                        ),
                       ),
                     ),
                     const SizedBox(height: 3),
-                    Text(
-                      'EGP ${product.price}',
-                      textAlign: TextAlign.end,
-                      style: TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w500,
-                        color: isDark ? Colors.white70 : Colors.black54,
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 4),
+                      child: Text(
+                        'EGP ${product.price}',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700,
+                          color: scheme.primary,
+                        ),
                       ),
                     ),
+                    const SizedBox(height: 4),
                   ],
                 ),
               );

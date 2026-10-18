@@ -18,13 +18,13 @@ Text DontHaveAnAcoountWidget(BuildContext context) {
         TextSpan(
           text: S.of(context)!.onLoginCreateAccountText,
           style: AppTextStyles.bodyBaseSemibold.copyWith(
-            color: isDark ? KdarkModeTextSecondary : const Color(0xFF949D9E),
+            color: isDark ? KdarkModeTextSecondary : KlightModeTextSecondary,
           ),
         ),
         TextSpan(
           text: ' ',
           style: AppTextStyles.bodyBaseSemibold.copyWith(
-            color: isDark ? KdarkModeTextSecondary : const Color(0xFF616A6B),
+            color: isDark ? KdarkModeTextSecondary : KlightModeTextSecondary,
           ),
         ),
 
@@ -35,7 +35,8 @@ Text DontHaveAnAcoountWidget(BuildContext context) {
             },
           text: S.of(context)!.onLoginCreateAccount,
           style: AppTextStyles.bodyBaseSemibold.copyWith(
-            color: isDark ? KaccentColor : KprimaryColor,
+            color: isDark ? KdarkModePrimary : KprimaryColor,
+            fontWeight: FontWeight.w700,
           ),
         ),
       ],

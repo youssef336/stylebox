@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:stylebox/core/utils/app_decoration.dart';
+import 'package:stylebox/constant.dart';
 
 import 'package:stylebox/core/utils/text_styles.dart';
 
@@ -12,12 +12,19 @@ class PaymentItem extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(title, style: AppTextStyles.bodysmallBold),
+        Text(
+          title,
+          style: AppTextStyles.bodysmallBold.copyWith(letterSpacing: 0.4),
+        ),
         const SizedBox(height: 8),
         Container(
-          decoration: AppDecoration.grayBoxDecoration,
+          decoration: BoxDecoration(
+            color: Theme.of(context).cardColor,
+            borderRadius: BorderRadius.circular(KradiusField),
+            border: Border.all(color: Theme.of(context).dividerColor),
+          ),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 15),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 15),
             child: child,
           ),
         ),

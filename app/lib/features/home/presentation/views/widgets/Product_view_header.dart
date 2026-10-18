@@ -28,11 +28,8 @@ class ProductViewHeader extends StatelessWidget {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           decoration: BoxDecoration(
-            color: isDark ? KdarkModeCardColor : Colors.grey[200],
-            border: Border.all(
-              color: isDark ? KdarkModeTextSecondary : Colors.grey,
-            ),
-            borderRadius: BorderRadius.circular(4),
+            color: Theme.of(context).inputDecorationTheme.fillColor,
+            borderRadius: BorderRadius.circular(KradiusSmall),
           ),
           child: Icon(
             Icons.tune,

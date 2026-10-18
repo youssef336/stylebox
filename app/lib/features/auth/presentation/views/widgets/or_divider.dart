@@ -13,23 +13,20 @@ class OrDivider extends StatelessWidget {
     return Row(
       children: [
         Expanded(
-          child: Divider(
-            thickness: 2,
-            color: Theme.of(context).dividerColor,
-          ),
+          child: Divider(thickness: 1, color: Theme.of(context).dividerColor),
         ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 18.0),
           child: Text(
             S.of(context)!.onLoginLoginOrDivider,
-            style: AppTextStyles.bodyBaseSemibold,
+            style: AppTextStyles.bodySmallSemibold.copyWith(
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+              letterSpacing: 1.2,
+            ),
           ),
         ),
         Expanded(
-          child: Divider(
-            thickness: 2,
-            color: Theme.of(context).dividerColor,
-          ),
+          child: Divider(thickness: 1, color: Theme.of(context).dividerColor),
         ),
       ],
     );

@@ -28,7 +28,7 @@ class AddressSummaryWidget extends StatelessWidget {
                 '${context.read<OrderEntity>().shipingAddressEntity}',
                 style: AppTextStyles.cairoRegular.copyWith(
                   fontSize: 16,
-                  color: const Color(0xFF4E5556),
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
               ),
               const Spacer(),
@@ -47,7 +47,7 @@ class AddressSummaryWidget extends StatelessWidget {
                         S.of(context)!.addressSummaryWidgetChange,
                         style: AppTextStyles.bodyBaseSemibold.copyWith(
                           fontSize: 13,
-                          color: const Color(0xFF949D9E),
+                          color: Theme.of(context).colorScheme.primary,
                         ),
                       ),
                     ],

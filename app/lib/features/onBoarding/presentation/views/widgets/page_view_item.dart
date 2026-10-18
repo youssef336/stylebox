@@ -31,48 +31,53 @@ class PageViewItem extends StatelessWidget {
         child: IntrinsicHeight(
           child: Column(
             children: [
-              /// 🔹 Hero: brand gradient + illustration
-              Container(
-                height: screenHeight * 0.55,
-                width: double.infinity,
-                decoration: const BoxDecoration(
-                  gradient: KbrandGradient,
-                  borderRadius: BorderRadius.vertical(
-                    bottom: Radius.circular(40),
+              /// Hero: an arched "boutique window" frame around the
+              /// illustration.
+              SafeArea(
+                bottom: false,
+                child: Container(
+                  height: screenHeight * 0.5,
+                  width: double.infinity,
+                  margin: const EdgeInsets.fromLTRB(28, 16, 28, 0),
+                  decoration: BoxDecoration(
+                    gradient: KbrandGradient,
+                    borderRadius: const BorderRadius.vertical(
+                      top: Radius.circular(220),
+                      bottom: Radius.circular(KradiusCard),
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: KprimaryColorDark.withOpacity(0.18),
+                        blurRadius: 30,
+                        offset: const Offset(0, 14),
+                      ),
+                    ],
                   ),
-                ),
-                child: Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    Positioned(
-                      top: -60,
-                      right: -40,
-                      child: Container(
-                        width: 200,
-                        height: 200,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.white.withOpacity(0.08),
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      Positioned.fill(
+                        child: Padding(
+                          padding: const EdgeInsets.all(10),
+                          child: DecoratedBox(
+                            decoration: BoxDecoration(
+                              borderRadius: const BorderRadius.vertical(
+                                top: Radius.circular(210),
+                                bottom: Radius.circular(KradiusCard - 6),
+                              ),
+                              border: Border.all(
+                                color: KaccentColor.withOpacity(0.55),
+                              ),
+                            ),
+                          ),
                         ),
                       ),
-                    ),
-                    Positioned(
-                      bottom: 30,
-                      left: -50,
-                      child: Container(
-                        width: 160,
-                        height: 160,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.white.withOpacity(0.06),
-                        ),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(32, 64, 32, 28),
+                        child: Image.asset(image, fit: BoxFit.contain),
                       ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(28, 56, 28, 24),
-                      child: Image.asset(image, fit: BoxFit.contain),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
 
@@ -88,7 +93,8 @@ class PageViewItem extends StatelessWidget {
                   subtitle,
                   textAlign: TextAlign.center,
                   style: AppTextStyles.bodyBaseSemibold.copyWith(
-                    color: Colors.grey.shade700,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    fontWeight: FontWeight.w500,
                     height: 1.6,
                   ),
                 ),
@@ -100,14 +106,8 @@ class PageViewItem extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 40),
                 child: SizedBox(
                   width: double.infinity,
-                  height: 55,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: KprimaryColor,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                    ),
+                  height: 52,
+                  child: OutlinedButton(
                     onPressed: () {
                       Prefs.setBool(KisBoardingViewSeen, true);
                       Navigator.of(
@@ -116,7 +116,7 @@ class PageViewItem extends StatelessWidget {
                     },
                     child: Text(
                       S.of(context)!.onBoardingSkip,
-                      style: const TextStyle(fontSize: 16),
+                      style: const TextStyle(fontSize: 15),
                     ),
                   ),
                 ),

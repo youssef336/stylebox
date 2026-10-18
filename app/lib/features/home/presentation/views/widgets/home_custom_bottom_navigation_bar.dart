@@ -20,53 +20,55 @@ class _HomeCustomBottomNavigationBarState
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    return SafeArea(
-      top: false,
-      child: Container(
-        height: 66,
-        margin: const EdgeInsets.fromLTRB(16, 4, 16, 12),
-        padding: const EdgeInsets.symmetric(horizontal: 6),
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surface,
-          borderRadius: BorderRadius.circular(24),
-          boxShadow: [
-            BoxShadow(
-              color: isDark
-                  ? Colors.black.withOpacity(0.4)
-                  : KprimaryColor.withOpacity(0.14),
-              blurRadius: 24,
-              offset: const Offset(0, 8),
-            ),
-          ],
-        ),
-        child: Row(
-          children: getButtonNavigationBarItems(context).asMap().entries.map((
-            e,
-          ) {
-            final index = e.key;
-            final entity = e.value;
+    final scheme = Theme.of(context).colorScheme;
 
-            return Expanded(
-              flex: index == selectedIndex ? 3 : 2,
-              child: GestureDetector(
-                behavior: HitTestBehavior.opaque,
-                onTap: () {
-                  setState(() {
-                    selectedIndex = index;
-                    widget.onItemTapped(index);
-                  });
-                },
-                child: AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 200),
-                  child: CustomBottomNavigationBarItem(
-                    key: ValueKey(selectedIndex == index),
-                    isSelected: selectedIndex == index,
-                    buttonNavigationBarEntity: entity,
+    return Container(
+      decoration: BoxDecoration(
+        color: scheme.surface,
+        border: Border(top: BorderSide(color: Theme.of(context).dividerColor)),
+        boxShadow: [
+          BoxShadow(
+            color: isDark
+                ? Colors.black.withOpacity(0.35)
+                : KprimaryColorDark.withOpacity(0.05),
+            blurRadius: 16,
+            offset: const Offset(0, -4),
+          ),
+        ],
+      ),
+      child: SafeArea(
+        top: false,
+        child: Container(
+          height: 68,
+          padding: const EdgeInsets.symmetric(horizontal: 8),
+          child: Row(
+            children: getButtonNavigationBarItems(context).asMap().entries.map((
+              e,
+            ) {
+              final index = e.key;
+              final entity = e.value;
+
+              return Expanded(
+                child: GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: () {
+                    setState(() {
+                      selectedIndex = index;
+                      widget.onItemTapped(index);
+                    });
+                  },
+                  child: AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 200),
+                    child: CustomBottomNavigationBarItem(
+                      key: ValueKey(selectedIndex == index),
+                      isSelected: selectedIndex == index,
+                      buttonNavigationBarEntity: entity,
+                    ),
                   ),
                 ),
-              ),
-            );
-          }).toList(),
+              );
+            }).toList(),
+          ),
         ),
       ),
     );
