@@ -118,8 +118,8 @@ cd ../dashboard && flutter pub get && flutter run
 
 | Service | Project | Used for |
 |---|---|---|
-| Firebase | `l-final-8f472` | Auth (Email/Password + Google), Firestore (`users`, `resturants`, `orders`, `chats/{uid}/messages`) |
-| Supabase | `ibfotiezdfvezrsrgavm` (eu-west-1) | Storage bucket `product_images` for product and store images |
+| Firebase | `stylebox-af5fe` | Auth (Email/Password + Google), Firestore (`users`, `resturants`, `orders`, `chats/{uid}/messages`) |
+| Supabase | `azfhmdgekgykkdyeudfu` (eu-west-1) | Storage bucket `product_images` for product and store images |
 
 > **Google Sign-In on Android** needs the SHA-1 of the keystore that signs the build. Get it with
 > `keytool -list -v -keystore ~/.android/debug.keystore -storepass android` and add it under
