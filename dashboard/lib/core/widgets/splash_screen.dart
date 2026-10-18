@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 // dart:async is not required here
-import 'package:stylebox_dashboard/core/localization/app_localizations.dart';
 
 class SplashWrapper extends StatelessWidget {
   final String initialRoute;
@@ -86,8 +85,6 @@ class _AppSplashScreenState extends State<AppSplashScreen>
 
   @override
   Widget build(BuildContext context) {
-    final title = AppLocalizations.of(context)?.appTitle ?? 'StyleBox Dashboard';
-
     return Stack(
       children: [
         // App content underneath
@@ -138,7 +135,6 @@ class _AppSplashScreenState extends State<AppSplashScreen>
                               ),
                             ),
                           ),
-                     
                         ],
                       ),
                     ),

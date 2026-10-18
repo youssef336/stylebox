@@ -114,6 +114,31 @@ cd ../dashboard && flutter pub get && flutter run
 2. **Supabase** — run `supabase_setup.sql` in the Supabase SQL editor to create the `product_images` bucket, then set your URL and anon key in `dashboard/lib/core/utils/supabase_key.dart`.
 3. **Gemini proxy** — deploy `app/worker.js` to Cloudflare Workers with a `GEMINI_API_KEY` secret (or deploy `app/functions/` with `gemini.key` config), then replace `https://YOUR-WORKER.workers.dev` in `app/lib/features/ai_chat/...` and `app/lib/features/food_scan/...`.
 
+**Backend in use**
+
+| Service | Project | Used for |
+|---|---|---|
+| Firebase | `l-final-8f472` | Auth (Email/Password + Google), Firestore (`users`, `resturants`, `orders`, `chats/{uid}/messages`) |
+| Supabase | `ibfotiezdfvezrsrgavm` (eu-west-1) | Storage bucket `product_images` for product and store images |
+
+> **Google Sign-In on Android** needs the SHA-1 of the keystore that signs the build. Get it with
+> `keytool -list -v -keystore ~/.android/debug.keystore -storepass android` and add it under
+> *Firebase → Project settings → Your apps* for both `com.stylebox.app` and `com.stylebox.dashboard`.
+
+**Quality checks** (also run by GitHub Actions on every push and PR, see `.github/workflows/ci.yml`)
+
+```bash
+cd app && flutter analyze && flutter test
+cd ../dashboard && flutter analyze && flutter test
+```
+
+**Release APK**
+
+```bash
+cd app && flutter build apk --release        # build/app/outputs/flutter-apk/app-release.apk
+cd ../dashboard && flutter build apk --release
+```
+
 ## 👤 Author
 
 **Youssef Belal Zakaria** · [GitHub @youssef336](https://github.com/youssef336)

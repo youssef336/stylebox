@@ -1,3 +1,4 @@
+import 'package:stylebox_dashboard/core/helper_functions/parse_price.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:stylebox_dashboard/core/repos/product_repo/products_repo.dart';
@@ -267,14 +268,6 @@ class _ManageRestaurantsWithBagsBodyState
     );
     bool isAvailable = bag.isAvailable;
 
-    // Helper to parse price (handles both comma and dot as decimal separator)
-    double? parsePrice(String text) {
-      if (text.trim().isEmpty) return null;
-      // Replace comma with dot for Arabic locale compatibility
-      final normalized = text.trim().replaceAll(',', '.');
-      return double.tryParse(normalized);
-    }
-
     final result = await showDialog<bool>(
       context: context,
       builder: (dialogContext) {
@@ -377,6 +370,7 @@ class _ManageRestaurantsWithBagsBodyState
     );
 
     if (result == true) {
+      if (!context.mounted) return;
       final price = parsePrice(priceCtrl.text) ?? 0.0;
       final oldPrice = parsePrice(oldPriceCtrl.text);
       final bagsLeft = int.tryParse(bagsLeftCtrl.text) ?? 0;
