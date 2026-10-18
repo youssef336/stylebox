@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:stylebox_dashboard/features/add_product/presentation/views/add_product_view.dart';
-import 'package:stylebox_dashboard/features/auth/presentation/views/Login_view.dart';
+import 'package:stylebox_dashboard/features/auth/presentation/views/login_view.dart';
 import 'package:stylebox_dashboard/features/dashboard/view/dashboard_view.dart';
 import 'package:stylebox_dashboard/features/manage_data/presentation/views/manage_data_view.dart';
 import 'package:stylebox_dashboard/features/manage_data/presentation/views/widgets/add_restaurant_simple.dart';

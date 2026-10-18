@@ -11,7 +11,7 @@ import 'package:stylebox_dashboard/core/services/get_it_services.dart';
 import 'package:stylebox_dashboard/core/services/shared_preferences_singletone.dart';
 import 'package:stylebox_dashboard/core/services/supabase_storage.dart';
 import 'package:stylebox_dashboard/core/services/user_session.dart';
-import 'package:stylebox_dashboard/features/auth/presentation/views/Login_view.dart';
+import 'package:stylebox_dashboard/features/auth/presentation/views/login_view.dart';
 import 'package:stylebox_dashboard/features/dashboard/view/dashboard_view.dart';
 import 'package:stylebox_dashboard/firebase_options.dart';
 import 'package:stylebox_dashboard/core/widgets/splash_screen.dart';
