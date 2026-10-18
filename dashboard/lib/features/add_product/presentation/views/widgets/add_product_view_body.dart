@@ -136,14 +136,19 @@ class _AddProductViewBodyState extends State<AddProductViewBody> {
                       ],
                     ),
                     borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: AppColors.secoundryColor.withOpacity(0.3)),
+                    border: Border.all(
+                      color: AppColors.secoundryColor.withOpacity(0.3),
+                    ),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
                         children: [
-                          const Icon(Icons.auto_awesome, color: AppColors.secoundryColor),
+                          const Icon(
+                            Icons.auto_awesome,
+                            color: AppColors.secoundryColor,
+                          ),
                           const SizedBox(width: 8),
                           Text(
                             AppLocalizations.of(context)!.verifyDetectedItems,
@@ -376,7 +381,8 @@ class _AddProductViewBodyState extends State<AddProductViewBody> {
                                                 vertical: 10,
                                               ),
                                           filled: true,
-                                          fillColor: const Color(0xFFFBF5E3),
+                                          fillColor:
+                                              AppColors.secondaryContainer,
                                           suffixText: ' EGP',
                                           suffixStyle: const TextStyle(
                                             color: AppColors.secoundryDark,
@@ -562,9 +568,7 @@ class _AddProductViewBodyState extends State<AddProductViewBody> {
                     restaurantName: selectedRestaurant!.name,
                     userEmail: UserSession.instance.currentEmail,
                     pickupTime: 'Pickup 9:00 AM - 11:59 PM',
-                    sizes: _allSizes
-                        .where(selectedSizes.contains)
-                        .toList(),
+                    sizes: _allSizes.where(selectedSizes.contains).toList(),
                     category: selectedCategory,
                   );
                   context.read<AddProductCubit>().addProduct(input);
@@ -788,7 +792,9 @@ class _AddProductViewBodyState extends State<AddProductViewBody> {
                                 vertical: 2,
                               ),
                               decoration: BoxDecoration(
-                                color: AppColors.secoundryColor.withOpacity(0.1),
+                                color: AppColors.secoundryColor.withOpacity(
+                                  0.1,
+                                ),
                                 borderRadius: BorderRadius.circular(4),
                               ),
                               child: const Text(

@@ -11,14 +11,17 @@ AppBar Custom_app_bar(
   return AppBar(
     backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
     leading: IconButton(
-      icon: const Icon(Icons.arrow_back_ios_new_rounded),
+      icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20),
       onPressed: onPressed,
     ),
     centerTitle: true,
     title: Text(
       title,
       textAlign: TextAlign.center,
-      style: AppTextStyles.bodyLargeBold,
+      style: AppTextStyles.bodyLargeBold.copyWith(
+        fontSize: 18,
+        letterSpacing: 0.2,
+      ),
     ),
   );
 }

@@ -321,9 +321,9 @@ class _BagelMysteryBagScreenState extends State<BagelMysteryBagScreen> {
 
     final restaurantId = widget.product.restaurantId;
     if (restaurantId == null || restaurantId.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Store data is missing.')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Store data is missing.')));
       return;
     }
 
@@ -445,7 +445,7 @@ class _BagelMysteryBagScreenState extends State<BagelMysteryBagScreen> {
                       decoration: BoxDecoration(
                         color: _cardColor(context),
                         borderRadius: const BorderRadius.vertical(
-                          top: Radius.circular(24),
+                          top: Radius.circular(28),
                         ),
                       ),
                       transform: Matrix4.translationValues(0, -24, 0),
@@ -463,7 +463,9 @@ class _BagelMysteryBagScreenState extends State<BagelMysteryBagScreen> {
                           _buildDivider(),
                           _buildInfoRow(
                             icon: Icons.access_time_rounded,
-                            iconBg: Theme.of(context).colorScheme.primaryContainer,
+                            iconBg: Theme.of(
+                              context,
+                            ).colorScheme.primaryContainer,
                             label: S
                                 .of(context)!
                                 .bagelMysteryBagPickupTimeLabel,
@@ -473,7 +475,9 @@ class _BagelMysteryBagScreenState extends State<BagelMysteryBagScreen> {
                           _buildDivider(),
                           _buildInfoRow(
                             icon: Icons.location_on_rounded,
-                            iconBg: Theme.of(context).colorScheme.primaryContainer,
+                            iconBg: Theme.of(
+                              context,
+                            ).colorScheme.primaryContainer,
                             label: S.of(context)!.bagelMysteryBagLocationLabel,
                             value: _locationValue(context),
                             hasArrow: true,
@@ -482,7 +486,9 @@ class _BagelMysteryBagScreenState extends State<BagelMysteryBagScreen> {
                           _buildDivider(),
                           _buildInfoRow(
                             icon: Icons.phone_rounded,
-                            iconBg: Theme.of(context).colorScheme.primaryContainer,
+                            iconBg: Theme.of(
+                              context,
+                            ).colorScheme.primaryContainer,
                             label: S.of(context)!.bagelMysteryBagContactLabel,
                             value: _contactValue(),
                             hasArrow: true,
@@ -580,7 +586,7 @@ class _BagelMysteryBagScreenState extends State<BagelMysteryBagScreen> {
                     size: 20,
                     color: _isDark(context)
                         ? KdarkModeTextColor
-                        : KprimaryColor,
+                        : KlightModeTextColor,
                   ),
                   child: const BackButtonIcon(),
                 ),
@@ -628,11 +634,13 @@ class _BagelMysteryBagScreenState extends State<BagelMysteryBagScreen> {
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
       decoration: BoxDecoration(
         color: filled
-            ? (_isDark(context) ? KaccentColor : KprimaryColor)
+            ? Theme.of(context).colorScheme.primary
             : light
             ? (_isDark(context) ? KdarkModeCardColor : KsecondaryColor)
             : _cardColor(context),
-        border: outlined ? Border.all(color: KaccentColor, width: 2) : null,
+        border: outlined
+            ? Border.all(color: KaccentColor.withOpacity(0.8), width: 1.2)
+            : null,
         borderRadius: BorderRadius.circular(24),
       ),
       child: Text(
@@ -640,9 +648,10 @@ class _BagelMysteryBagScreenState extends State<BagelMysteryBagScreen> {
         style: TextStyle(
           fontSize: 13,
           fontWeight: FontWeight.w600,
+          letterSpacing: 0.3,
           color: filled
-              ? Colors.white
-              : (outlined ? KaccentColor : _primaryTextColor(context)),
+              ? Theme.of(context).colorScheme.onPrimary
+              : _primaryTextColor(context),
         ),
       ),
     );
@@ -675,7 +684,8 @@ class _BagelMysteryBagScreenState extends State<BagelMysteryBagScreen> {
                 _productTitle(context),
                 style: TextStyle(
                   fontSize: 22,
-                  fontWeight: FontWeight.w800,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: -0.3,
                   color: _primaryTextColor(context),
                   height: 1.2,
                 ),
@@ -706,11 +716,7 @@ class _BagelMysteryBagScreenState extends State<BagelMysteryBagScreen> {
               ),
               child: Row(
                 children: [
-                  const Icon(
-                    Icons.star_rounded,
-                    color: Color(0xFFFFB020),
-                    size: 16,
-                  ),
+                  const Icon(Icons.star_rounded, color: KaccentColor, size: 16),
                   const SizedBox(width: 4),
                   Text(
                     averageRating.toStringAsFixed(1),
@@ -756,8 +762,8 @@ class _BagelMysteryBagScreenState extends State<BagelMysteryBagScreen> {
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
         color: _backgroundColor(context),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: KdividerColor),
+        borderRadius: BorderRadius.circular(KradiusCard),
+        border: Border.all(color: Theme.of(context).dividerColor),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -781,15 +787,17 @@ class _BagelMysteryBagScreenState extends State<BagelMysteryBagScreen> {
                     vertical: 3,
                   ),
                   decoration: BoxDecoration(
-                    color: KaccentColor,
-                    borderRadius: BorderRadius.circular(8),
+                    color: Theme.of(context).colorScheme.secondaryContainer,
+                    borderRadius: BorderRadius.circular(6),
+                    border: Border.all(color: KaccentColor.withOpacity(0.6)),
                   ),
                   child: Text(
                     locale.bagCardOff('$discount'),
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 12,
-                      fontWeight: FontWeight.w800,
-                      color: Colors.white,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: 0.4,
+                      color: Theme.of(context).colorScheme.onSecondaryContainer,
                     ),
                   ),
                 ),
@@ -851,7 +859,7 @@ class _BagelMysteryBagScreenState extends State<BagelMysteryBagScreen> {
           S.of(context)!.bagDetailsWhatInsideTitle,
           style: TextStyle(
             fontSize: 18,
-            fontWeight: FontWeight.w800,
+            fontWeight: FontWeight.w700,
             color: _primaryTextColor(context),
           ),
         ),
@@ -881,52 +889,52 @@ class _BagelMysteryBagScreenState extends State<BagelMysteryBagScreen> {
       onTap: onTap,
       borderRadius: BorderRadius.circular(14),
       child: Padding(
-      padding: const EdgeInsets.symmetric(vertical: 16),
-      child: Row(
-        children: [
-          Container(
-            width: 48,
-            height: 48,
-            decoration: BoxDecoration(
-              color: iconBg,
-              borderRadius: BorderRadius.circular(14),
+        padding: const EdgeInsets.symmetric(vertical: 16),
+        child: Row(
+          children: [
+            Container(
+              width: 48,
+              height: 48,
+              decoration: BoxDecoration(
+                color: iconBg,
+                borderRadius: BorderRadius.circular(14),
+              ),
+              child: Icon(
+                icon,
+                color: Theme.of(context).colorScheme.primary,
+                size: 22,
+              ),
             ),
-            child: Icon(
-              icon,
-              color: Theme.of(context).colorScheme.primary,
-              size: 22,
-            ),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  label.toUpperCase(),
-                  style: TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w600,
-                    color: _secondaryTextColor(context),
-                    letterSpacing: 0.8,
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    label.toUpperCase(),
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600,
+                      color: _secondaryTextColor(context),
+                      letterSpacing: 0.8,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 3),
-                Text(
-                  value,
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w700,
-                    color: _primaryTextColor(context),
+                  const SizedBox(height: 3),
+                  Text(
+                    value,
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                      color: _primaryTextColor(context),
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-          if (hasArrow)
-            Icon(Icons.chevron_right, color: _secondaryTextColor(context)),
-        ],
-      ),
+            if (hasArrow)
+              Icon(Icons.chevron_right, color: _secondaryTextColor(context)),
+          ],
+        ),
       ),
     );
   }
@@ -1082,7 +1090,7 @@ class _BagelMysteryBagScreenState extends State<BagelMysteryBagScreen> {
               locale.bagelMysteryBagCustomerReviews,
               style: TextStyle(
                 fontSize: 18,
-                fontWeight: FontWeight.w800,
+                fontWeight: FontWeight.w700,
                 color: _primaryTextColor(context),
               ),
             ),
@@ -1372,18 +1380,20 @@ class _BagelMysteryBagScreenState extends State<BagelMysteryBagScreen> {
             color: _reserved
                 ? KaccentColor
                 : isSoldOut
-                ? Colors.grey
-                : KprimaryColor,
-            borderRadius: BorderRadius.circular(14),
+                ? KdisabledColor
+                : Theme.of(context).colorScheme.primary,
+            borderRadius: BorderRadius.circular(30),
           ),
           child: Center(
             child: Text(
               buttonLabel,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 16,
-                fontWeight: FontWeight.w700,
-                letterSpacing: 0.3,
+              style: TextStyle(
+                color: _reserved || isSoldOut
+                    ? Colors.white
+                    : Theme.of(context).colorScheme.onPrimary,
+                fontSize: 15,
+                fontWeight: FontWeight.w600,
+                letterSpacing: 0.6,
               ),
             ),
           ),

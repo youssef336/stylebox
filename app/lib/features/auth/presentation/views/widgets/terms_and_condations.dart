@@ -40,7 +40,7 @@ class _TermsAndConditionsWidgetState extends State<TermsAndConditionsWidget> {
                 TextSpan(
                   text: S.of(context)!.onSignupTermsandConditions,
                   style: AppTextStyles.bodySmallSemibold.copyWith(
-                    color: const Color(0xFF949D9E) /* Grayscale-600 */,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
                 ),
                 TextSpan(
@@ -52,7 +52,7 @@ class _TermsAndConditionsWidgetState extends State<TermsAndConditionsWidget> {
                 TextSpan(
                   text: ' ',
                   style: AppTextStyles.bodySmallSemibold.copyWith(
-                    color: const Color(0xFF616A6B) /* Grayscale-600 */,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
                 ),
                 TextSpan(
@@ -64,7 +64,7 @@ class _TermsAndConditionsWidgetState extends State<TermsAndConditionsWidget> {
                 TextSpan(
                   text: ' ',
                   style: AppTextStyles.bodySmallSemibold.copyWith(
-                    color: const Color(0xFF616A6B) /* Grayscale-600 */,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
                 ),
                 TextSpan(

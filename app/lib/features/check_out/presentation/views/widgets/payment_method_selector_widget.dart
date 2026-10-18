@@ -64,15 +64,15 @@ class _PaymentMethodCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final highlightColor = isDark ? KaccentColor : KprimaryColor;
+    final highlightColor = Theme.of(context).colorScheme.primary;
     final titleColor = isDark ? KdarkModeTextColor : KlightModeTextColor;
     final subtitleColor = isDark
         ? KdarkModeTextSecondary
         : KlightModeTextSecondary;
-    final priceColor = isDark ? KsecondaryColor : KprimaryColor;
+    final priceColor = Theme.of(context).colorScheme.primary;
     final cardBackgroundColor = isDark
         ? KdarkModeCardColor
-        : const Color(0x33D9D9D9);
+        : KlightModeFieldColor;
 
     return GestureDetector(
       onTap: onTap,
@@ -87,9 +87,9 @@ class _PaymentMethodCard extends StatelessWidget {
           shape: RoundedRectangleBorder(
             side: BorderSide(
               color: isSelected ? highlightColor : Colors.transparent,
-              width: 2.5,
+              width: 1.4,
             ),
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(KradiusField),
           ),
         ),
         child: Row(
@@ -108,9 +108,7 @@ class _PaymentMethodCard extends StatelessWidget {
                     width: 2,
                     color: isSelected
                         ? highlightColor
-                        : (isDark
-                              ? KdarkModeTextSecondary
-                              : const Color(0xFF949D9E)),
+                        : (isDark ? KdarkModeTextSecondary : KdisabledColor),
                   ),
                 ),
               ),

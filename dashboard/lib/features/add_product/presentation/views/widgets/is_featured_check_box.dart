@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:stylebox_dashboard/core/utils/app_colors.dart';
 import 'package:stylebox_dashboard/core/utils/app_text_style.dart';
 import 'package:stylebox_dashboard/features/add_product/presentation/views/widgets/custom_check_box.dart';
 
@@ -47,7 +48,7 @@ class _IsFeaturedCheckBoxState extends State<IsFeaturedCheckBox> {
               TextSpan(
                 text: widget.label,
                 style: TextStyles.semiBold13.copyWith(
-                  color: const Color(0xFF949D9E),
+                  color: AppColors.textSecondary,
                 ),
               ),
             ],

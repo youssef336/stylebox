@@ -1,12 +1,13 @@
 // ignore_for_file: deprecated_member_use
 
 import 'package:flutter/material.dart';
+import 'package:stylebox_dashboard/core/utils/app_colors.dart';
 
 class SpecialAppBar extends StatelessWidget implements PreferredSizeWidget {
   const SpecialAppBar({
     super.key,
     required this.title,
-    this.backgroundColor = const Color(0xFF5B3DF5),
+    this.backgroundColor = AppColors.primaryColor,
     this.showBackButton = false,
     this.actions,
     this.elevation = 2,
@@ -29,13 +30,7 @@ class SpecialAppBar extends StatelessWidget implements PreferredSizeWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        gradient: useGradient
-            ? const LinearGradient(
-                colors: [Color(0xFF5B3DF5), Color(0xFF7C63FF)],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              )
-            : null,
+        gradient: useGradient ? AppColors.primaryGradient : null,
         color: !useGradient ? backgroundColor : null,
         boxShadow: [
           BoxShadow(
@@ -48,12 +43,14 @@ class SpecialAppBar extends StatelessWidget implements PreferredSizeWidget {
       child: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
+        foregroundColor: Colors.white,
         title: Text(
           title,
           style: const TextStyle(
             color: Colors.white,
-            fontSize: 20,
-            fontWeight: FontWeight.w600,
+            fontSize: 18,
+            fontWeight: FontWeight.w700,
+            letterSpacing: 0.2,
           ),
         ),
         centerTitle: true,

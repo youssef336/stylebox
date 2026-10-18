@@ -1,30 +1,51 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:stylebox_dashboard/main.dart';
+import 'package:stylebox_dashboard/core/utils/app_colors.dart';
+import 'package:stylebox_dashboard/core/utils/app_theme.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  group('StyleBox dashboard theme', () {
+    final theme = AppTheme.light();
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    test('uses the Atelier palette', () {
+      expect(theme.colorScheme.primary, AppColors.primaryColor);
+      expect(theme.colorScheme.secondary, AppColors.secoundryColor);
+      expect(theme.scaffoldBackgroundColor, AppColors.background);
+      expect(theme.colorScheme.error, AppColors.errorColor);
+    });
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+    test('uses bundled Cairo typography', () {
+      expect(theme.textTheme.bodyMedium?.fontFamily, 'Cairo');
+    });
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    test('buttons are pill shaped and fields are borderless', () {
+      final shape = theme.elevatedButtonTheme.style?.shape?.resolve({});
+      expect(shape, isA<StadiumBorder>());
+      final border = theme.inputDecorationTheme.enabledBorder;
+      expect(border?.borderSide, BorderSide.none);
+    });
+
+    testWidgets('themed button renders in LTR and RTL', (tester) async {
+      for (final direction in TextDirection.values) {
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: theme,
+            home: Directionality(
+              textDirection: direction,
+              child: Scaffold(
+                body: Center(
+                  child: ElevatedButton(
+                    onPressed: () {},
+                    child: const Text('Save'),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+        expect(find.text('Save'), findsOneWidget);
+      }
+    });
   });
 }

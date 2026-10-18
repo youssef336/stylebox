@@ -48,8 +48,13 @@ class _ProfileViewBodyState extends State<ProfileViewBody> {
                 const CustomHomeAppBar(showNotification: false),
                 const SizedBox(height: KTopPadding),
                 Text(
-                  S.of(context)!.profileViewSettingsTitle,
-                  style: AppTextStyles.cairoBold.copyWith(height: 1.70),
+                  S.of(context)!.profileViewSettingsTitle.toUpperCase(),
+                  style: AppTextStyles.cairoBold.copyWith(
+                    height: 1.70,
+                    fontSize: 12,
+                    letterSpacing: 1.6,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
                 ),
                 const SizedBox(height: 16),
                 ProfileViewItem(
@@ -61,11 +66,6 @@ class _ProfileViewBodyState extends State<ProfileViewBody> {
                       ProfileViewLanguagePage.routeName,
                     );
                   },
-                ),
-                Divider(
-                  height: 1,
-                  thickness: 1,
-                  color: Theme.of(context).dividerColor,
                 ),
                 BlocBuilder<ThemeCubit, ThemeMode>(
                   builder: (context, themeState) {
@@ -79,11 +79,6 @@ class _ProfileViewBodyState extends State<ProfileViewBody> {
                     );
                   },
                 ),
-                Divider(
-                  height: 1,
-                  thickness: 1,
-                  color: Theme.of(context).dividerColor,
-                ),
                 ProfileViewItem(
                   headText: S.of(context)!.profileViewProfileImage,
                   icon: Icons.person_outline_outlined,
@@ -94,11 +89,6 @@ class _ProfileViewBodyState extends State<ProfileViewBody> {
                     );
                   },
                 ),
-                Divider(
-                  height: 1,
-                  thickness: 1,
-                  color: Theme.of(context).dividerColor,
-                ),
                 ProfileViewItem(
                   headText: S.of(context)!.profileViewPoints,
                   icon: Icons.point_of_sale,
@@ -108,11 +98,6 @@ class _ProfileViewBodyState extends State<ProfileViewBody> {
                       ProfileViewPointsPage.routeName,
                     );
                   },
-                ),
-                Divider(
-                  height: 1,
-                  thickness: 1,
-                  color: Theme.of(context).dividerColor,
                 ),
                 ProfileViewItem(
                   headText: S.of(context)!.profileViewLogout,

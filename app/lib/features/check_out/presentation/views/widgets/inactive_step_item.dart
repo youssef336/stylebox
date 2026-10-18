@@ -12,8 +12,8 @@ class InactiveStepItem extends StatelessWidget {
     final numberTextColor = isDark ? KdarkModeTextColor : KprimaryColor;
     final labelTextColor = isDark
         ? KdarkModeTextSecondary
-        : const Color(0xFFAAAAAA);
-    final circleColor = isDark ? KdarkModeCardColor : const Color(0xFFF2F3F3);
+        : KlightModeTextSecondary;
+    final circleColor = isDark ? KdarkModeCardColor : KlightModeFieldColor;
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,

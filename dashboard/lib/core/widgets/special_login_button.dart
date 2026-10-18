@@ -1,6 +1,7 @@
 // ignore_for_file: deprecated_member_use
 
 import 'package:flutter/material.dart';
+import 'package:stylebox_dashboard/core/utils/app_colors.dart';
 
 class SpecialLoginButton extends StatefulWidget {
   const SpecialLoginButton({
@@ -62,22 +63,13 @@ class _SpecialLoginButtonState extends State<SpecialLoginButton>
         width: double.infinity,
         height: 56,
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16),
-          gradient: const LinearGradient(
-            colors: [Color(0xFF5B3DF5), Color(0xFF7C63FF)],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
+          borderRadius: BorderRadius.circular(28),
+          color: AppColors.primaryColor,
           boxShadow: [
             BoxShadow(
-              color: const Color(0xFF5B3DF5).withOpacity(0.3),
-              blurRadius: 12,
+              color: AppColors.primaryDark.withOpacity(0.18),
+              blurRadius: 16,
               offset: const Offset(0, 6),
-            ),
-            BoxShadow(
-              color: const Color(0xFF5B3DF5).withOpacity(0.1),
-              blurRadius: 24,
-              offset: const Offset(0, 12),
             ),
           ],
         ),
@@ -85,7 +77,7 @@ class _SpecialLoginButtonState extends State<SpecialLoginButton>
           color: Colors.transparent,
           child: InkWell(
             onTap: widget.isLoading ? null : _handlePressed,
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(28),
             child: Center(
               child: widget.isLoading
                   ? _buildLoadingWidget()

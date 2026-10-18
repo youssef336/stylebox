@@ -1,11 +1,9 @@
 // ignore_for_file: deprecated_member_use
 
 import 'package:dots_indicator/dots_indicator.dart';
-import 'package:flutter/cupertino.dart';
 // ignore_for_file: unchecked_use_of_nullable_value
 
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:stylebox/constant.dart';
 import 'package:stylebox/core/services/shared_preferences_singletone.dart';
 import 'package:stylebox/core/widgets/custom_buttom.dart';
@@ -50,11 +48,14 @@ class _OnBoardingViewBodyState extends State<OnBoardingViewBody> {
         Expanded(child: OnBoardingPageView(pageController: pageController)),
         DotsIndicator(
           dotsCount: 2,
+          position: currentPage.toDouble(),
           decorator: DotsDecorator(
-            activeColor: KprimaryColor,
-            color: currentPage == 1
-                ? KprimaryColor
-                : KprimaryColor.withOpacity(0.5),
+            activeColor: Theme.of(context).colorScheme.primary,
+            color: Theme.of(context).colorScheme.primary.withOpacity(0.22),
+            size: const Size.square(7),
+            activeSize: const Size(24, 7),
+            activeShape: const StadiumBorder(),
+            spacing: const EdgeInsets.symmetric(horizontal: 4),
           ),
         ),
         const SizedBox(height: 25),

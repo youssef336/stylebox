@@ -2,6 +2,7 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:stylebox/core/widgets/brand_wordmark.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:stylebox/constant.dart';
 import 'package:stylebox/core/helper_functions/build_error_bar.dart';
@@ -39,7 +40,9 @@ class _SignUpViewBodyState extends State<SignUpViewBody> {
           autovalidateMode: autoValidateMode,
           child: Column(
             children: [
-              const SizedBox(height: 24),
+              const SizedBox(height: 20),
+              const BrandWordmark(),
+              const SizedBox(height: 32),
               CustomTextFormFeild(
                 onSaved: (value) {
                   name = value!;

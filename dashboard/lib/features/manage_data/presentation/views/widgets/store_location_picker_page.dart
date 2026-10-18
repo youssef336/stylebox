@@ -122,7 +122,10 @@ class _StoreLocationPickerPageState extends State<StoreLocationPickerPage> {
                     const Text(
                       'Move the map until the pin sits on the store entrance. '
                       'Customers get directions to this exact spot.',
-                      style: TextStyle(fontSize: 13, color: Color(0xFF6E6A80)),
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: AppColors.textSecondary,
+                      ),
                     ),
                     const SizedBox(height: 8),
                     Text(
@@ -131,7 +134,7 @@ class _StoreLocationPickerPageState extends State<StoreLocationPickerPage> {
                       style: const TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w700,
-                        color: Color(0xFF14121F),
+                        color: AppColors.black,
                       ),
                     ),
                     const SizedBox(height: 12),

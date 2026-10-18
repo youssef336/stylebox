@@ -22,8 +22,7 @@ class _MainViewState extends State<MainView> {
         onPressed: () {
           Navigator.of(context).pushNamed(AiChatView.routeName);
         },
-        shape: const CircleBorder(),
-        child: const Icon(Icons.smart_toy_outlined),
+        child: const Icon(Icons.auto_awesome_outlined),
       ),
       bottomNavigationBar: HomeCustomBottomNavigationBar(
         onItemTapped: (int value) {

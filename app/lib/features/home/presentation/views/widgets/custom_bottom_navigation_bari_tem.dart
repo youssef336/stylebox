@@ -20,6 +20,9 @@ class CustomBottomNavigationBarItem extends StatelessWidget {
             text: buttonNavigationBarEntity.name,
             image: buttonNavigationBarEntity.activeImagePath,
           )
-        : InActiveItem(imagePath: buttonNavigationBarEntity.inactiveImagePath);
+        : InActiveItem(
+            imagePath: buttonNavigationBarEntity.inactiveImagePath,
+            text: buttonNavigationBarEntity.name,
+          );
   }
 }

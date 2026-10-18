@@ -9,6 +9,7 @@ import 'package:stylebox/core/utils/assets.dart';
 
 import 'package:stylebox/constant.dart';
 import 'package:stylebox/core/utils/text_styles.dart';
+import 'package:stylebox/core/widgets/brand_wordmark.dart';
 import 'package:stylebox/core/widgets/custom_buttom.dart';
 import 'package:stylebox/core/widgets/custom_text_feild.dart';
 import 'package:stylebox/features/auth/presentation/views/widgets/dont_have_an_acoount_widget.dart';
@@ -42,7 +43,9 @@ class _SigninViewBodyState extends State<SigninViewBody> {
             autovalidateMode: autoValidateMode,
             child: Column(
               children: [
-                const SizedBox(height: 24),
+                const SizedBox(height: 20),
+                const BrandWordmark(),
+                const SizedBox(height: 32),
                 CustomTextFormFeild(
                   onSaved: (value) {
                     email = value!;

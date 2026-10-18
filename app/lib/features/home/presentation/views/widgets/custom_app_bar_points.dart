@@ -191,7 +191,7 @@ class _CustomappBarPointsState extends State<CustomappBarPoints>
                       vertical: 4,
                     ),
                     decoration: BoxDecoration(
-                      color: const Color(0xff4CAF50),
+                      color: KaccentColor,
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Text(

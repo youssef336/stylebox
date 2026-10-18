@@ -29,7 +29,7 @@ class DashboardViewBody extends StatelessWidget {
         }
       },
       child: Scaffold(
-        backgroundColor: const Color(0xFFF7F6FB),
+        backgroundColor: AppColors.background,
         body: CustomScrollView(
           slivers: [
             // ── Header ───────────────────────────────────────────────────────
@@ -45,27 +45,31 @@ class DashboardViewBody extends StatelessWidget {
                   ),
                   child: Stack(
                     children: [
-                      Positioned(
-                        top: -50,
-                        right: -50,
+                      PositionedDirectional(
+                        top: -60,
+                        end: -60,
                         child: Container(
-                          width: 200,
-                          height: 200,
+                          width: 220,
+                          height: 220,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color: Colors.white.withOpacity(0.06),
+                            border: Border.all(
+                              color: AppColors.accentColor.withOpacity(0.45),
+                            ),
                           ),
                         ),
                       ),
-                      Positioned(
-                        bottom: -30,
-                        left: -40,
+                      PositionedDirectional(
+                        top: -20,
+                        end: -20,
                         child: Container(
-                          width: 150,
-                          height: 150,
+                          width: 140,
+                          height: 140,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color: Colors.white.withOpacity(0.06),
+                            border: Border.all(
+                              color: AppColors.accentColor.withOpacity(0.3),
+                            ),
                           ),
                         ),
                       ),
@@ -81,25 +85,39 @@ class DashboardViewBody extends StatelessWidget {
                                   width: 48,
                                   height: 48,
                                   decoration: BoxDecoration(
-                                    color: Colors.white.withOpacity(0.18),
-                                    borderRadius: BorderRadius.circular(14),
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                      color: AppColors.accentColor,
+                                      width: 1.2,
+                                    ),
                                   ),
                                   child: const Icon(
-                                    Icons.restaurant_rounded,
+                                    Icons.storefront_outlined,
                                     color: Colors.white,
-                                    size: 26,
+                                    size: 24,
                                   ),
                                 ),
                                 const SizedBox(width: 14),
                                 Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
+                                    const Text(
+                                      'STYLEBOX',
+                                      style: TextStyle(
+                                        color: AppColors.accentColor,
+                                        fontSize: 11,
+                                        fontWeight: FontWeight.w700,
+                                        letterSpacing: 3,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 2),
                                     Text(
                                       AppLocalizations.of(context)!.appTitle,
                                       style: const TextStyle(
                                         color: Colors.white,
                                         fontSize: 20,
                                         fontWeight: FontWeight.w700,
+                                        letterSpacing: -0.2,
                                       ),
                                     ),
                                     const SizedBox(height: 2),
@@ -132,11 +150,12 @@ class DashboardViewBody extends StatelessWidget {
                 delegate: SliverChildListDelegate([
                   const SizedBox(height: 8),
                   Text(
-                    AppLocalizations.of(context)!.quickActions,
+                    AppLocalizations.of(context)!.quickActions.toUpperCase(),
                     style: const TextStyle(
-                      fontSize: 18,
+                      fontSize: 12,
                       fontWeight: FontWeight.w700,
-                      color: Color(0xFF14121F),
+                      letterSpacing: 1.6,
+                      color: AppColors.textSecondary,
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -150,7 +169,7 @@ class DashboardViewBody extends StatelessWidget {
                           icon: Icons.shopping_bag_outlined,
                           label: AppLocalizations.of(context)!.addBagItemLabel,
                           subtitle: AppLocalizations.of(context)!.scanAddBags,
-                          gradient: AppColors.primaryGradient,
+                          accent: AppColors.primaryColor,
                           onTap: () => Navigator.pushNamed(
                             context,
                             AddProductView.routeName,
@@ -168,11 +187,7 @@ class DashboardViewBody extends StatelessWidget {
                           subtitle: AppLocalizations.of(
                             context,
                           )!.createNewRestaurant,
-                          gradient: const LinearGradient(
-                            colors: [Color(0xFFFF6B6B), Color(0xFFFF9A7B)],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),
+                          accent: AppColors.secoundryDark,
                           onTap: () => Navigator.pushNamed(
                             context,
                             AddRestaurantSimple.routeName,
@@ -194,11 +209,7 @@ class DashboardViewBody extends StatelessWidget {
                           subtitle: AppLocalizations.of(
                             context,
                           )!.viewEditDelete,
-                          gradient: const LinearGradient(
-                            colors: [Color(0xFF14121F), Color(0xFF2B2640)],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),
+                          accent: AppColors.black,
                           onTap: () => Navigator.pushNamed(
                             context,
                             ManageDataView.routeName,
@@ -214,11 +225,7 @@ class DashboardViewBody extends StatelessWidget {
                             context,
                           )!.analyticsStatsLabel,
                           subtitle: 'View reviews & ratings',
-                          gradient: const LinearGradient(
-                            colors: [Color(0xFF14B8A6), Color(0xFF2DD4BF)],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),
+                          accent: AppColors.successColor,
                           onTap: () => Navigator.pushNamed(
                             context,
                             AnalyticsView.routeName,
@@ -247,92 +254,88 @@ class DashboardViewBody extends StatelessWidget {
 }
 
 // ── Action Card ───────────────────────────────────────────────────────────────
+/// White tile with a tinted icon medallion and a short accent rule, so the
+/// grid reads like a boutique catalogue rather than four loud gradients.
 class _ActionCard extends StatelessWidget {
   const _ActionCard({
     required this.icon,
     required this.label,
     required this.subtitle,
-    required this.gradient,
+    required this.accent,
     required this.onTap,
   });
 
   final IconData icon;
   final String label;
   final String subtitle;
-  final LinearGradient gradient;
+  final Color accent;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        height: 140,
-        decoration: BoxDecoration(
-          gradient: gradient,
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: [
-            BoxShadow(
-              color: gradient.colors.first.withOpacity(0.35),
-              blurRadius: 16,
-              offset: const Offset(0, 8),
-            ),
-          ],
-        ),
-        child: Stack(
-          children: [
-            Positioned(
-              right: -18,
-              bottom: -18,
-              child: Container(
-                width: 90,
-                height: 90,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Colors.white.withOpacity(0.1),
+    return Material(
+      color: AppColors.surface,
+      borderRadius: BorderRadius.circular(AppColors.radiusCard),
+      elevation: 0,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(AppColors.radiusCard),
+        child: Ink(
+          height: 148,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(AppColors.radiusCard),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.primaryDark.withOpacity(0.06),
+                blurRadius: 18,
+                offset: const Offset(0, 6),
+              ),
+            ],
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(18),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Container(
+                  width: 44,
+                  height: 44,
+                  decoration: BoxDecoration(
+                    color: accent.withOpacity(0.10),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(icon, color: accent, size: 22),
                 ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(18),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.2),
-                      borderRadius: BorderRadius.circular(10),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(width: 18, height: 2, color: accent),
+                    const SizedBox(height: 8),
+                    Text(
+                      label,
+                      style: const TextStyle(
+                        color: AppColors.black,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                        height: 1.2,
+                      ),
                     ),
-                    child: Icon(icon, color: Colors.white, size: 22),
-                  ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        label,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 15,
-                          fontWeight: FontWeight.w700,
-                          height: 1.2,
-                        ),
+                    const SizedBox(height: 3),
+                    Text(
+                      subtitle,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        color: AppColors.textSecondary,
+                        fontSize: 11.5,
                       ),
-                      const SizedBox(height: 3),
-                      Text(
-                        subtitle,
-                        style: TextStyle(
-                          color: Colors.white.withOpacity(0.75),
-                          fontSize: 11,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+                    ),
+                  ],
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );

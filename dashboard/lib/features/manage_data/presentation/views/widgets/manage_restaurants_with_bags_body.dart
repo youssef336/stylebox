@@ -377,6 +377,7 @@ class _ManageRestaurantsWithBagsBodyState
     );
 
     if (result == true) {
+      if (!context.mounted) return;
       final price = parsePrice(priceCtrl.text) ?? 0.0;
       final oldPrice = parsePrice(oldPriceCtrl.text);
       final bagsLeft = int.tryParse(bagsLeftCtrl.text) ?? 0;
@@ -686,7 +687,7 @@ class _RestaurantWithBagsCard extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
-                      color: Color(0xFF14121F),
+                      color: AppColors.black,
                     ),
                   ),
                   const Spacer(),
@@ -777,7 +778,7 @@ class _RestaurantHeader extends StatelessWidget {
             ? const LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
-                colors: [Color(0xFF5B3DF5), Color(0xFF9B6BFF)],
+                colors: [AppColors.primaryColor, AppColors.primaryLight],
               )
             : null,
       ),
@@ -885,7 +886,10 @@ class _RestaurantHeader extends StatelessWidget {
                             height: 50,
                           ),
                         )
-                      : const Icon(Icons.restaurant, color: Color(0xFF2C3E50)),
+                      : const Icon(
+                          Icons.restaurant,
+                          color: AppColors.primaryColor,
+                        ),
                 ),
                 const SizedBox(width: 12),
                 // Name and Info
@@ -1038,7 +1042,7 @@ class _BagCard extends StatelessWidget {
                   style: const TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFF14121F),
+                    color: AppColors.black,
                   ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,

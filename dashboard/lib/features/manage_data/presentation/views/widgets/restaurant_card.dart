@@ -62,7 +62,7 @@ class RestaurantCard extends StatelessWidget {
                           style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w700,
-                            color: Color(0xFF14121F),
+                            color: AppColors.black,
                           ),
                         ),
                       ),
@@ -101,7 +101,7 @@ class RestaurantCard extends StatelessWidget {
                   ),
 
                   const SizedBox(height: 12),
-                  const Divider(height: 1, color: Color(0xFFEEEEEE)),
+                  const Divider(height: 1, color: AppColors.divider),
                   const SizedBox(height: 10),
 
                   // ── Actions ───────────────────────────────────────────
@@ -161,7 +161,7 @@ class _RestaurantImage extends StatelessWidget {
     return Container(
       height: 160,
       width: double.infinity,
-      color: const Color(0xFFF1EEFB),
+      color: AppColors.primaryContainer,
       child: loading
           ? const Center(
               child: CircularProgressIndicator(

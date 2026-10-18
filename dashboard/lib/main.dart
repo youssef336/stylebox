@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:stylebox_dashboard/constant.dart';
+import 'package:stylebox_dashboard/core/utils/app_theme.dart';
 import 'package:stylebox_dashboard/core/helper_functions/on_generate_routes.dart';
 import 'package:stylebox_dashboard/core/localization/app_localizations.dart';
 import 'package:stylebox_dashboard/core/localization/locale_cubit.dart';
@@ -64,7 +65,7 @@ class MyApp extends StatelessWidget {
             // Use an in-app splash wrapper which navigates to the correct initial route
             home: SplashWrapper(initialRoute: initialRoute),
             onGenerateRoute: onGenerateRoutes,
-            theme: _buildAppTheme(),
+            theme: AppTheme.light(),
             locale: locale,
             supportedLocales: const [Locale('en'), Locale('ar')],
             localizationsDelegates: const [
@@ -75,115 +76,6 @@ class MyApp extends StatelessWidget {
             ],
           );
         },
-      ),
-    );
-  }
-
-  ThemeData _buildAppTheme() {
-    return ThemeData(
-      useMaterial3: true,
-      brightness: Brightness.light,
-      primaryColor: const Color(0xFF5B3DF5),
-      scaffoldBackgroundColor: const Color(0xFFF7F6FB),
-      colorScheme: const ColorScheme.light(
-        primary: Color(0xFF5B3DF5),
-        secondary: Color(0xFFFF6B6B),
-        surface: Color(0xFFFFFFFF),
-        error: Color(0xFFE53935),
-      ),
-      appBarTheme: const AppBarTheme(
-        backgroundColor: Color(0xFF5B3DF5),
-        foregroundColor: Color(0xFFFFFFFF),
-        elevation: 2,
-        centerTitle: true,
-        titleTextStyle: TextStyle(
-          color: Color(0xFFFFFFFF),
-          fontSize: 20,
-          fontWeight: FontWeight.w600,
-        ),
-      ),
-      textTheme: const TextTheme(
-        displayLarge: TextStyle(
-          fontSize: 28,
-          fontWeight: FontWeight.w700,
-          color: Color(0xFF5B3DF5),
-        ),
-        displayMedium: TextStyle(
-          fontSize: 24,
-          fontWeight: FontWeight.w600,
-          color: Color(0xFF5B3DF5),
-        ),
-        titleLarge: TextStyle(
-          fontSize: 20,
-          fontWeight: FontWeight.w600,
-          color: Color(0xFF424242),
-        ),
-        bodyLarge: TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.w500,
-          color: Color(0xFF424242),
-        ),
-        bodyMedium: TextStyle(
-          fontSize: 14,
-          fontWeight: FontWeight.w400,
-          color: Color(0xFF616161),
-        ),
-        labelSmall: TextStyle(
-          fontSize: 12,
-          fontWeight: FontWeight.w500,
-          color: Color(0xFF9E9E9E),
-        ),
-      ),
-      elevatedButtonTheme: ElevatedButtonThemeData(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFF5B3DF5),
-          foregroundColor: Colors.white,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 24),
-          elevation: 4,
-        ),
-      ),
-      textButtonTheme: TextButtonThemeData(
-        style: TextButton.styleFrom(
-          foregroundColor: const Color(0xFF5B3DF5),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-        ),
-      ),
-      inputDecorationTheme: InputDecorationTheme(
-        filled: true,
-        fillColor: const Color(0xFFF9FAFA),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: Color(0xFFE0E0E0)),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: Color(0xFFE0E0E0)),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: Color(0xFF5B3DF5), width: 2),
-        ),
-        errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: Color(0xFFE53935)),
-        ),
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: 14,
-        ),
-        hintStyle: const TextStyle(
-          color: Color(0xFF949D9E),
-          fontSize: 14,
-          fontWeight: FontWeight.w500,
-        ),
-      ),
-      cardTheme: CardThemeData(
-        elevation: 2,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        color: Colors.white,
       ),
     );
   }

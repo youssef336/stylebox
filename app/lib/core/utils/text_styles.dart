@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 
 abstract class AppTextStyles {
-  //===== Poppins (Default Font) =====//
+  //===== StyleBox type scale (Cairo, bundled) =====//
   static const TextStyle bodySmallRegular = TextStyle(
     fontSize: 12,
     fontWeight: FontWeight.w400,
   );
 
   static const TextStyle heading5Bold = TextStyle(
-    fontSize: 23,
+    fontSize: 24,
     fontWeight: FontWeight.w700,
+    letterSpacing: -0.4,
   );
 
   static const TextStyle bodySmallSemibold = TextStyle(
@@ -50,6 +51,7 @@ abstract class AppTextStyles {
     fontSize: 19,
     fontFamily: 'Cairo',
     fontWeight: FontWeight.w700,
+    letterSpacing: -0.2,
   );
 
   static const TextStyle bodyXSmallSemibold = TextStyle(
@@ -76,6 +78,7 @@ abstract class AppTextStyles {
   static const TextStyle heading5Semibold = TextStyle(
     fontSize: 18,
     fontWeight: FontWeight.w600,
+    letterSpacing: -0.2,
   );
 
   //===== Cairo =====//
@@ -88,6 +91,7 @@ abstract class AppTextStyles {
     fontSize: 19,
     fontWeight: FontWeight.w700,
     fontFamily: 'Cairo',
+    letterSpacing: -0.2,
   );
 
   static const TextStyle cairoRegular = TextStyle(
@@ -102,17 +106,16 @@ abstract class AppTextStyles {
     fontFamily: 'Cairo',
   );
 
-  //===== DM Sans =====//
+  //===== Legacy aliases (kept for existing call sites; mapped to Cairo) =====//
   static const TextStyle dmSansBold = TextStyle(
     fontSize: 14,
     fontWeight: FontWeight.w700,
-    fontFamily: 'DMSans',
+    fontFamily: 'Cairo',
   );
 
-  //===== Roboto =====//
   static const TextStyle robotoRegular = TextStyle(
     fontSize: 14,
     fontWeight: FontWeight.w400,
-    fontFamily: 'Roboto',
+    fontFamily: 'Cairo',
   );
 }

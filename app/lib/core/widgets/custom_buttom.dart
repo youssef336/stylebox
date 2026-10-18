@@ -14,17 +14,17 @@ class CustomButtom extends StatelessWidget {
       child: TextButton(
         style: TextButton.styleFrom(
           backgroundColor: scheme.primary,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
+          foregroundColor: scheme.onPrimary,
+          shape: const StadiumBorder(),
         ),
         onPressed: onPressed,
         child: Text(
           text,
           style: TextStyle(
             color: scheme.onPrimary,
-            fontSize: 16,
-            fontWeight: FontWeight.w700,
+            fontSize: 15,
+            fontWeight: FontWeight.w600,
+            letterSpacing: 0.6,
           ),
         ),
       ),
