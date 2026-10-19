@@ -875,4 +875,79 @@ class SAr extends S {
 
   @override
   String get mapMyLocation => 'موقعي';
+
+  @override
+  String get authHeroTitle => 'دولابك، بشكل جديد.';
+
+  @override
+  String get authHeroSubtitle =>
+      'سجّل دخولك واحجز بوكسات ستايل مفاجأة من المحلات القريبة منك.';
+
+  @override
+  String get authSignupHeroTitle => 'انضم لستايل بوكس';
+
+  @override
+  String get authSignupHeroSubtitle =>
+      'اعمل حساب وابدأ توفّر على لبسك من النهارده.';
+
+  @override
+  String get authContinueWith => 'أو كمّل باستخدام';
+
+  @override
+  String get onBoardingNext => 'التالي';
+
+  @override
+  String get homeCategoryAll => 'الكل';
+
+  @override
+  String get homeNewArrivalsTitle => 'وصل حديثاً';
+
+  @override
+  String get homeAllBoxesTitle => 'كل البوكسات';
+
+  @override
+  String get homeShopByStoreTitle => 'تسوّق حسب المحل';
+
+  @override
+  String get homeAiSlideTitle => 'منسّق الستايل الذكي';
+
+  @override
+  String get homeAiSlideSubtitle => 'اسأله عن أفكار لبس والبوكس المناسب ليك.';
+
+  @override
+  String get homeNoResults => 'مفيش بوكسات مطابقة لبحثك';
+
+  @override
+  String get cartSubtotal => 'المجموع الفرعي';
+
+  @override
+  String get cartTotal => 'الإجمالي';
+
+  @override
+  String cartItemsCount(String count) {
+    return '$count منتجات';
+  }
+
+  @override
+  String get cartCheckout => 'الدفع';
+
+  @override
+  String checkoutStepOf(String current, String total) {
+    return 'خطوة $current من $total';
+  }
+
+  @override
+  String get profileSectionAccount => 'الحساب';
+
+  @override
+  String get profileSectionPreferences => 'التفضيلات';
+
+  @override
+  String get profileEditProfile => 'تعديل';
+
+  @override
+  String get profileDarkMode => 'الوضع الداكن';
+
+  @override
+  String get detailsStockLabel => 'المتاح';
 }

@@ -9,7 +9,6 @@ import 'package:stylebox/features/check_out/presentation/manager/cubits/order_cu
 import 'package:stylebox/features/check_out/presentation/views/widgets/check_out_view_body.dart';
 import 'package:stylebox/features/check_out/presentation/views/widgets/order_cubit_bloc_consumer.dart';
 import 'package:stylebox/features/home/domain/entities/cart_entites.dart';
-import 'package:stylebox/generated/l10n.dart';
 
 class CheckOutView extends StatelessWidget {
   const CheckOutView({super.key, required this.cartItems});
@@ -30,10 +29,8 @@ class CheckOutView extends StatelessWidget {
       ],
       child: OrderCubitBlocConsumer(
         child: Scaffold(
-          appBar: AppBar(
-            title: Text(S.of(context)!.checkOutViewTitle),
-            centerTitle: true,
-          ),
+          // The step header below carries the title.
+          appBar: AppBar(),
           body: const CheckOutViewBody(),
         ),
       ),

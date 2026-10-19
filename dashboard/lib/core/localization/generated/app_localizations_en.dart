@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -427,4 +428,67 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get noClothesDetected =>
       'No clothing detected — you can type the items yourself';
+
+  @override
+  String get dashOverview => 'Overview';
+
+  @override
+  String get dashGreeting => 'Hello again';
+
+  @override
+  String get dashActiveStores => 'Open now';
+
+  @override
+  String get dashYourStores => 'Your stores';
+
+  @override
+  String get dashSeeAll => 'See all';
+
+  @override
+  String get dashLoginHeroTitle => 'Run your store, beautifully.';
+
+  @override
+  String get dashLoginHeroSubtitle =>
+      'Post Style Boxes, track stock and read customer reviews in one place.';
+
+  @override
+  String get dashFeatureScan => 'AI clothing scan';
+
+  @override
+  String get dashFeatureStock => 'Live stock & pickups';
+
+  @override
+  String get dashFeatureReviews => 'Ratings & reviews';
+
+  @override
+  String get dashStoreOwner => 'Store owner';
+
+  @override
+  String get dashStepStore => 'Choose store';
+
+  @override
+  String get dashStepScan => 'Scan the clothes';
+
+  @override
+  String get dashStepDetails => 'Category & sizes';
+
+  @override
+  String get dashStepPublish => 'Publish';
+
+  @override
+  String dashBoxesCount(String count) {
+    return '$count boxes';
+  }
+
+  @override
+  String get dashNoBoxesYet => 'No Style Boxes yet';
+
+  @override
+  String get dashRestock => 'Restock';
+
+  @override
+  String get dashAddStyleBox => 'Add Style Box';
+
+  @override
+  String get dashBoxesLive => 'Style Boxes live';
 }

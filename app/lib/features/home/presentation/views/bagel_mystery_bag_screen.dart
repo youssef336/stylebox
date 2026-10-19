@@ -7,6 +7,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:stylebox/constant.dart';
 import 'package:stylebox/core/entities/review_analytics_entity.dart';
 import 'package:stylebox/core/entities/review_entity.dart';
+import 'package:stylebox/core/services/favorites_store.dart';
+import 'package:stylebox/core/widgets/box_artwork.dart';
 import 'package:stylebox/core/entities/demo_products.dart';
 import 'package:stylebox/core/entities/product_entity.dart';
 import 'package:stylebox/core/models/restaurant_entity_model.dart';
@@ -421,6 +423,15 @@ class _BagelMysteryBagScreenState extends State<BagelMysteryBagScreen> {
     }
   }
 
+  /// Firebase may be unavailable (previews, tests); never crash the screen.
+  String _currentUid() {
+    try {
+      return FirebaseAuth.instance.currentUser?.uid ?? '';
+    } catch (_) {
+      return '';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<ProductsCubit, ProductsState>(
@@ -429,97 +440,37 @@ class _BagelMysteryBagScreenState extends State<BagelMysteryBagScreen> {
 
         return Scaffold(
           backgroundColor: _backgroundColor(context),
-          body: Stack(
-            children: [
-              // Scrollable content
-              CustomScrollView(
-                slivers: [
-                  // Hero Image Section
-                  SliverToBoxAdapter(
-                    child: _buildHeroSection(context, bagsLeft),
-                  ),
-
-                  // White Card Content
-                  SliverToBoxAdapter(
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: _cardColor(context),
-                        borderRadius: const BorderRadius.vertical(
-                          top: Radius.circular(28),
-                        ),
+          bottomNavigationBar: _buildBottomBar(bagsLeft),
+          body: CustomScrollView(
+            slivers: [
+              _buildSliverHeader(context, bagsLeft),
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 22, 20, 32),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildTitleBlock(),
+                      const SizedBox(height: 22),
+                      _buildQuickFacts(bagsLeft),
+                      const SizedBox(height: 30),
+                      _buildWhatsInBox(),
+                      const SizedBox(height: 30),
+                      _buildSizes(),
+                      const SizedBox(height: 30),
+                      _buildStoreCard(),
+                      const SizedBox(height: 30),
+                      BagelCustomerReviewsSection(
+                        productId: widget.product.documentId,
+                        reviewsRepo: _reviewsRepo,
+                        onWriteReviewPressed: _showReviewComposer,
+                        currentUserId: _currentUid(),
+                        onEditReview: _editReview,
+                        onDeleteReview: _deleteReview,
                       ),
-                      transform: Matrix4.translationValues(0, -24, 0),
-                      padding: const EdgeInsets.fromLTRB(20, 24, 20, 120),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const SizedBox(height: 24),
-
-                          _buildStoreHeader(),
-                          const SizedBox(height: 24),
-                          _buildPriceBox(context, bagsLeft),
-                          const SizedBox(height: 28),
-                          _buildWhatsInBag(),
-                          _buildDivider(),
-                          _buildInfoRow(
-                            icon: Icons.access_time_rounded,
-                            iconBg: Theme.of(
-                              context,
-                            ).colorScheme.primaryContainer,
-                            label: S
-                                .of(context)!
-                                .bagelMysteryBagPickupTimeLabel,
-                            value: _pickupTime(context),
-                            hasArrow: false,
-                          ),
-                          _buildDivider(),
-                          _buildInfoRow(
-                            icon: Icons.location_on_rounded,
-                            iconBg: Theme.of(
-                              context,
-                            ).colorScheme.primaryContainer,
-                            label: S.of(context)!.bagelMysteryBagLocationLabel,
-                            value: _locationValue(context),
-                            hasArrow: true,
-                            onTap: _openStoreOnMap,
-                          ),
-                          _buildDivider(),
-                          _buildInfoRow(
-                            icon: Icons.phone_rounded,
-                            iconBg: Theme.of(
-                              context,
-                            ).colorScheme.primaryContainer,
-                            label: S.of(context)!.bagelMysteryBagContactLabel,
-                            value: _contactValue(),
-                            hasArrow: true,
-                          ),
-                          _buildDivider(),
-                          const SizedBox(height: 8),
-                          _buildAllergens(),
-                          _buildDivider(),
-                          const SizedBox(height: 8),
-                          BagelCustomerReviewsSection(
-                            productId: widget.product.documentId,
-                            reviewsRepo: _reviewsRepo,
-                            onWriteReviewPressed: _showReviewComposer,
-                            currentUserId:
-                                FirebaseAuth.instance.currentUser?.uid ?? '',
-                            onEditReview: _editReview,
-                            onDeleteReview: _deleteReview,
-                          ),
-                        ],
-                      ),
-                    ),
+                    ],
                   ),
-                ],
-              ),
-
-              // Fixed Reserve Button
-              Positioned(
-                bottom: 0,
-                left: 0,
-                right: 0,
-                child: _buildReserveButton(bagsLeft),
+                ),
               ),
             ],
           ),
@@ -528,210 +479,633 @@ class _BagelMysteryBagScreenState extends State<BagelMysteryBagScreen> {
     );
   }
 
-  Widget _buildHeroSection(BuildContext context, int bagsLeft) {
+  // ── Collapsing image header ───────────────────────────────────────────────
+  Widget _buildSliverHeader(BuildContext context, int bagsLeft) {
     final locale = S.of(context)!;
-    final heroImage = widget.product.imageUrl.trim();
+    final discount = _discountPercent();
 
-    return SizedBox(
-      height: 280,
-      child: Stack(
-        fit: StackFit.expand,
-        children: [
-          Container(
-            decoration: BoxDecoration(
-              gradient: heroImage.isEmpty ? KbrandGradient : null,
-              image: heroImage.isEmpty
-                  ? null
-                  : DecorationImage(
-                      image: heroImage.startsWith('http')
-                          ? NetworkImage(heroImage)
-                          : AssetImage(heroImage),
-                      fit: BoxFit.cover,
-                    ),
-            ),
-            child: heroImage.isEmpty
-                ? Center(
-                    child: Icon(
-                      Icons.checkroom_rounded,
-                      size: 130,
-                      color: Colors.white.withOpacity(0.22),
-                    ),
-                  )
-                : Container(color: Colors.black.withOpacity(0.25)),
-          ),
-
-          // Decorative bagel circles removed
-
-          // Back button
-          PositionedDirectional(
-            top: MediaQuery.of(context).padding.top + 12,
-            start: 16,
-            child: GestureDetector(
-              onTap: () => Navigator.of(context).pop(),
-              child: Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  color: _cardColor(context).withOpacity(0.92),
-                  shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.15),
-                      blurRadius: 8,
-                    ),
-                  ],
-                ),
-                child: IconTheme(
-                  data: IconThemeData(
-                    size: 20,
-                    color: _isDark(context)
-                        ? KdarkModeTextColor
-                        : KlightModeTextColor,
-                  ),
-                  child: const BackButtonIcon(),
-                ),
+    Widget circleButton({required Widget child, VoidCallback? onTap}) {
+      return Padding(
+        padding: const EdgeInsets.all(6),
+        child: Material(
+          color: Colors.white.withOpacity(0.92),
+          shape: const CircleBorder(),
+          child: InkWell(
+            customBorder: const CircleBorder(),
+            onTap: onTap,
+            child: SizedBox(
+              width: 42,
+              height: 42,
+              child: IconTheme(
+                data: const IconThemeData(size: 20, color: KlightModeTextColor),
+                child: Center(child: child),
               ),
             ),
           ),
+        ),
+      );
+    }
 
-          // Badges
-          PositionedDirectional(
-            top: MediaQuery.of(context).padding.top + 12,
-            end: 16,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                _buildBadge(
-                  label: locale.bagelMysteryBagPickupOnlyBadge,
-                  outlined: true,
+    return SliverAppBar(
+      expandedHeight: 420,
+      pinned: true,
+      stretch: true,
+      backgroundColor: KprimaryColorDark,
+      foregroundColor: Colors.white,
+      automaticallyImplyLeading: false,
+      leadingWidth: 64,
+      leading: Padding(
+        padding: const EdgeInsetsDirectional.only(start: 10),
+        child: circleButton(
+          onTap: () => Navigator.of(context).maybePop(),
+          child: const BackButtonIcon(),
+        ),
+      ),
+      actions: [
+        ValueListenableBuilder<Set<String>>(
+          valueListenable: FavoritesStore.ids,
+          builder: (context, ids, _) {
+            final liked = ids.contains(widget.product.documentId);
+            return circleButton(
+              onTap: () => FavoritesStore.toggle(widget.product.documentId),
+              child: Icon(
+                liked ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+                color: liked ? KprimaryColor : KlightModeTextColor,
+              ),
+            );
+          },
+        ),
+        const SizedBox(width: 10),
+      ],
+      flexibleSpace: FlexibleSpaceBar(
+        collapseMode: CollapseMode.parallax,
+        stretchModes: const [StretchMode.zoomBackground],
+        background: Stack(
+          fit: StackFit.expand,
+          children: [
+            BoxArtwork(product: widget.product, iconSize: 170),
+            const DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Color(0x33000000),
+                    Colors.transparent,
+                    Color(0x66000000),
+                  ],
+                  stops: [0, 0.4, 1],
                 ),
-                const SizedBox(height: 8),
-                _buildBadge(
-                  label: locale.bagCardBagsLeft(bagsLeft.toString()),
-                  filled: true,
-                ),
-                if (_distanceLabel(locale) case final distance?) ...[
-                  const SizedBox(height: 8),
-                  _buildBadge(label: distance, outlined: false, light: true),
-                ],
-              ],
+              ),
             ),
+            PositionedDirectional(
+              start: 20,
+              end: 20,
+              bottom: 22,
+              child: Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  if (discount > 0)
+                    _glassChip(locale.bagCardOff('$discount'), filled: true),
+                  _glassChip(locale.bagCardBagsLeft('$bagsLeft')),
+                  if (_distanceLabel(locale) case final distance?)
+                    _glassChip(distance),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _glassChip(String label, {bool filled = false}) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        color: filled ? KaccentColor : Colors.white.withOpacity(0.9),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Text(
+        label,
+        style: TextStyle(
+          fontSize: 12.5,
+          fontWeight: FontWeight.w700,
+          color: filled ? Colors.white : KlightModeTextColor,
+        ),
+      ),
+    );
+  }
+
+  int _discountPercent() {
+    final current = _currentPrice();
+    final old = _oldPrice();
+    return old > current && old > 0 ? ((1 - current / old) * 100).round() : 0;
+  }
+
+  // ── Title, store and rating ───────────────────────────────────────────────
+  Widget _buildTitleBlock() {
+    final scheme = Theme.of(context).colorScheme;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            ClipOval(
+              child: SizedBox(width: 26, height: 26, child: _storeLogo()),
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                _restaurantName(context).toUpperCase(),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontSize: 11.5,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 1.2,
+                  color: _secondaryTextColor(context),
+                ),
+              ),
+            ),
+            StreamBuilder<ReviewAnalyticsEntity>(
+              stream: _reviewsRepo.watchProductReviewAnalytics(
+                productId: widget.product.documentId,
+              ),
+              initialData: ReviewAnalyticsEntity(
+                productId: widget.product.documentId,
+                reviewCount: 0,
+                averageRating: widget.product.avgRating,
+                ratingBreakdown: const {},
+              ),
+              builder: (context, snapshot) {
+                final data = snapshot.data;
+                final rating = data?.averageRating ?? widget.product.avgRating;
+                return Row(
+                  children: [
+                    const Icon(
+                      Icons.star_rounded,
+                      color: KaccentColor,
+                      size: 18,
+                    ),
+                    const SizedBox(width: 3),
+                    Text(
+                      rating.toStringAsFixed(1),
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w800,
+                        color: _primaryTextColor(context),
+                      ),
+                    ),
+                    if ((data?.reviewCount ?? 0) > 0)
+                      Text(
+                        ' (${data!.reviewCount})',
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: _secondaryTextColor(context),
+                        ),
+                      ),
+                  ],
+                );
+              },
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        Text(
+          _productTitle(context),
+          style: TextStyle(
+            fontSize: 30,
+            fontWeight: FontWeight.w800,
+            letterSpacing: -0.7,
+            height: 1.1,
+            color: scheme.onSurface,
+          ),
+        ),
+      ],
+    );
+  }
+
+  // ── Three fact tiles ──────────────────────────────────────────────────────
+  Widget _buildQuickFacts(int bagsLeft) {
+    final locale = S.of(context)!;
+    final pickup = _pickupTime(context).replaceFirst(RegExp(r'^Pickup\s*'), '');
+    final third =
+        _distanceLabel(locale) ??
+        _categoryLabel(locale, widget.product.category) ??
+        locale.bagelMysteryBagLocationLabel;
+    final thirdIcon = _distanceLabel(locale) != null
+        ? Icons.near_me_outlined
+        : Icons.sell_outlined;
+
+    Widget tile(IconData icon, String label, String value) {
+      return Expanded(
+        child: Container(
+          padding: const EdgeInsets.fromLTRB(12, 14, 12, 14),
+          decoration: BoxDecoration(
+            color: _cardColor(context),
+            borderRadius: BorderRadius.circular(18),
+            border: Border.all(color: Theme.of(context).dividerColor),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Icon(
+                icon,
+                size: 20,
+                color: Theme.of(context).colorScheme.primary,
+              ),
+              const SizedBox(height: 10),
+              Text(
+                label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w600,
+                  color: _secondaryTextColor(context),
+                ),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                value,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w800,
+                  height: 1.25,
+                  color: _primaryTextColor(context),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    return IntrinsicHeight(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          tile(
+            Icons.schedule_rounded,
+            locale.bagelMysteryBagPickupTimeLabel,
+            pickup,
+          ),
+          const SizedBox(width: 10),
+          tile(
+            Icons.inventory_2_outlined,
+            locale.detailsStockLabel,
+            locale.bagelMysteryBagAvailableCount('$bagsLeft'),
+          ),
+          const SizedBox(width: 10),
+          tile(
+            thirdIcon,
+            _distanceLabel(locale) != null
+                ? locale.bagelMysteryBagLocationLabel
+                : locale.bagCategoryLabel,
+            third,
           ),
         ],
       ),
     );
   }
 
-  // Decorative bagel decorations removed as requested.
-
-  Widget _buildBadge({
-    required String label,
-    bool outlined = false,
-    bool filled = false,
-    bool light = false,
-  }) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
-      decoration: BoxDecoration(
-        color: filled
-            ? Theme.of(context).colorScheme.primary
-            : light
-            ? (_isDark(context) ? KdarkModeCardColor : KsecondaryColor)
-            : _cardColor(context),
-        border: outlined
-            ? Border.all(color: KaccentColor.withOpacity(0.8), width: 1.2)
-            : null,
-        borderRadius: BorderRadius.circular(24),
+  Widget _sectionTitle(String text) => Padding(
+    padding: const EdgeInsets.only(bottom: 14),
+    child: Text(
+      text,
+      style: TextStyle(
+        fontSize: 19,
+        fontWeight: FontWeight.w800,
+        letterSpacing: -0.3,
+        color: _primaryTextColor(context),
       ),
-      child: Text(
-        label,
-        style: TextStyle(
-          fontSize: 13,
-          fontWeight: FontWeight.w600,
-          letterSpacing: 0.3,
-          color: filled
-              ? Theme.of(context).colorScheme.onPrimary
-              : _primaryTextColor(context),
+    ),
+  );
+
+  // ── What's inside: checklist ──────────────────────────────────────────────
+  Widget _buildWhatsInBox() {
+    final items = widget.product.detectedItems;
+    final scheme = Theme.of(context).colorScheme;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _sectionTitle(S.of(context)!.bagDetailsWhatInsideTitle),
+        if (items.isEmpty)
+          Text(
+            _ingredients(context),
+            style: TextStyle(
+              fontSize: 15,
+              height: 1.7,
+              color: _secondaryTextColor(context),
+            ),
+          )
+        else
+          ...items.map(
+            (item) => Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child: Row(
+                children: [
+                  Container(
+                    width: 30,
+                    height: 30,
+                    decoration: BoxDecoration(
+                      color: scheme.primaryContainer,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      Icons.check_rounded,
+                      size: 17,
+                      color: scheme.primary,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      item,
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                        color: _primaryTextColor(context),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+
+  // ── Sizes as round swatches + category ────────────────────────────────────
+  Widget _buildSizes() {
+    final locale = S.of(context)!;
+    final sizes = widget.product.sizes;
+    final category = _categoryLabel(locale, widget.product.category);
+    final scheme = Theme.of(context).colorScheme;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Expanded(child: _sectionTitle(locale.bagSizesLabel)),
+            if (category != null)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 14),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 5,
+                  ),
+                  decoration: BoxDecoration(
+                    color: scheme.secondaryContainer,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    '${locale.bagCategoryLabel}: $category',
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w700,
+                      color: scheme.onSecondaryContainer,
+                    ),
+                  ),
+                ),
+              ),
+          ],
         ),
+        if (sizes.isEmpty)
+          Text(
+            locale.bagSizesNotSpecified,
+            style: TextStyle(fontSize: 14, color: _secondaryTextColor(context)),
+          )
+        else
+          Wrap(
+            spacing: 10,
+            runSpacing: 10,
+            children: sizes
+                .map(
+                  (size) => Container(
+                    width: 52,
+                    height: 52,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: _cardColor(context),
+                      border: Border.all(
+                        color: _primaryTextColor(context),
+                        width: 1.2,
+                      ),
+                    ),
+                    child: Text(
+                      size,
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w800,
+                        color: _primaryTextColor(context),
+                      ),
+                    ),
+                  ),
+                )
+                .toList(),
+          ),
+        if (sizes.isNotEmpty) ...[
+          const SizedBox(height: 12),
+          Text(
+            locale.bagelMysteryBagAllergenNotice,
+            style: TextStyle(
+              fontSize: 12.5,
+              height: 1.5,
+              color: _secondaryTextColor(context),
+            ),
+          ),
+        ],
+      ],
+    );
+  }
+
+  // ── Store / pickup card ───────────────────────────────────────────────────
+  Widget _buildStoreCard() {
+    final locale = S.of(context)!;
+    final scheme = Theme.of(context).colorScheme;
+    return Container(
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: _cardColor(context),
+        borderRadius: BorderRadius.circular(22),
+        border: Border.all(color: Theme.of(context).dividerColor),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(14),
+                child: SizedBox(width: 52, height: 52, child: _storeLogo()),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      _restaurantName(context),
+                      style: TextStyle(
+                        fontSize: 15.5,
+                        fontWeight: FontWeight.w800,
+                        color: _primaryTextColor(context),
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      _locationValue(context),
+                      maxLines: 2,
+                      style: TextStyle(
+                        fontSize: 13,
+                        height: 1.35,
+                        color: _secondaryTextColor(context),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              Expanded(
+                child: SizedBox(
+                  height: 46,
+                  child: FilledButton.icon(
+                    onPressed: _openStoreOnMap,
+                    style: FilledButton.styleFrom(
+                      minimumSize: const Size(0, 46),
+                      backgroundColor: scheme.primaryContainer,
+                      foregroundColor: scheme.primary,
+                    ),
+                    icon: const Icon(Icons.directions_outlined, size: 19),
+                    label: Text(locale.mapDirections),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: SizedBox(
+                  height: 46,
+                  child: OutlinedButton.icon(
+                    onPressed: () {},
+                    style: OutlinedButton.styleFrom(
+                      minimumSize: const Size(0, 46),
+                      side: BorderSide(color: Theme.of(context).dividerColor),
+                      textStyle: const TextStyle(
+                        fontFamily: 'Cairo',
+                        fontSize: 12.5,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    icon: const Icon(Icons.call_outlined, size: 18),
+                    label: FittedBox(child: Text(_contactValue())),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
 
-  Widget _buildStoreHeader() {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
+  // ── Sticky price + reserve bar ────────────────────────────────────────────
+  Widget _buildBottomBar(int bagsLeft) {
+    final locale = S.of(context)!;
+    final scheme = Theme.of(context).colorScheme;
+    final isSoldOut = bagsLeft <= 0;
+    final canReserve = !_reserved && !_isReserving && !isSoldOut;
+    final buttonLabel = _isReserving
+        ? (Directionality.of(context) == TextDirection.rtl
+              ? 'جارٍ الحجز...'
+              : 'Reserving...')
+        : _reserved
+        ? locale.bagelMysteryBagReservedState
+        : isSoldOut
+        ? (Directionality.of(context) == TextDirection.rtl
+              ? 'نفدت الكمية'
+              : 'Sold out')
+        : locale.bagDetailsReservePickup;
+    final currentPrice = _currentPrice();
+    final oldPrice = _oldPrice();
 
-      children: [
-        // Logo
-        ClipRRect(
-          borderRadius: BorderRadius.circular(14),
-          child: SizedBox(width: 56, height: 56, child: _storeLogo()),
-        ),
-        const SizedBox(width: 14),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+    return Container(
+      decoration: BoxDecoration(
+        color: _cardColor(context),
+        border: Border(top: BorderSide(color: Theme.of(context).dividerColor)),
+        boxShadow: [
+          BoxShadow(
+            color: KprimaryColorDark.withOpacity(0.06),
+            blurRadius: 20,
+            offset: const Offset(0, -6),
+          ),
+        ],
+      ),
+      child: SafeArea(
+        top: false,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 14, 20, 14),
+          child: Row(
             children: [
-              Text(
-                _restaurantName(context),
-                style: TextStyle(
-                  fontSize: 13,
-                  color: _secondaryTextColor(context),
-                ),
+              Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '${currentPrice.toStringAsFixed(0)} ${locale.bagCurrencySuffix}',
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: -0.5,
+                      height: 1.1,
+                      color: scheme.primary,
+                    ),
+                  ),
+                  if (oldPrice > currentPrice)
+                    Text(
+                      '${oldPrice.toStringAsFixed(0)} ${locale.bagCurrencySuffix}',
+                      style: TextStyle(
+                        fontSize: 13,
+                        decoration: TextDecoration.lineThrough,
+                        color: _secondaryTextColor(context),
+                      ),
+                    ),
+                ],
               ),
-              const SizedBox(height: 4),
-              Text(
-                _productTitle(context),
-                style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: -0.3,
-                  color: _primaryTextColor(context),
-                  height: 1.2,
+              const SizedBox(width: 18),
+              Expanded(
+                child: SizedBox(
+                  height: 56,
+                  child: ElevatedButton(
+                    onPressed: canReserve
+                        ? () => _reserveProduct(bagsLeft)
+                        : null,
+                    style: ElevatedButton.styleFrom(
+                      disabledBackgroundColor: _reserved
+                          ? KaccentColor
+                          : KdisabledColor,
+                      disabledForegroundColor: Colors.white,
+                    ),
+                    child: FittedBox(child: Text(buttonLabel)),
+                  ),
                 ),
               ),
             ],
           ),
         ),
-        const SizedBox(width: 8),
-        StreamBuilder<ReviewAnalyticsEntity>(
-          stream: _reviewsRepo.watchProductReviewAnalytics(
-            productId: widget.product.documentId,
-          ),
-          initialData: ReviewAnalyticsEntity(
-            productId: widget.product.documentId,
-            reviewCount: 0,
-            averageRating: widget.product.avgRating,
-            ratingBreakdown: const {},
-          ),
-          builder: (context, snapshot) {
-            final averageRating =
-                snapshot.data?.averageRating ?? widget.product.avgRating;
-
-            return Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.primaryContainer,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Row(
-                children: [
-                  const Icon(Icons.star_rounded, color: KaccentColor, size: 16),
-                  const SizedBox(width: 4),
-                  Text(
-                    averageRating.toStringAsFixed(1),
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w700,
-                      color: _primaryTextColor(context),
-                    ),
-                  ),
-                ],
-              ),
-            );
-          },
-        ),
-      ],
+      ),
     );
   }
 
@@ -750,265 +1124,6 @@ class _BagelMysteryBagScreenState extends State<BagelMysteryBagScreen> {
     return Image.asset(fallback, fit: BoxFit.cover);
   }
 
-  Widget _buildPriceBox(BuildContext context, int bagsLeft) {
-    final locale = S.of(context)!;
-    final currentPrice = _currentPrice();
-    final oldPrice = _oldPrice();
-    final discount = oldPrice > currentPrice && oldPrice > 0
-        ? ((1 - currentPrice / oldPrice) * 100).round()
-        : 0;
-
-    return Container(
-      padding: const EdgeInsets.all(18),
-      decoration: BoxDecoration(
-        color: _backgroundColor(context),
-        borderRadius: BorderRadius.circular(KradiusCard),
-        border: Border.all(color: Theme.of(context).dividerColor),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                locale.bagDetailsPriceLabel.toUpperCase(),
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
-                  color: _secondaryTextColor(context),
-                  letterSpacing: 1,
-                ),
-              ),
-              if (discount > 0)
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 3,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.secondaryContainer,
-                    borderRadius: BorderRadius.circular(6),
-                    border: Border.all(color: KaccentColor.withOpacity(0.6)),
-                  ),
-                  child: Text(
-                    locale.bagCardOff('$discount'),
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w700,
-                      letterSpacing: 0.4,
-                      color: Theme.of(context).colorScheme.onSecondaryContainer,
-                    ),
-                  ),
-                ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          RichText(
-            text: TextSpan(
-              text:
-                  '${currentPrice.toStringAsFixed(0)} ${locale.bagCurrencySuffix}',
-              style: TextStyle(
-                fontSize: 38,
-                fontWeight: FontWeight.w900,
-                color: Theme.of(context).colorScheme.primary,
-              ),
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            '${oldPrice.toStringAsFixed(0)} ${locale.bagCurrencySuffix}',
-            style: TextStyle(
-              fontSize: 16,
-              color: _secondaryTextColor(context),
-              decoration: TextDecoration.lineThrough,
-            ),
-          ),
-          const Divider(height: 28, color: KdividerColor),
-          Row(
-            children: [
-              Container(
-                width: 10,
-                height: 10,
-                decoration: const BoxDecoration(
-                  color: Color(0xFF22C55E),
-                  shape: BoxShape.circle,
-                ),
-              ),
-              const SizedBox(width: 8),
-              Text(
-                locale.bagelMysteryBagAvailableCount(bagsLeft.toString()),
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: _primaryTextColor(context),
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildWhatsInBag() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          S.of(context)!.bagDetailsWhatInsideTitle,
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.w700,
-            color: _primaryTextColor(context),
-          ),
-        ),
-        const SizedBox(height: 10),
-        Text(
-          _ingredients(context),
-          style: TextStyle(
-            fontSize: 15,
-            color: _secondaryTextColor(context),
-            height: 1.7,
-          ),
-        ),
-        const SizedBox(height: 28),
-      ],
-    );
-  }
-
-  Widget _buildInfoRow({
-    required IconData icon,
-    required Color iconBg,
-    required String label,
-    required String value,
-    required bool hasArrow,
-    VoidCallback? onTap,
-  }) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(14),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 16),
-        child: Row(
-          children: [
-            Container(
-              width: 48,
-              height: 48,
-              decoration: BoxDecoration(
-                color: iconBg,
-                borderRadius: BorderRadius.circular(14),
-              ),
-              child: Icon(
-                icon,
-                color: Theme.of(context).colorScheme.primary,
-                size: 22,
-              ),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    label.toUpperCase(),
-                    style: TextStyle(
-                      fontSize: 11,
-                      fontWeight: FontWeight.w600,
-                      color: _secondaryTextColor(context),
-                      letterSpacing: 0.8,
-                    ),
-                  ),
-                  const SizedBox(height: 3),
-                  Text(
-                    value,
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w700,
-                      color: _primaryTextColor(context),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            if (hasArrow)
-              Icon(Icons.chevron_right, color: _secondaryTextColor(context)),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildAllergens() {
-    final locale = S.of(context)!;
-    final sizes = widget.product.sizes;
-    final category = _categoryLabel(locale, widget.product.category);
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          locale.bagelMysteryBagIngredientsAndAllergens.toUpperCase(),
-          style: TextStyle(
-            fontSize: 12,
-            fontWeight: FontWeight.w700,
-            color: _secondaryTextColor(context),
-            letterSpacing: 1.2,
-          ),
-        ),
-        const SizedBox(height: 12),
-        if (category != null) ...[
-          _buildChipGroup(label: locale.bagCategoryLabel, values: [category]),
-          const SizedBox(height: 14),
-        ],
-        if (sizes.isNotEmpty) ...[
-          _buildChipGroup(label: locale.bagSizesLabel, values: sizes),
-          const SizedBox(height: 14),
-        ],
-        Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: _backgroundColor(context),
-            borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: KdividerColor),
-          ),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                width: 32,
-                height: 32,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(color: KdividerColor, width: 2),
-                ),
-                child: Icon(
-                  Icons.straighten_rounded,
-                  size: 16,
-                  color: _secondaryTextColor(context),
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Text(
-                  sizes.isEmpty
-                      ? locale.bagSizesNotSpecified
-                      : locale.bagelMysteryBagAllergenNotice,
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: _secondaryTextColor(context),
-                    height: 1.6,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(height: 8),
-      ],
-    );
-  }
-
   String? _categoryLabel(S locale, String? category) {
     switch (category) {
       case 'men':
@@ -1022,249 +1137,6 @@ class _BagelMysteryBagScreenState extends State<BagelMysteryBagScreen> {
       default:
         return null;
     }
-  }
-
-  Widget _buildChipGroup({
-    required String label,
-    required List<String> values,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w600,
-            color: _primaryTextColor(context),
-          ),
-        ),
-        const SizedBox(height: 8),
-        Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          children: values
-              .map(
-                (value) => Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 14,
-                    vertical: 6,
-                  ),
-                  decoration: BoxDecoration(
-                    color: KaccentColor.withOpacity(0.12),
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: KaccentColor.withOpacity(0.6)),
-                  ),
-                  child: Text(
-                    value,
-                    style: TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w700,
-                      color: _primaryTextColor(context),
-                    ),
-                  ),
-                ),
-              )
-              .toList(),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildCustomerReviews() {
-    final locale = S.of(context)!;
-    final productId = widget.product.documentId;
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Icon(
-              Icons.star_border_rounded,
-              color: _secondaryTextColor(context),
-              size: 22,
-            ),
-            const SizedBox(width: 8),
-            Text(
-              locale.bagelMysteryBagCustomerReviews,
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w700,
-                color: _primaryTextColor(context),
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 14),
-        StreamBuilder<List<ReviewEntity>>(
-          stream: _reviewsRepo.watchProductReviews(productId: productId),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: _backgroundColor(context),
-                  borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: KdividerColor),
-                ),
-                child: const Center(child: CircularProgressIndicator()),
-              );
-            }
-
-            if (snapshot.hasError) {
-              return Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: _backgroundColor(context),
-                  borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: KdividerColor),
-                ),
-                child: Center(
-                  child: Text(
-                    'Error loading reviews',
-                    style: TextStyle(color: _secondaryTextColor(context)),
-                  ),
-                ),
-              );
-            }
-
-            final reviews = snapshot.data ?? [];
-
-            if (reviews.isEmpty) {
-              return Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: _backgroundColor(context),
-                  borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: KdividerColor),
-                ),
-                child: Center(
-                  child: Column(
-                    children: [
-                      Icon(
-                        Icons.rate_review_outlined,
-                        color: _secondaryTextColor(context),
-                        size: 48,
-                      ),
-                      const SizedBox(height: 12),
-                      Text(
-                        'No reviews yet',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          color: _primaryTextColor(context),
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        'Be the first to share your experience!',
-                        style: TextStyle(
-                          fontSize: 13,
-                          color: _secondaryTextColor(context),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              );
-            }
-
-            return Column(
-              children: [
-                ...reviews.map((review) => _buildReviewCard(review)),
-                const SizedBox(height: 12),
-              ],
-            );
-          },
-        ),
-      ],
-    );
-  }
-
-  Widget _buildReviewCard(ReviewEntity review) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: _backgroundColor(context),
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: KdividerColor),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              CircleAvatar(
-                radius: 20,
-                backgroundImage: review.image.isNotEmpty
-                    ? (review.image.startsWith('http')
-                          ? NetworkImage(review.image)
-                          : AssetImage(review.image))
-                    : null,
-                child: review.image.isEmpty
-                    ? Icon(
-                        Icons.person,
-                        color: _secondaryTextColor(context),
-                        size: 20,
-                      )
-                    : null,
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      review.name,
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w600,
-                        color: _primaryTextColor(context),
-                      ),
-                    ),
-                    const SizedBox(height: 2),
-                    Row(
-                      children: [
-                        ...List.generate(5, (index) {
-                          return Icon(
-                            index < review.rating
-                                ? Icons.star
-                                : Icons.star_border,
-                            color: KaccentColor,
-                            size: 14,
-                          );
-                        }),
-                        const SizedBox(width: 8),
-                        Text(
-                          review.date,
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: _secondaryTextColor(context),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          if (review.review.isNotEmpty) ...[
-            const SizedBox(height: 12),
-            Text(
-              review.review,
-              style: TextStyle(
-                fontSize: 14,
-                color: _primaryTextColor(context),
-                height: 1.4,
-              ),
-            ),
-          ],
-        ],
-      ),
-    );
   }
 
   Future<void> _showReviewComposer() async {
@@ -1286,7 +1158,7 @@ class _BagelMysteryBagScreenState extends State<BagelMysteryBagScreen> {
   Future<void> _editReview(ReviewEntity review) async {
     // Add current user ID to the review for editing
     final reviewWithUserId = review.copyWith(
-      userId: FirebaseAuth.instance.currentUser?.uid,
+      userId: _currentUid().isEmpty ? null : _currentUid(),
     );
 
     final submitted = await showModalBottomSheet<bool>(
@@ -1334,71 +1206,6 @@ class _BagelMysteryBagScreenState extends State<BagelMysteryBagScreen> {
           );
         }
       },
-    );
-  }
-
-  Widget _buildDivider() {
-    return const Divider(height: 1, color: KdividerColor);
-  }
-
-  Widget _buildReserveButton(int bagsLeft) {
-    final locale = S.of(context)!;
-    final isSoldOut = bagsLeft <= 0;
-    final canReserve = !_reserved && !_isReserving && !isSoldOut;
-    final buttonLabel = _isReserving
-        ? (Directionality.of(context) == TextDirection.rtl
-              ? 'جارٍ الحجز...'
-              : 'Reserving...')
-        : _reserved
-        ? locale.bagelMysteryBagReservedState
-        : isSoldOut
-        ? (Directionality.of(context) == TextDirection.rtl
-              ? 'نفدت الكمية'
-              : 'Sold out')
-        : locale.bagDetailsReservePickup;
-
-    return Container(
-      padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.bottomCenter,
-          end: Alignment.topCenter,
-          colors: [
-            _cardColor(context),
-            _cardColor(context),
-            Colors.transparent,
-          ],
-        ),
-      ),
-      child: GestureDetector(
-        onTap: canReserve ? () => _reserveProduct(bagsLeft) : null,
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 300),
-          width: double.infinity,
-          padding: const EdgeInsets.symmetric(vertical: 16),
-          decoration: BoxDecoration(
-            color: _reserved
-                ? KaccentColor
-                : isSoldOut
-                ? KdisabledColor
-                : Theme.of(context).colorScheme.primary,
-            borderRadius: BorderRadius.circular(30),
-          ),
-          child: Center(
-            child: Text(
-              buttonLabel,
-              style: TextStyle(
-                color: _reserved || isSoldOut
-                    ? Colors.white
-                    : Theme.of(context).colorScheme.onPrimary,
-                fontSize: 15,
-                fontWeight: FontWeight.w600,
-                letterSpacing: 0.6,
-              ),
-            ),
-          ),
-        ),
-      ),
     );
   }
 }

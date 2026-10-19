@@ -1,6 +1,7 @@
 // ignore_for_file: deprecated_member_use
 
 import 'package:flutter/material.dart';
+import 'package:stylebox_dashboard/core/localization/app_localizations.dart';
 import 'package:stylebox_dashboard/core/utils/app_colors.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:stylebox_dashboard/core/widgets/custom_text_field.dart';
@@ -37,154 +38,80 @@ class _LoginViewBodyState extends State<LoginViewBody> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Form(
       key: formKey,
       autovalidateMode: autovalidateMode,
       child: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              // Header
-              const SizedBox(height: 60),
-              _buildHeader(),
-              const SizedBox(height: 24),
-
-              _buildDemoCredentialsCard(),
-              const SizedBox(height: 24),
-
-              // Email Field
-              _buildEmailField(),
-              const SizedBox(height: 24),
-
-              // Password Field
-              _buildPasswordField(),
-              const SizedBox(height: 32),
-
-              // Special Login Button
-              _buildLoginButton(),
-              const SizedBox(height: 40),
-            ],
-          ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            const _LoginHero(),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(24, 28, 24, 32),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    l10n.welcomeBack,
+                    style: const TextStyle(
+                      fontSize: 26,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: -0.5,
+                      color: AppColors.black,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    l10n.signInToContinueDashboard,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
+                  const SizedBox(height: 18),
+                  _buildDemoCredentialsCard(),
+                  const SizedBox(height: 18),
+                  _buildEmailField(),
+                  const SizedBox(height: 14),
+                  _buildPasswordField(),
+                  const SizedBox(height: 26),
+                  _buildLoginButton(),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
 
-  Widget _buildHeader() {
-    return Column(
-      children: [
-        const Text(
-          'STYLEBOX',
-          textDirection: TextDirection.ltr,
-          style: TextStyle(
-            fontSize: 22,
-            fontWeight: FontWeight.w600,
-            letterSpacing: 6.5,
-            color: AppColors.black,
-          ),
-        ),
-        const SizedBox(height: 8),
-        Container(width: 36, height: 1.5, color: AppColors.accentColor),
-        const SizedBox(height: 28),
-        const Text(
-          'Welcome Back',
-          style: TextStyle(
-            fontSize: 28,
-            fontWeight: FontWeight.w700,
-            letterSpacing: -0.5,
-            color: AppColors.black,
-          ),
-        ),
-        const SizedBox(height: 6),
-        const Text(
-          'Sign in to continue to your dashboard',
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
-            color: AppColors.textSecondary,
-          ),
-        ),
-      ],
-    );
-  }
-
+  /// Compact "store account" chips that auto-fill the email.
   Widget _buildDemoCredentialsCard() {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: AppColors.lightGrey,
-        borderRadius: BorderRadius.circular(AppColors.radiusField),
-        border: Border.all(color: AppColors.divider),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            'Store Account',
-            style: TextStyle(
-              fontSize: 13,
+    return Wrap(
+      spacing: 8,
+      runSpacing: 8,
+      crossAxisAlignment: WrapCrossAlignment.center,
+      children: [
+        for (final account in _demoAccounts)
+          ActionChip(
+            avatar: const Icon(
+              Icons.storefront_outlined,
+              size: 18,
+              color: AppColors.primaryColor,
+            ),
+            label: Text(account.key),
+            labelStyle: const TextStyle(
+              fontSize: 12.5,
               fontWeight: FontWeight.w700,
               color: AppColors.primaryColor,
             ),
+            backgroundColor: AppColors.primaryContainer,
+            side: BorderSide.none,
+            shape: const StadiumBorder(),
+            onPressed: () => _fillDemoAccount(account.key, account.value),
           ),
-          const SizedBox(height: 8),
-          ..._demoAccounts.map((account) {
-            final accountEmail = account.key;
-            final accountPassword = account.value;
-            return Padding(
-              padding: const EdgeInsets.only(bottom: 8),
-              child: Material(
-                color: Colors.transparent,
-                child: InkWell(
-                  borderRadius: BorderRadius.circular(10),
-                  onTap: () => _fillDemoAccount(accountEmail, accountPassword),
-                  child: Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: AppColors.divider),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Email: $accountEmail',
-                          style: const TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.primaryColor,
-                          ),
-                        ),
-                        if (accountPassword.isNotEmpty) ...[
-                          const SizedBox(height: 2),
-                          Text(
-                            'Password: $accountPassword',
-                            style: const TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
-                              color: AppColors.primaryColor,
-                            ),
-                          ),
-                        ],
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            );
-          }),
-          const SizedBox(height: 2),
-          const Text(
-            'Tap any account to auto-fill credentials',
-            style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
-          ),
-        ],
-      ),
+      ],
     );
   }
 
@@ -272,6 +199,133 @@ class _LoginViewBodyState extends State<LoginViewBody> {
           });
         }
       },
+    );
+  }
+}
+
+/// Espresso top half of the split login: wordmark, role pill, promise and
+/// three feature lines.
+class _LoginHero extends StatelessWidget {
+  const _LoginHero();
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final top = MediaQuery.paddingOf(context).top;
+
+    Widget feature(IconData icon, String text) => Padding(
+      padding: const EdgeInsets.only(top: 10),
+      child: Row(
+        children: [
+          Container(
+            width: 30,
+            height: 30,
+            decoration: BoxDecoration(
+              color: AppColors.accentColor.withOpacity(0.15),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(icon, size: 16, color: AppColors.accentColor),
+          ),
+          const SizedBox(width: 12),
+          Text(
+            text,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
+      ),
+    );
+
+    return Container(
+      padding: EdgeInsets.fromLTRB(24, top + 20, 24, 30),
+      decoration: const BoxDecoration(
+        color: AppColors.black,
+        borderRadius: BorderRadius.vertical(bottom: Radius.circular(36)),
+      ),
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          PositionedDirectional(
+            end: -90,
+            top: -80,
+            child: Container(
+              width: 240,
+              height: 240,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: AppColors.accentColor.withOpacity(0.3),
+                ),
+              ),
+            ),
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  const Text(
+                    'STYLEBOX',
+                    textDirection: TextDirection.ltr,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: 4.5,
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 3,
+                    ),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: AppColors.accentColor),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Text(
+                      l10n.dashStoreOwner,
+                      style: const TextStyle(
+                        color: AppColors.accentColor,
+                        fontSize: 11,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 34),
+              Text(
+                l10n.dashLoginHeroTitle,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 30,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: -0.7,
+                  height: 1.12,
+                ),
+              ),
+              const SizedBox(height: 10),
+              Text(
+                l10n.dashLoginHeroSubtitle,
+                style: TextStyle(
+                  color: Colors.white.withOpacity(0.7),
+                  fontSize: 13.5,
+                  height: 1.5,
+                ),
+              ),
+              const SizedBox(height: 14),
+              feature(Icons.center_focus_strong_outlined, l10n.dashFeatureScan),
+              feature(Icons.inventory_2_outlined, l10n.dashFeatureStock),
+              feature(Icons.star_outline_rounded, l10n.dashFeatureReviews),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }

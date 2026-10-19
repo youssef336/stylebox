@@ -7,6 +7,7 @@ class OnBoarding extends StatelessWidget {
   static const routeName = '/onBoarding';
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(body: SafeArea(child: OnBoardingViewBody()));
+    // Full-bleed: the hero runs under the status bar.
+    return const Scaffold(body: OnBoardingViewBody());
   }
 }

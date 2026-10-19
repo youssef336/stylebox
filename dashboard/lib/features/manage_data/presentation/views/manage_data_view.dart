@@ -37,13 +37,19 @@ class _ManageDataScaffold extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: AppColors.primaryColor,
-        foregroundColor: Colors.white,
+        backgroundColor: AppColors.background,
+        foregroundColor: AppColors.black,
         elevation: 0,
-        centerTitle: true,
+        centerTitle: false,
+        titleSpacing: 0,
         title: Text(
           AppLocalizations.of(context)!.manageRestaurants,
-          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+          style: const TextStyle(
+            fontSize: 22,
+            fontWeight: FontWeight.w800,
+            letterSpacing: -0.3,
+            color: AppColors.black,
+          ),
         ),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_rounded, size: 20),

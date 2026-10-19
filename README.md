@@ -16,7 +16,7 @@
 
 <p align="center">
   <img src="docs/screens.jpg" alt="App screens" width="100%"/>
-  <br/><sub>Home · Style scan · AI style assistant</sub>
+  <br/><sub>Customer app (top) · checkout, Arabic RTL and the store dashboard (bottom)</sub>
 </p>
 
 ---
@@ -53,6 +53,38 @@ Both apps use Clean Architecture with Bloc/Cubit, are fully bilingual (English /
 - 🖼 Product images uploaded to **Supabase Storage**
 - 📊 **Analytics & stats** — total stores, total reviews, latest reviews
 - 🌍 English / Arabic, skeleton loading states (`skeletonizer`)
+
+## 📱 Screenshots
+
+Rendered from the real widgets with demo data (no Firebase needed) — see [Regenerating the screenshots](#regenerating-the-screenshots).
+
+**Customer app**
+
+| Onboarding | Login | Sign up | Home |
+|:---:|:---:|:---:|:---:|
+| <img src="docs/screenshots/app_onboarding.png" width="200"/> | <img src="docs/screenshots/app_login.png" width="200"/> | <img src="docs/screenshots/app_signup.png" width="200"/> | <img src="docs/screenshots/app_home.png" width="200"/> |
+| **Home — all boxes** | **Home (Arabic, RTL)** | **Box details** | **Cart** |
+| <img src="docs/screenshots/app_home_grid.png" width="200"/> | <img src="docs/screenshots/app_home_ar.png" width="200"/> | <img src="docs/screenshots/app_product_details.png" width="200"/> | <img src="docs/screenshots/app_cart.png" width="200"/> |
+| **Checkout** | **Profile** | | |
+| <img src="docs/screenshots/app_checkout.png" width="200"/> | <img src="docs/screenshots/app_profile.png" width="200"/> | | |
+
+**Store dashboard**
+
+| Login | Home | Stores & boxes | Add Style Box |
+|:---:|:---:|:---:|:---:|
+| <img src="docs/screenshots/dashboard_login.png" width="200"/> | <img src="docs/screenshots/dashboard_home.png" width="200"/> | <img src="docs/screenshots/dashboard_products.png" width="200"/> | <img src="docs/screenshots/dashboard_add_product.png" width="200"/> |
+
+### Regenerating the screenshots
+
+The screenshot tests are skipped in the normal `flutter test` run. To re-render them:
+
+```bash
+cd dashboard && flutter test --dart-define=SCREENSHOTS=true test/screenshots
+cd ../app && flutter test --dart-define=SCREENSHOTS=true test/screenshots/app_screens_test.dart
+flutter test --dart-define=SCREENSHOTS=true test/screenshots/montage_test.dart   # builds docs/screens.jpg
+```
+
+---
 
 ## 🛠 Tech stack
 

@@ -8,7 +8,6 @@ import 'package:flutter_paypal_payment/flutter_paypal_payment.dart';
 import 'package:stylebox/constant.dart';
 import 'package:stylebox/core/helper_functions/build_error_bar.dart';
 import 'package:stylebox/core/services/shared_preferences_singletone.dart';
-import 'package:stylebox/core/widgets/custom_buttom.dart';
 import 'package:stylebox/core/services/visa_card_prefs_services.dart';
 import 'package:stylebox/features/check_out/domains/entities/PaypalPaymentEntity/PaypalPaymentEntity.dart'
     show PaypalPaymentEntity;
@@ -77,12 +76,11 @@ class _CheckOutViewBodyState extends State<CheckOutViewBody> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 10),
-      child: Column(
-        children: [
-          const SizedBox(height: 20),
-          CheckOutStage(
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
+          child: CheckOutStage(
             onTap: (index) {
               if (index == 0) {
                 pageController.animateToPage(
@@ -111,52 +109,52 @@ class _CheckOutViewBodyState extends State<CheckOutViewBody> {
             pageController: pageController,
             currentPageindex: currentPageindex,
           ),
+        ),
 
-          Expanded(
-            child: CheckOutStepsPageView(
-              autoValidateMode: _addressAutoValidate
-                  ? AutovalidateMode.always
-                  : AutovalidateMode.disabled,
-              formKey: _formKey,
-              pageController: pageController,
-              visaFormKey: _visaFormKey,
-              cardHolderController: _cardHolderController,
-              cardNumberController: _cardNumberController,
-              expiryDateController: _expiryDateController,
-              cvvController: _cvvController,
-              onPaymentMethodChanged: () {
-                if (mounted) {
-                  setState(() {});
-                }
-              },
-              onShippingMethodChanged: () {
-                if (mounted) {
-                  setState(() {});
-                }
-              },
-              addressNameController: _addressNameController,
-              addressEmailController: _addressEmailController,
-              addressLineController: _addressLineController,
-              addressCityController: _addressCityController,
-              addressFloorController: _addressFloorController,
-              addressPhoneController: _addressPhoneController,
-            ),
-          ),
-          CustomButtom(
-            text: getNextButtonText(currentPageindex),
-            onPressed: () {
-              if (currentPageindex == 0) {
-                _handleShipinngSectionValidation(context);
-              } else if (currentPageindex == 1) {
-                _handleAddressSectionValidation();
-              } else {
-                _processPayment();
+        Expanded(
+          child: CheckOutStepsPageView(
+            autoValidateMode: _addressAutoValidate
+                ? AutovalidateMode.always
+                : AutovalidateMode.disabled,
+            formKey: _formKey,
+            pageController: pageController,
+            visaFormKey: _visaFormKey,
+            cardHolderController: _cardHolderController,
+            cardNumberController: _cardNumberController,
+            expiryDateController: _expiryDateController,
+            cvvController: _cvvController,
+            onPaymentMethodChanged: () {
+              if (mounted) {
+                setState(() {});
               }
             },
+            onShippingMethodChanged: () {
+              if (mounted) {
+                setState(() {});
+              }
+            },
+            addressNameController: _addressNameController,
+            addressEmailController: _addressEmailController,
+            addressLineController: _addressLineController,
+            addressCityController: _addressCityController,
+            addressFloorController: _addressFloorController,
+            addressPhoneController: _addressPhoneController,
           ),
-          const SizedBox(height: 32),
-        ],
-      ),
+        ),
+        _CheckoutTotalBar(
+          total: context.read<OrderEntity>().cartEntites.calculateTotalPrice(),
+          buttonText: getNextButtonText(currentPageindex),
+          onPressed: () {
+            if (currentPageindex == 0) {
+              _handleShipinngSectionValidation(context);
+            } else if (currentPageindex == 1) {
+              _handleAddressSectionValidation();
+            } else {
+              _processPayment();
+            }
+          },
+        ),
+      ],
     );
   }
 
@@ -372,5 +370,80 @@ class _CheckOutViewBodyState extends State<CheckOutViewBody> {
         ),
       );
     }
+  }
+}
+
+/// Docked footer: order total on one side, the step action on the other.
+class _CheckoutTotalBar extends StatelessWidget {
+  const _CheckoutTotalBar({
+    required this.total,
+    required this.buttonText,
+    required this.onPressed,
+  });
+
+  final double total;
+  final String buttonText;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final locale = S.of(context)!;
+    return Container(
+      decoration: BoxDecoration(
+        color: scheme.surface,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(26)),
+        boxShadow: [
+          BoxShadow(
+            color: KprimaryColorDark.withValues(alpha: 0.07),
+            blurRadius: 22,
+            offset: const Offset(0, -6),
+          ),
+        ],
+      ),
+      child: SafeArea(
+        top: false,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 16, 20, 14),
+          child: Row(
+            children: [
+              Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    locale.cartTotal,
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: scheme.onSurfaceVariant,
+                    ),
+                  ),
+                  Text(
+                    '${total.toStringAsFixed(total % 1 == 0 ? 0 : 2)} ${locale.bagCurrencySuffix}',
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: -0.4,
+                      color: scheme.primary,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(width: 18),
+              Expanded(
+                child: SizedBox(
+                  height: 54,
+                  child: ElevatedButton(
+                    onPressed: onPressed,
+                    child: FittedBox(child: Text(buttonText)),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }

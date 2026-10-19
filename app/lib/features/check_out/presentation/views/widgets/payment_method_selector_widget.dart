@@ -33,6 +33,7 @@ class PaymentMethodSelectorWidget extends StatelessWidget {
           (index) => Padding(
             padding: EdgeInsets.only(bottom: 16, top: index == 0 ? 0 : 0),
             child: _PaymentMethodCard(
+              method: methods[index],
               isSelected: selectedIndex == index,
               title: titles[index],
               subtitle: subtitles[index],
@@ -48,6 +49,7 @@ class PaymentMethodSelectorWidget extends StatelessWidget {
 
 class _PaymentMethodCard extends StatelessWidget {
   const _PaymentMethodCard({
+    required this.method,
     required this.isSelected,
     required this.title,
     required this.subtitle,
@@ -55,6 +57,7 @@ class _PaymentMethodCard extends StatelessWidget {
     required this.onTap,
   });
 
+  final CheckoutPaymentMethod method;
   final bool isSelected;
   final String title;
   final String subtitle;
@@ -96,29 +99,23 @@ class _PaymentMethodCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisSize: MainAxisSize.max,
           children: [
-            // Checkbox
-            AnimatedContainer(
-              duration: const Duration(milliseconds: 300),
-              width: 26,
-              height: 26,
-              decoration: ShapeDecoration(
-                color: isSelected ? highlightColor : Colors.transparent,
-                shape: OvalBorder(
-                  side: BorderSide(
-                    width: 2,
-                    color: isSelected
-                        ? highlightColor
-                        : (isDark ? KdarkModeTextSecondary : KdisabledColor),
-                  ),
-                ),
+            Container(
+              width: 46,
+              height: 46,
+              decoration: BoxDecoration(
+                color: isSelected
+                    ? highlightColor
+                    : Theme.of(context).colorScheme.surface,
+                borderRadius: BorderRadius.circular(14),
               ),
-              child: isSelected
-                  ? const Center(
-                      child: Icon(Icons.check, size: 16, color: Colors.white),
-                    )
-                  : null,
+              child: Icon(switch (method) {
+                CheckoutPaymentMethod.cashOnDelivery => Icons.payments_outlined,
+                CheckoutPaymentMethod.paypal =>
+                  Icons.account_balance_wallet_outlined,
+                CheckoutPaymentMethod.visa => Icons.credit_card_rounded,
+              }, color: isSelected ? Colors.white : highlightColor),
             ),
-            const SizedBox(width: 16),
+            const SizedBox(width: 14),
             // Content
             Expanded(
               child: Column(
@@ -157,6 +154,29 @@ class _PaymentMethodCard extends StatelessWidget {
                 color: priceColor,
                 fontSize: 14,
               ),
+            ),
+            const SizedBox(width: 12),
+            // Checkbox
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 300),
+              width: 22,
+              height: 22,
+              decoration: ShapeDecoration(
+                color: isSelected ? highlightColor : Colors.transparent,
+                shape: OvalBorder(
+                  side: BorderSide(
+                    width: 2,
+                    color: isSelected
+                        ? highlightColor
+                        : (isDark ? KdarkModeTextSecondary : KdisabledColor),
+                  ),
+                ),
+              ),
+              child: isSelected
+                  ? const Center(
+                      child: Icon(Icons.check, size: 14, color: Colors.white),
+                    )
+                  : null,
             ),
           ],
         ),

@@ -1,45 +1,54 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:stylebox/constant.dart';
-import 'package:stylebox/core/utils/text_styles.dart';
 import 'package:stylebox/features/home/domain/entities/cart_item_entity.dart';
 import 'package:stylebox/features/home/presentation/manager/cubits/cart_item/cart_item_cubit.dart';
 
+/// Pill-shaped quantity stepper: − count +.
 class CartItemActionButtoms extends StatelessWidget {
   const CartItemActionButtoms({super.key, required this.cartItemEntity});
   final CartItemEntity cartItemEntity;
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        CartItemActionButtom(
-          color: KprimaryColorDark,
-          icon: const Icon(Icons.add, color: Colors.white),
-          onPressed: () {
-            cartItemEntity.icreaseCount();
-            context.read<CartItemCubit>().updateCartItem(cartItemEntity);
-          },
-        ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Text(
-            cartItemEntity.count.toString(),
-            textAlign: TextAlign.center,
-            style: AppTextStyles.cairoBold.copyWith(fontSize: 16),
+    final scheme = Theme.of(context).colorScheme;
+    return Container(
+      height: 34,
+      decoration: BoxDecoration(
+        color: Theme.of(context).inputDecorationTheme.fillColor,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          CartItemActionButtom(
+            color: Colors.transparent,
+            icon: Icon(Icons.remove_rounded, color: scheme.onSurface),
+            onPressed: () {
+              cartItemEntity.decreaseCount();
+              context.read<CartItemCubit>().updateCartItem(cartItemEntity);
+            },
           ),
-        ),
-        CartItemActionButtom(
-          color: Theme.of(context).inputDecorationTheme.fillColor!,
-          icon: Icon(
-            Icons.remove,
-            color: Theme.of(context).colorScheme.onSurfaceVariant,
+          SizedBox(
+            width: 22,
+            child: Text(
+              cartItemEntity.count.toString(),
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w800,
+                color: scheme.onSurface,
+              ),
+            ),
           ),
-          onPressed: () {
-            cartItemEntity.decreaseCount();
-            context.read<CartItemCubit>().updateCartItem(cartItemEntity);
-          },
-        ),
-      ],
+          CartItemActionButtom(
+            color: scheme.primary,
+            icon: Icon(Icons.add_rounded, color: scheme.onPrimary),
+            onPressed: () {
+              cartItemEntity.icreaseCount();
+              context.read<CartItemCubit>().updateCartItem(cartItemEntity);
+            },
+          ),
+        ],
+      ),
     );
   }
 }
@@ -59,15 +68,11 @@ class CartItemActionButtom extends StatelessWidget {
     return GestureDetector(
       onTap: onPressed,
       child: Container(
-        padding: const EdgeInsets.all(2),
-        width: 24,
-        height: 24,
-        decoration: ShapeDecoration(
-          color: color /* Green1-500 */,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(100),
-          ),
-        ),
+        margin: const EdgeInsets.all(3),
+        padding: const EdgeInsets.all(5),
+        width: 28,
+        height: 28,
+        decoration: BoxDecoration(color: color, shape: BoxShape.circle),
         child: FittedBox(child: icon),
       ),
     );
