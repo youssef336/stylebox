@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "679216134970-q9hvk7rbni96j26eh8nsd3mdtfs4tbpb.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.stylebox.app",
+            "certificate_hash": "b1180d09d320be2a8950a70c25c6647d2952e9e9"
+          }
+        },
+        {
           "client_id": "679216134970-6oai56o44qvcoji0uddrudav539e1f85.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -49,6 +57,14 @@
         }
       },
       "oauth_client": [
+        {
+          "client_id": "679216134970-b5dqqksp843sio5k9jg4gqf1n1cpndc0.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.stylebox.dashboard",
+            "certificate_hash": "b1180d09d320be2a8950a70c25c6647d2952e9e9"
+          }
+        },
         {
           "client_id": "679216134970-6oai56o44qvcoji0uddrudav539e1f85.apps.googleusercontent.com",
           "client_type": 3
