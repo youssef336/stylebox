@@ -106,7 +106,7 @@ class _AddRestaurantSimpleState extends State<AddRestaurantSimple> {
         }
       },
       child: Scaffold(
-        backgroundColor: const Color(0xFFF7F6FB),
+        backgroundColor: AppColors.background,
         appBar: AppBar(
           backgroundColor: AppColors.primaryColor,
           foregroundColor: Colors.white,

@@ -31,13 +31,17 @@ class ShipinngItem extends StatelessWidget {
         ),
         clipBehavior: Clip.antiAlias,
         decoration: ShapeDecoration(
-          color: const Color(0x33D9D9D9),
-
+          color: isSelected
+              ? Theme.of(context).colorScheme.primaryContainer
+              : Theme.of(context).inputDecorationTheme.fillColor,
           shape: RoundedRectangleBorder(
             side: BorderSide(
-              color: isSelected ? KprimaryColor : Colors.transparent,
+              color: isSelected
+                  ? Theme.of(context).colorScheme.primary
+                  : Colors.transparent,
+              width: 1.4,
             ),
-            borderRadius: BorderRadius.circular(4),
+            borderRadius: BorderRadius.circular(KradiusField),
           ),
         ),
         child: IntrinsicHeight(
@@ -69,7 +73,7 @@ class ShipinngItem extends StatelessWidget {
                       textAlign: TextAlign.right,
                       style: AppTextStyles.cairoRegular.copyWith(
                         height: 1.60,
-                        color: Colors.black.withOpacity(0.5),
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
                     ),
                   ],
@@ -94,12 +98,7 @@ class InActiveShipinngItemDot extends StatelessWidget {
       width: 18,
       height: 18,
       decoration: const ShapeDecoration(
-        shape: OvalBorder(
-          side: BorderSide(
-            width: 1,
-            color: Color(0xFF949D9E) /* Grayscale-400 */,
-          ),
-        ),
+        shape: OvalBorder(side: BorderSide(width: 1.2, color: KdisabledColor)),
       ),
     );
   }
@@ -113,9 +112,11 @@ class ActiveShipinngItemDot extends StatelessWidget {
     return Container(
       width: 18,
       height: 18,
-      decoration: const ShapeDecoration(
-        color: Color(0xFF1B5E37) /* Green1-500 */,
-        shape: OvalBorder(side: BorderSide(width: 4, color: Colors.white)),
+      decoration: ShapeDecoration(
+        color: Theme.of(context).colorScheme.primary,
+        shape: OvalBorder(
+          side: BorderSide(width: 4, color: Theme.of(context).cardColor),
+        ),
       ),
     );
   }

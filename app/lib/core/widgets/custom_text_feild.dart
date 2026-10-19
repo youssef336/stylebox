@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:stylebox/constant.dart';
 import 'package:flutter/services.dart';
 
 import 'package:stylebox/core/utils/text_styles.dart';
@@ -44,8 +45,9 @@ class CustomTextFormFeild extends StatelessWidget {
       decoration: InputDecoration(
         suffixIcon: suffixIcon,
         hintText: hintText,
-        hintStyle: AppTextStyles.bodysmallBold.copyWith(
+        hintStyle: AppTextStyles.bodySmallSemibold.copyWith(
           color: Theme.of(context).hintColor,
+          fontWeight: FontWeight.w500,
         ),
 
         filled: true,
@@ -56,8 +58,11 @@ class CustomTextFormFeild extends StatelessWidget {
         focusedBorder: bulidBoarder(context).copyWith(
           borderSide: BorderSide(
             color: Theme.of(context).colorScheme.primary,
-            width: 1.6,
+            width: 1.4,
           ),
+        ),
+        errorBorder: bulidBoarder(context).copyWith(
+          borderSide: BorderSide(color: Theme.of(context).colorScheme.error),
         ),
       ),
 
@@ -67,8 +72,8 @@ class CustomTextFormFeild extends StatelessWidget {
 
   OutlineInputBorder bulidBoarder(BuildContext context) {
     return OutlineInputBorder(
-      borderRadius: BorderRadius.circular(14),
-      borderSide: BorderSide(color: Theme.of(context).dividerColor, width: 1.0),
+      borderRadius: BorderRadius.circular(KradiusField),
+      borderSide: BorderSide.none,
     );
   }
 }
@@ -103,8 +108,9 @@ class CustomTextFormFeildforCopon extends StatelessWidget {
       decoration: InputDecoration(
         suffixIcon: suffixIcon,
         hintText: hintText,
-        hintStyle: AppTextStyles.bodysmallBold.copyWith(
+        hintStyle: AppTextStyles.bodySmallSemibold.copyWith(
           color: Theme.of(context).hintColor,
+          fontWeight: FontWeight.w500,
         ),
 
         filled: true,
@@ -115,8 +121,11 @@ class CustomTextFormFeildforCopon extends StatelessWidget {
         focusedBorder: bulidBoarder(context).copyWith(
           borderSide: BorderSide(
             color: Theme.of(context).colorScheme.primary,
-            width: 1.6,
+            width: 1.4,
           ),
+        ),
+        errorBorder: bulidBoarder(context).copyWith(
+          borderSide: BorderSide(color: Theme.of(context).colorScheme.error),
         ),
       ),
 
@@ -128,8 +137,8 @@ class CustomTextFormFeildforCopon extends StatelessWidget {
 
   OutlineInputBorder bulidBoarder(BuildContext context) {
     return OutlineInputBorder(
-      borderRadius: BorderRadius.circular(14),
-      borderSide: BorderSide(color: Theme.of(context).dividerColor, width: 1.0),
+      borderRadius: BorderRadius.circular(KradiusField),
+      borderSide: BorderSide.none,
     );
   }
 }

@@ -45,7 +45,7 @@ class _StoresMapPreviewState extends State<StoresMapPreview> {
       child: Container(
         height: 170,
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(24),
+          borderRadius: BorderRadius.circular(KradiusCard),
           boxShadow: [
             BoxShadow(
               color: KprimaryColor.withOpacity(0.12),
@@ -55,7 +55,7 @@ class _StoresMapPreviewState extends State<StoresMapPreview> {
           ],
         ),
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(24),
+          borderRadius: BorderRadius.circular(KradiusCard),
           child: Stack(
             fit: StackFit.expand,
             children: [

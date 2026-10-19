@@ -1,17 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:stylebox/constant.dart';
-import 'package:stylebox/core/utils/assets.dart';
-import 'package:stylebox/core/widgets/custom_network_image.dart';
+import 'package:stylebox/core/widgets/box_artwork.dart';
 import 'package:stylebox/features/home/presentation/manager/cubits/cart_item/cart_item_cubit.dart';
-import 'package:stylebox/core/cubits/locale/locale_cubit.dart';
 import 'package:stylebox/features/home/presentation/views/widgets/cart_item_action_buttoms.dart';
+import 'package:stylebox/generated/l10n.dart';
 
-import '../../../../../core/utils/text_styles.dart';
 import '../../../domain/entities/cart_item_entity.dart';
 import '../../manager/cubits/cart/cart_cubit.dart';
 
+/// Bag row as a floating card: tall artwork thumbnail, name + store + sizes,
+/// remove button in the corner and a pill quantity stepper next to the price.
 class CartItem extends StatelessWidget {
   const CartItem({super.key, required this.cartItemEntity});
   final CartItemEntity cartItemEntity;
@@ -30,139 +28,130 @@ class CartItem extends StatelessWidget {
         if (cartItemEntity.count == 0) {
           context.read<CartCubit>().deleteCartItem(cartItemEntity);
         }
-        return IntrinsicHeight(
-          child: Row(
-            children: [
-              Container(
-                width: 73,
-                height: 92,
-                decoration: const BoxDecoration(color: Color(0xFFF3F5F7)),
-                child: Builder(
-                  builder: (context) {
-                    final url = cartItemEntity.productEntity.imageUrl;
-                    if (url.isNotEmpty) {
-                      return CustomNetworkImage(ImageUrl: url);
-                    }
-                    return ClipRRect(
-                      child: Image.asset(
-                        'assets/images/app_icon.jpg',
-                        fit: BoxFit.cover,
-                        width: 73,
-                        height: 92,
+        final product = cartItemEntity.productEntity;
+        final scheme = Theme.of(context).colorScheme;
+        final locale = S.of(context)!;
+        final isRtl = Directionality.of(context) == TextDirection.rtl;
+        final total = cartItemEntity.calculateTotalPrice();
+
+        return Container(
+          padding: const EdgeInsets.all(10),
+          decoration: BoxDecoration(
+            color: scheme.surface,
+            borderRadius: BorderRadius.circular(22),
+            border: Border.all(color: Theme.of(context).dividerColor),
+          ),
+          child: IntrinsicHeight(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                SizedBox(
+                  width: 92,
+                  height: 112,
+                  child: BoxArtwork(
+                    product: product,
+                    iconSize: 38,
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                ),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  isRtl ? product.nameAr : product.nameEn,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                    fontSize: 15.5,
+                                    fontWeight: FontWeight.w800,
+                                    color: scheme.onSurface,
+                                  ),
+                                ),
+                                if ((product.restaurantName ?? '').isNotEmpty)
+                                  Text(
+                                    product.restaurantName!,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: scheme.onSurfaceVariant,
+                                    ),
+                                  ),
+                              ],
+                            ),
+                          ),
+                          InkResponse(
+                            radius: 18,
+                            onTap: () => context
+                                .read<CartCubit>()
+                                .deleteCartItem(cartItemEntity),
+                            child: Icon(
+                              Icons.close_rounded,
+                              size: 20,
+                              color: scheme.onSurfaceVariant,
+                            ),
+                          ),
+                        ],
                       ),
-                    );
-                  },
-                ),
-              ),
-              const SizedBox(width: 17),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      children: [
-                        Expanded(
-                          child: BlocBuilder<LocaleCubit, LocaleState>(
-                            builder: (context, localeState) {
-                              final isAr = localeState is LocaleChangedtoArabic;
-                              return Text(
-                                isAr
-                                    ? cartItemEntity.productEntity.nameAr
-                                    : cartItemEntity.productEntity.nameEn,
-                                style: AppTextStyles.cairoBold.copyWith(),
-                                textDirection: isAr
-                                    ? TextDirection.rtl
-                                    : TextDirection.ltr,
-                              );
-                            },
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        GestureDetector(
-                          onTap: () {
-                            context.read<CartCubit>().deleteCartItem(
-                              cartItemEntity,
-                            );
-                          },
-                          child: SvgPicture.asset(
-                            AssetsData.light().images.trash_svg,
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    BlocBuilder<LocaleCubit, LocaleState>(
-                      builder: (context, localeState) {
-                        final isAr = localeState is LocaleChangedtoArabic;
-                        final isDark = Theme.of(context).brightness == Brightness.dark;
-                        final weightColor = isDark ? KdarkModeTextSecondary : KlightModeTextSecondary;
-                        return Text.rich(
-                          TextSpan(
-                            children: [
-                              TextSpan(
-                                text:
-                                    "${cartItemEntity.calculateTotalWeight()}",
-                                style: AppTextStyles.cairoRegular.copyWith(
-                                  color: weightColor,
-                                ),
-                              ),
-                              TextSpan(
-                                text: isAr ? 'كيلو' : 'Kg',
-                                style: AppTextStyles.cairoRegular.copyWith(
-                                  color: weightColor,
-                                ),
-                              ),
-                            ],
-                          ),
-                          textDirection: isAr
-                              ? TextDirection.rtl
-                              : TextDirection.ltr,
-                        );
-                      },
-                    ),
-
-                    Row(
-                      children: [
-                        CartItemActionButtoms(cartItemEntity: cartItemEntity),
-                        const Spacer(),
-                        BlocBuilder<LocaleCubit, LocaleState>(
-                          builder: (context, localeState) {
-                            final isAr = localeState is LocaleChangedtoArabic;
-                            final isDark = Theme.of(context).brightness == Brightness.dark;
-                            final priceColor = isDark ? KsecondaryColor : KprimaryColor;
-                            return Text.rich(
-                              TextSpan(
-                                children: [
-                                  TextSpan(
-                                    text:
-                                        '${cartItemEntity.calculateTotalPrice()}',
-                                    style: AppTextStyles.cairoBold.copyWith(
-                                      fontSize: 16,
-                                      color: priceColor,
+                      const SizedBox(height: 6),
+                      if (product.sizes.isNotEmpty)
+                        Wrap(
+                          spacing: 4,
+                          children: product.sizes
+                              .map(
+                                (s) => Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 7,
+                                    vertical: 1,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(6),
+                                    border: Border.all(
+                                      color: Theme.of(context).dividerColor,
                                     ),
                                   ),
-                                  TextSpan(
-                                    text: isAr ? 'جنيه' : 'EGP',
-                                    style: AppTextStyles.cairoBold.copyWith(
-                                      fontSize: 16,
-                                      color: priceColor,
+                                  child: Text(
+                                    s,
+                                    style: TextStyle(
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.w700,
+                                      color: scheme.onSurfaceVariant,
                                     ),
                                   ),
-                                ],
-                              ),
-                              textDirection: isAr
-                                  ? TextDirection.rtl
-                                  : TextDirection.ltr,
-                            );
-                          },
+                                ),
+                              )
+                              .toList(),
                         ),
-                      ],
-                    ),
-                  ],
+                      const Spacer(),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              '${total.toStringAsFixed(total % 1 == 0 ? 0 : 2)} ${locale.bagCurrencySuffix}',
+                              style: TextStyle(
+                                fontSize: 17,
+                                fontWeight: FontWeight.w800,
+                                color: scheme.primary,
+                              ),
+                            ),
+                          ),
+                          CartItemActionButtoms(cartItemEntity: cartItemEntity),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         );
       },

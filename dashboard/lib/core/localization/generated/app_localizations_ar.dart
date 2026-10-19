@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -424,4 +425,67 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get noClothesDetected => 'مفيش ملابس اتعرفت — تقدر تكتب القطع بنفسك';
+
+  @override
+  String get dashOverview => 'نظرة عامة';
+
+  @override
+  String get dashGreeting => 'أهلاً بيك تاني';
+
+  @override
+  String get dashActiveStores => 'مفتوح دلوقتي';
+
+  @override
+  String get dashYourStores => 'محلاتك';
+
+  @override
+  String get dashSeeAll => 'عرض الكل';
+
+  @override
+  String get dashLoginHeroTitle => 'أدِر محلك بكل سهولة.';
+
+  @override
+  String get dashLoginHeroSubtitle =>
+      'انشر بوكسات الستايل، تابع المخزون واقرأ تقييمات العملاء من مكان واحد.';
+
+  @override
+  String get dashFeatureScan => 'فحص الملابس بالذكاء الاصطناعي';
+
+  @override
+  String get dashFeatureStock => 'مخزون واستلام لحظي';
+
+  @override
+  String get dashFeatureReviews => 'التقييمات والمراجعات';
+
+  @override
+  String get dashStoreOwner => 'صاحب محل';
+
+  @override
+  String get dashStepStore => 'اختار المحل';
+
+  @override
+  String get dashStepScan => 'صوّر الهدوم';
+
+  @override
+  String get dashStepDetails => 'الفئة والمقاسات';
+
+  @override
+  String get dashStepPublish => 'النشر';
+
+  @override
+  String dashBoxesCount(String count) {
+    return '$count بوكس';
+  }
+
+  @override
+  String get dashNoBoxesYet => 'لسه مفيش بوكسات';
+
+  @override
+  String get dashRestock => 'زوّد المخزون';
+
+  @override
+  String get dashAddStyleBox => 'أضف بوكس';
+
+  @override
+  String get dashBoxesLive => 'بوكسات معروضة';
 }

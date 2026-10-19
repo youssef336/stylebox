@@ -47,7 +47,7 @@ class StoreMapCard extends StatelessWidget {
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
           color: isDark ? KdarkModeCardColor : KlightModeCardColor,
-          borderRadius: BorderRadius.circular(22),
+          borderRadius: BorderRadius.circular(KradiusCard),
           border: Border.all(
             color: selected ? KprimaryColor : Colors.transparent,
             width: 1.5,

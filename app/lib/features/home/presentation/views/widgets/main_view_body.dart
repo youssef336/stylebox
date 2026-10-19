@@ -13,13 +13,20 @@ class MainViewBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // The tab bar is drawn over the body (extendBody), so scrolling tabs let
+    // content run underneath it and add the bar height as inner padding.
+    final barInset = MediaQuery.paddingOf(context).bottom;
+    Widget inset(Widget child) =>
+        Padding(padding: EdgeInsets.only(bottom: barInset), child: child);
+
     return SafeArea(
+      bottom: false,
       child: IndexedStack(
         index: currentViewIndex,
         children: [
           const HomeView(),
-          const FoodScanView(),
-          const ProductsView(),
+          inset(const FoodScanView()),
+          inset(const ProductsView()),
           const CartView(),
           const ProfileView(),
         ],

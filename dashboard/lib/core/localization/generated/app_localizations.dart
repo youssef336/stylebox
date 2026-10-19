@@ -889,6 +889,126 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No clothing detected — you can type the items yourself'**
   String get noClothesDetected;
+
+  /// No description provided for @dashOverview.
+  ///
+  /// In en, this message translates to:
+  /// **'Overview'**
+  String get dashOverview;
+
+  /// No description provided for @dashGreeting.
+  ///
+  /// In en, this message translates to:
+  /// **'Hello again'**
+  String get dashGreeting;
+
+  /// No description provided for @dashActiveStores.
+  ///
+  /// In en, this message translates to:
+  /// **'Open now'**
+  String get dashActiveStores;
+
+  /// No description provided for @dashYourStores.
+  ///
+  /// In en, this message translates to:
+  /// **'Your stores'**
+  String get dashYourStores;
+
+  /// No description provided for @dashSeeAll.
+  ///
+  /// In en, this message translates to:
+  /// **'See all'**
+  String get dashSeeAll;
+
+  /// No description provided for @dashLoginHeroTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Run your store, beautifully.'**
+  String get dashLoginHeroTitle;
+
+  /// No description provided for @dashLoginHeroSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Post Style Boxes, track stock and read customer reviews in one place.'**
+  String get dashLoginHeroSubtitle;
+
+  /// No description provided for @dashFeatureScan.
+  ///
+  /// In en, this message translates to:
+  /// **'AI clothing scan'**
+  String get dashFeatureScan;
+
+  /// No description provided for @dashFeatureStock.
+  ///
+  /// In en, this message translates to:
+  /// **'Live stock & pickups'**
+  String get dashFeatureStock;
+
+  /// No description provided for @dashFeatureReviews.
+  ///
+  /// In en, this message translates to:
+  /// **'Ratings & reviews'**
+  String get dashFeatureReviews;
+
+  /// No description provided for @dashStoreOwner.
+  ///
+  /// In en, this message translates to:
+  /// **'Store owner'**
+  String get dashStoreOwner;
+
+  /// No description provided for @dashStepStore.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose store'**
+  String get dashStepStore;
+
+  /// No description provided for @dashStepScan.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan the clothes'**
+  String get dashStepScan;
+
+  /// No description provided for @dashStepDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Category & sizes'**
+  String get dashStepDetails;
+
+  /// No description provided for @dashStepPublish.
+  ///
+  /// In en, this message translates to:
+  /// **'Publish'**
+  String get dashStepPublish;
+
+  /// No description provided for @dashBoxesCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} boxes'**
+  String dashBoxesCount(String count);
+
+  /// No description provided for @dashNoBoxesYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No Style Boxes yet'**
+  String get dashNoBoxesYet;
+
+  /// No description provided for @dashRestock.
+  ///
+  /// In en, this message translates to:
+  /// **'Restock'**
+  String get dashRestock;
+
+  /// No description provided for @dashAddStyleBox.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Style Box'**
+  String get dashAddStyleBox;
+
+  /// No description provided for @dashBoxesLive.
+  ///
+  /// In en, this message translates to:
+  /// **'Style Boxes live'**
+  String get dashBoxesLive;
 }
 
 class _AppLocalizationsDelegate

@@ -20,7 +20,7 @@ class RestaurantCard extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: Theme.of(context).cardColor,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(KradiusCard),
         border: Border.all(color: Theme.of(context).dividerColor),
         boxShadow: [
           BoxShadow(
@@ -42,7 +42,7 @@ class RestaurantCard extends StatelessWidget {
               children: [
                 ClipRRect(
                   borderRadius: const BorderRadius.vertical(
-                    top: Radius.circular(24),
+                    top: Radius.circular(KradiusCard),
                   ),
                   child: Image(
                     image: _getImageProvider(restaurant),
@@ -57,7 +57,7 @@ class RestaurantCard extends StatelessWidget {
                 ),
                 ClipRRect(
                   borderRadius: const BorderRadius.vertical(
-                    top: Radius.circular(24),
+                    top: Radius.circular(KradiusCard),
                   ),
                   child: DecoratedBox(
                     decoration: BoxDecoration(

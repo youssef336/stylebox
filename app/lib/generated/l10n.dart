@@ -1722,6 +1722,144 @@ abstract class S {
   /// In en, this message translates to:
   /// **'My location'**
   String get mapMyLocation;
+
+  /// No description provided for @authHeroTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your wardrobe, refreshed.'**
+  String get authHeroTitle;
+
+  /// No description provided for @authHeroSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to reserve surprise Style Boxes from stores near you.'**
+  String get authHeroSubtitle;
+
+  /// No description provided for @authSignupHeroTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Join StyleBox'**
+  String get authSignupHeroTitle;
+
+  /// No description provided for @authSignupHeroSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Create an account and start saving on fashion today.'**
+  String get authSignupHeroSubtitle;
+
+  /// No description provided for @authContinueWith.
+  ///
+  /// In en, this message translates to:
+  /// **'or continue with'**
+  String get authContinueWith;
+
+  /// No description provided for @onBoardingNext.
+  ///
+  /// In en, this message translates to:
+  /// **'Next'**
+  String get onBoardingNext;
+
+  /// No description provided for @homeCategoryAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get homeCategoryAll;
+
+  /// No description provided for @homeNewArrivalsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'New arrivals'**
+  String get homeNewArrivalsTitle;
+
+  /// No description provided for @homeAllBoxesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'All Style Boxes'**
+  String get homeAllBoxesTitle;
+
+  /// No description provided for @homeShopByStoreTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Shop by store'**
+  String get homeShopByStoreTitle;
+
+  /// No description provided for @homeAiSlideTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your AI stylist'**
+  String get homeAiSlideTitle;
+
+  /// No description provided for @homeAiSlideSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Ask for outfit ideas and the right box for you.'**
+  String get homeAiSlideSubtitle;
+
+  /// No description provided for @homeNoResults.
+  ///
+  /// In en, this message translates to:
+  /// **'No boxes match your search'**
+  String get homeNoResults;
+
+  /// No description provided for @cartSubtotal.
+  ///
+  /// In en, this message translates to:
+  /// **'Subtotal'**
+  String get cartSubtotal;
+
+  /// No description provided for @cartTotal.
+  ///
+  /// In en, this message translates to:
+  /// **'Total'**
+  String get cartTotal;
+
+  /// No description provided for @cartItemsCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} items'**
+  String cartItemsCount(String count);
+
+  /// No description provided for @cartCheckout.
+  ///
+  /// In en, this message translates to:
+  /// **'Checkout'**
+  String get cartCheckout;
+
+  /// No description provided for @checkoutStepOf.
+  ///
+  /// In en, this message translates to:
+  /// **'Step {current} of {total}'**
+  String checkoutStepOf(String current, String total);
+
+  /// No description provided for @profileSectionAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Account'**
+  String get profileSectionAccount;
+
+  /// No description provided for @profileSectionPreferences.
+  ///
+  /// In en, this message translates to:
+  /// **'Preferences'**
+  String get profileSectionPreferences;
+
+  /// No description provided for @profileEditProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get profileEditProfile;
+
+  /// No description provided for @profileDarkMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Dark mode'**
+  String get profileDarkMode;
+
+  /// No description provided for @detailsStockLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'In stock'**
+  String get detailsStockLabel;
 }
 
 class _SDelegate extends LocalizationsDelegate<S> {

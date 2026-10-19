@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:flutter/material.dart';
 import 'package:stylebox/constant.dart';
 import 'package:stylebox/core/services/firebase_auth_services.dart';
@@ -86,23 +88,32 @@ class _SplashViewBodyState extends State<SplashViewBody>
               children: [
                 Image.asset(
                   "assets/icon/splash_logo.png",
-                  width: 150,
-                  height: 150,
+                  width: 120,
+                  height: 120,
                   fit: BoxFit.contain,
                 ),
+                const SizedBox(height: 18),
                 const Text(
-                  'StyleBox',
+                  'STYLEBOX',
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 36,
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: 0.5,
+                    fontSize: 30,
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: 8,
                   ),
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 12),
+                Container(width: 44, height: 1.5, color: KaccentColor),
+                const SizedBox(height: 12),
                 Text(
                   S.of(context)!.homeHeroTitle,
-                  style: const TextStyle(color: Colors.white70, fontSize: 16),
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Colors.white.withOpacity(0.78),
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    letterSpacing: 0.6,
+                  ),
                 ),
               ],
             ),

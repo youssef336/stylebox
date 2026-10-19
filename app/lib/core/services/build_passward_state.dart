@@ -2,6 +2,7 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:stylebox/constant.dart';
 import 'package:stylebox/core/widgets/custom_text_feild.dart';
 import 'package:stylebox/generated/l10n.dart';
 
@@ -29,8 +30,8 @@ class _BiludPasswordStateState extends State<BiludPasswordState> {
           });
         },
         child: _isObscure
-            ? const Icon(Icons.remove_red_eye, color: Color(0xFFC9CECF))
-            : const Icon(Icons.visibility_off, color: Color(0xFFC9CECF)),
+            ? const Icon(Icons.remove_red_eye, color: KlightModeTextSecondary)
+            : const Icon(Icons.visibility_off, color: KlightModeTextSecondary),
       ),
     );
   }

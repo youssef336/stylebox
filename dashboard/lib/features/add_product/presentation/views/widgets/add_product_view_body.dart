@@ -6,7 +6,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:stylebox_dashboard/core/localization/app_localizations.dart';
 import 'package:stylebox_dashboard/core/services/user_session.dart';
 import 'package:stylebox_dashboard/core/utils/app_colors.dart';
-import 'package:stylebox_dashboard/core/widgets/custom_button.dart';
 import 'package:stylebox_dashboard/features/add_product/domain/entities/add_product_input_entity.dart';
 import 'package:stylebox_dashboard/features/add_product/presentation/manager/cubit/add_product_cubit.dart';
 import 'package:stylebox_dashboard/features/add_product/presentation/views/widgets/is_featured_check_box.dart';
@@ -58,525 +57,536 @@ class _AddProductViewBodyState extends State<AddProductViewBody> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: SingleChildScrollView(
-        child: Form(
-          key: _formKey,
-          autovalidateMode: autovalidateMode,
-          child: Column(
-            children: [
-              const SizedBox(height: 16),
+    final l10n = AppLocalizations.of(context)!;
+    return Column(
+      children: [
+        Expanded(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Form(
+              key: _formKey,
+              autovalidateMode: autovalidateMode,
+              child: Column(
+                children: [
+                  const SizedBox(height: 8),
 
-              // ── Restaurant Selector ──────────────────────────────────
-              BlocBuilder<RestaurantCubit, RestaurantState>(
-                builder: (context, state) {
-                  if (state is RestaurantLoading) {
-                    return Container(
-                      padding: const EdgeInsets.all(20),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: const Center(child: CircularProgressIndicator()),
-                    );
-                  }
-
-                  if (state is RestaurantLoaded) {
-                    restaurants = state.restaurants;
-                  } else if (state is RestaurantOperationSuccess) {
-                    restaurants = state.restaurants;
-                  }
-
-                  return _buildRestaurantDropdown();
-                },
-              ),
-              const SizedBox(height: 16),
-
-              // ── AI Scanner (Primary Entry Point) ──────────────────────
-              AiScannerWidget(
-                onScanComplete: (scannedImage, detectedFood) {
-                  setState(() {
-                    // Dispose old item controllers
-                    for (var item in detectedItems) {
-                      item.dispose();
-                    }
-
-                    image = scannedImage;
-
-                    // Parse detected food string (comma-separated)
-                    var items = detectedFood
-                        .split(', ')
-                        .where((s) => s.isNotEmpty)
-                        .toList();
-                    if (items.isEmpty) {
-                      items = ['Clothing Item'];
-                    }
-
-                    detectedItems = items
-                        .map((label) => DetectedItem(label, 1))
-                        .toList();
-
-                    // Set title from the first detected item
-                    title = items.first;
-                  });
-                },
-              ),
-              const SizedBox(height: 16),
-
-              // ── AI Detected Variables ──────────────────────────────────
-              if (detectedItems.isNotEmpty) ...[
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [
-                        AppColors.secoundryColor.withOpacity(0.1),
-                        AppColors.secoundryColor.withOpacity(0.05),
-                      ],
-                    ),
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: AppColors.secoundryColor.withOpacity(0.3)),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          const Icon(Icons.auto_awesome, color: AppColors.secoundryColor),
-                          const SizedBox(width: 8),
-                          Text(
-                            AppLocalizations.of(context)!.verifyDetectedItems,
-                            style: Theme.of(context).textTheme.titleMedium
-                                ?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                  color: AppColors.secoundryColor,
-                                ),
+                  // ── Step 1: store ────────────────────────────────────────
+                  _StepHeader(index: 1, title: l10n.dashStepStore),
+                  BlocBuilder<RestaurantCubit, RestaurantState>(
+                    builder: (context, state) {
+                      if (state is RestaurantLoading) {
+                        return Container(
+                          padding: const EdgeInsets.all(20),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(16),
                           ),
-                        ],
+                          child: const Center(
+                            child: CircularProgressIndicator(),
+                          ),
+                        );
+                      }
+
+                      if (state is RestaurantLoaded) {
+                        restaurants = state.restaurants;
+                      } else if (state is RestaurantOperationSuccess) {
+                        restaurants = state.restaurants;
+                      }
+
+                      return _buildRestaurantDropdown();
+                    },
+                  ),
+                  const SizedBox(height: 16),
+
+                  // ── Step 2: scan (AI scanner is the primary entry point) ──
+                  _StepHeader(index: 2, title: l10n.dashStepScan),
+                  AiScannerWidget(
+                    onScanComplete: (scannedImage, detectedFood) {
+                      setState(() {
+                        // Dispose old item controllers
+                        for (var item in detectedItems) {
+                          item.dispose();
+                        }
+
+                        image = scannedImage;
+
+                        // Parse detected food string (comma-separated)
+                        var items = detectedFood
+                            .split(', ')
+                            .where((s) => s.isNotEmpty)
+                            .toList();
+                        if (items.isEmpty) {
+                          items = ['Clothing Item'];
+                        }
+
+                        detectedItems = items
+                            .map((label) => DetectedItem(label, 1))
+                            .toList();
+
+                        // Set title from the first detected item
+                        title = items.first;
+                      });
+                    },
+                  ),
+                  const SizedBox(height: 16),
+
+                  // ── AI Detected Variables ──────────────────────────────────
+                  if (detectedItems.isNotEmpty) ...[
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            AppColors.secoundryColor.withOpacity(0.1),
+                            AppColors.secoundryColor.withOpacity(0.05),
+                          ],
+                        ),
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                          color: AppColors.secoundryColor.withOpacity(0.3),
+                        ),
                       ),
-                      const SizedBox(height: 16),
-                      ...detectedItems.asMap().entries.map((entry) {
-                        final idx = entry.key;
-                        final item = entry.value;
-                        return Padding(
-                          padding: const EdgeInsets.only(bottom: 12.0),
-                          child: Container(
-                            padding: const EdgeInsets.all(12),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(12),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.05),
-                                  blurRadius: 4,
-                                ),
-                              ],
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                // Name + Delete button
-                                Row(
-                                  children: [
-                                    Expanded(
-                                      child: TextFormField(
-                                        controller: item.nameController,
-                                        onChanged: (v) => item.name = v,
-                                        decoration: InputDecoration(
-                                          labelText:
-                                              '${AppLocalizations.of(context)!.bagItem} ${idx + 1}',
-                                          labelStyle: const TextStyle(
-                                            color: AppColors.secoundryColor,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                          border: OutlineInputBorder(
-                                            borderRadius: BorderRadius.circular(
-                                              8,
-                                            ),
-                                          ),
-                                          contentPadding:
-                                              const EdgeInsets.symmetric(
-                                                horizontal: 12,
-                                                vertical: 8,
-                                              ),
-                                        ),
-                                        style: const TextStyle(
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              const Icon(
+                                Icons.auto_awesome,
+                                color: AppColors.secoundryColor,
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                AppLocalizations.of(
+                                  context,
+                                )!.verifyDetectedItems,
+                                style: Theme.of(context).textTheme.titleMedium
+                                    ?.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                      color: AppColors.secoundryColor,
                                     ),
-                                    const SizedBox(width: 8),
-                                    IconButton(
-                                      onPressed: () {
-                                        setState(() {
-                                          item.isDeleted = true;
-                                        });
-                                      },
-                                      icon: const Icon(
-                                        Icons.delete_outline,
-                                        color: Colors.red,
-                                      ),
-                                      tooltip: AppLocalizations.of(
-                                        context,
-                                      )!.deleteItem,
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 16),
+                          ...detectedItems.asMap().entries.map((entry) {
+                            final idx = entry.key;
+                            final item = entry.value;
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 12.0),
+                              child: Container(
+                                padding: const EdgeInsets.all(12),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(12),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.05),
+                                      blurRadius: 4,
                                     ),
                                   ],
                                 ),
-                                if (item.isDeleted) ...[
-                                  const SizedBox(height: 4),
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 8,
-                                      vertical: 4,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: Colors.red.shade100,
-                                      borderRadius: BorderRadius.circular(4),
-                                    ),
-                                    child: Row(
-                                      mainAxisSize: MainAxisSize.min,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    // Name + Delete button
+                                    Row(
                                       children: [
-                                        const Icon(
-                                          Icons.warning,
-                                          color: Colors.red,
-                                          size: 16,
-                                        ),
-                                        const SizedBox(width: 4),
-                                        Flexible(
-                                          child: Text(
-                                            AppLocalizations.of(
-                                              context,
-                                            )!.willBeDeleted,
-                                            style: const TextStyle(
-                                              color: Colors.red,
-                                              fontSize: 12,
+                                        Expanded(
+                                          child: TextFormField(
+                                            controller: item.nameController,
+                                            onChanged: (v) => item.name = v,
+                                            decoration: InputDecoration(
+                                              labelText:
+                                                  '${AppLocalizations.of(context)!.bagItem} ${idx + 1}',
+                                              labelStyle: const TextStyle(
+                                                color: AppColors.secoundryColor,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                              border: OutlineInputBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(8),
+                                              ),
+                                              contentPadding:
+                                                  const EdgeInsets.symmetric(
+                                                    horizontal: 12,
+                                                    vertical: 8,
+                                                  ),
                                             ),
-                                            overflow: TextOverflow.ellipsis,
+                                            style: const TextStyle(
+                                              fontSize: 15,
+                                              fontWeight: FontWeight.w500,
+                                            ),
                                           ),
                                         ),
-                                        const SizedBox(width: 4),
-                                        GestureDetector(
-                                          onTap: () {
+                                        const SizedBox(width: 8),
+                                        IconButton(
+                                          onPressed: () {
                                             setState(() {
-                                              item.isDeleted = false;
+                                              item.isDeleted = true;
                                             });
                                           },
-                                          child: Text(
-                                            AppLocalizations.of(context)!.undo,
-                                            style: const TextStyle(
+                                          icon: const Icon(
+                                            Icons.delete_outline,
+                                            color: Colors.red,
+                                          ),
+                                          tooltip: AppLocalizations.of(
+                                            context,
+                                          )!.deleteItem,
+                                        ),
+                                      ],
+                                    ),
+                                    if (item.isDeleted) ...[
+                                      const SizedBox(height: 4),
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 8,
+                                          vertical: 4,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: Colors.red.shade100,
+                                          borderRadius: BorderRadius.circular(
+                                            4,
+                                          ),
+                                        ),
+                                        child: Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            const Icon(
+                                              Icons.warning,
                                               color: Colors.red,
+                                              size: 16,
+                                            ),
+                                            const SizedBox(width: 4),
+                                            Flexible(
+                                              child: Text(
+                                                AppLocalizations.of(
+                                                  context,
+                                                )!.willBeDeleted,
+                                                style: const TextStyle(
+                                                  color: Colors.red,
+                                                  fontSize: 12,
+                                                ),
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                            ),
+                                            const SizedBox(width: 4),
+                                            GestureDetector(
+                                              onTap: () {
+                                                setState(() {
+                                                  item.isDeleted = false;
+                                                });
+                                              },
+                                              child: Text(
+                                                AppLocalizations.of(
+                                                  context,
+                                                )!.undo,
+                                                style: const TextStyle(
+                                                  color: Colors.red,
+                                                  fontSize: 12,
+                                                  fontWeight: FontWeight.bold,
+                                                  decoration:
+                                                      TextDecoration.underline,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                    const SizedBox(height: 12),
+                                    // Old Price & New Price
+                                    Row(
+                                      children: [
+                                        // Old Price
+                                        Expanded(
+                                          child: TextFormField(
+                                            controller: item.oldPriceController,
+                                            keyboardType: TextInputType.number,
+                                            decoration: InputDecoration(
+                                              labelText: AppLocalizations.of(
+                                                context,
+                                              )!.oldPriceEgp,
+                                              labelStyle: TextStyle(
+                                                color: Colors.grey.shade500,
+                                                fontWeight: FontWeight.w600,
+                                                fontSize: 12,
+                                              ),
+                                              border: OutlineInputBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(8),
+                                                borderSide: BorderSide(
+                                                  color: Colors.grey.shade300,
+                                                ),
+                                              ),
+                                              enabledBorder: OutlineInputBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(8),
+                                                borderSide: BorderSide(
+                                                  color: Colors.grey.shade300,
+                                                ),
+                                              ),
+                                              contentPadding:
+                                                  const EdgeInsets.symmetric(
+                                                    horizontal: 12,
+                                                    vertical: 10,
+                                                  ),
+                                              hintText: 'Enter original price',
+                                              hintStyle: TextStyle(
+                                                fontSize: 12,
+                                                color: Colors.grey.shade400,
+                                              ),
+                                            ),
+                                            style: TextStyle(
                                               fontSize: 12,
-                                              fontWeight: FontWeight.bold,
+                                              fontWeight: FontWeight.w600,
+                                              color: Colors.grey.shade500,
                                               decoration:
-                                                  TextDecoration.underline,
+                                                  TextDecoration.lineThrough,
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(width: 12),
+                                        // Arrow
+                                        const Icon(
+                                          Icons.arrow_forward,
+                                          color: Colors.grey,
+                                          size: 18,
+                                        ),
+                                        const SizedBox(width: 12),
+                                        // New Price (auto-calculated, read-only)
+                                        Expanded(
+                                          child: TextFormField(
+                                            controller: item.priceController,
+                                            readOnly: true,
+                                            decoration: InputDecoration(
+                                              labelText: AppLocalizations.of(
+                                                context,
+                                              )!.newPriceEgp,
+                                              labelStyle: const TextStyle(
+                                                color: AppColors.secoundryDark,
+                                                fontWeight: FontWeight.w600,
+                                                fontSize: 12,
+                                              ),
+                                              border: OutlineInputBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(8),
+                                                borderSide: const BorderSide(
+                                                  color:
+                                                      AppColors.secoundryLight,
+                                                ),
+                                              ),
+                                              enabledBorder: OutlineInputBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(8),
+                                                borderSide: const BorderSide(
+                                                  color:
+                                                      AppColors.secoundryLight,
+                                                ),
+                                              ),
+                                              contentPadding:
+                                                  const EdgeInsets.symmetric(
+                                                    horizontal: 12,
+                                                    vertical: 10,
+                                                  ),
+                                              filled: true,
+                                              fillColor:
+                                                  AppColors.secondaryContainer,
+                                              suffixText: ' EGP',
+                                              suffixStyle: const TextStyle(
+                                                color: AppColors.secoundryDark,
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.w600,
+                                              ),
+                                            ),
+                                            style: const TextStyle(
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.bold,
+                                              color: AppColors.secoundryDark,
                                             ),
                                           ),
                                         ),
                                       ],
                                     ),
-                                  ),
-                                ],
-                                const SizedBox(height: 12),
-                                // Old Price & New Price
-                                Row(
-                                  children: [
-                                    // Old Price
-                                    Expanded(
-                                      child: TextFormField(
-                                        controller: item.oldPriceController,
-                                        keyboardType: TextInputType.number,
-                                        decoration: InputDecoration(
-                                          labelText: AppLocalizations.of(
-                                            context,
-                                          )!.oldPriceEgp,
-                                          labelStyle: TextStyle(
-                                            color: Colors.grey.shade500,
-                                            fontWeight: FontWeight.w600,
-                                            fontSize: 12,
+                                    const SizedBox(height: 8),
+                                    // Quantity counter
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      children: [
+                                        const Text(
+                                          'Quantity: ',
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            color: Colors.grey,
                                           ),
-                                          border: OutlineInputBorder(
+                                        ),
+                                        Container(
+                                          decoration: BoxDecoration(
+                                            color: Colors.grey.shade100,
                                             borderRadius: BorderRadius.circular(
                                               8,
                                             ),
-                                            borderSide: BorderSide(
-                                              color: Colors.grey.shade300,
-                                            ),
                                           ),
-                                          enabledBorder: OutlineInputBorder(
-                                            borderRadius: BorderRadius.circular(
-                                              8,
-                                            ),
-                                            borderSide: BorderSide(
-                                              color: Colors.grey.shade300,
-                                            ),
-                                          ),
-                                          contentPadding:
-                                              const EdgeInsets.symmetric(
-                                                horizontal: 12,
-                                                vertical: 10,
+                                          child: Row(
+                                            children: [
+                                              IconButton(
+                                                onPressed: () {
+                                                  setState(() {
+                                                    if (item.count > 0) {
+                                                      item.count--;
+                                                    }
+                                                  });
+                                                },
+                                                icon: const Icon(
+                                                  Icons.remove,
+                                                  size: 18,
+                                                ),
+                                                color: Colors.redAccent,
                                               ),
-                                          hintText: 'Enter original price',
-                                          hintStyle: TextStyle(
-                                            fontSize: 12,
-                                            color: Colors.grey.shade400,
-                                          ),
-                                        ),
-                                        style: TextStyle(
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.w600,
-                                          color: Colors.grey.shade500,
-                                          decoration:
-                                              TextDecoration.lineThrough,
-                                        ),
-                                      ),
-                                    ),
-                                    const SizedBox(width: 12),
-                                    // Arrow
-                                    const Icon(
-                                      Icons.arrow_forward,
-                                      color: Colors.grey,
-                                      size: 18,
-                                    ),
-                                    const SizedBox(width: 12),
-                                    // New Price (auto-calculated, read-only)
-                                    Expanded(
-                                      child: TextFormField(
-                                        controller: item.priceController,
-                                        readOnly: true,
-                                        decoration: InputDecoration(
-                                          labelText: AppLocalizations.of(
-                                            context,
-                                          )!.newPriceEgp,
-                                          labelStyle: const TextStyle(
-                                            color: AppColors.secoundryDark,
-                                            fontWeight: FontWeight.w600,
-                                            fontSize: 12,
-                                          ),
-                                          border: OutlineInputBorder(
-                                            borderRadius: BorderRadius.circular(
-                                              8,
-                                            ),
-                                            borderSide: const BorderSide(
-                                              color: AppColors.secoundryLight,
-                                            ),
-                                          ),
-                                          enabledBorder: OutlineInputBorder(
-                                            borderRadius: BorderRadius.circular(
-                                              8,
-                                            ),
-                                            borderSide: const BorderSide(
-                                              color: AppColors.secoundryLight,
-                                            ),
-                                          ),
-                                          contentPadding:
-                                              const EdgeInsets.symmetric(
-                                                horizontal: 12,
-                                                vertical: 10,
+                                              Text(
+                                                '${item.count}',
+                                                style: const TextStyle(
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
                                               ),
-                                          filled: true,
-                                          fillColor: const Color(0xFFFBF5E3),
-                                          suffixText: ' EGP',
-                                          suffixStyle: const TextStyle(
-                                            color: AppColors.secoundryDark,
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.w600,
+                                              IconButton(
+                                                onPressed: () {
+                                                  setState(() {
+                                                    item.count++;
+                                                  });
+                                                },
+                                                icon: const Icon(
+                                                  Icons.add,
+                                                  size: 18,
+                                                ),
+                                                color: AppColors.secoundryColor,
+                                              ),
+                                            ],
                                           ),
                                         ),
-                                        style: const TextStyle(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.bold,
-                                          color: AppColors.secoundryDark,
-                                        ),
-                                      ),
+                                      ],
                                     ),
                                   ],
                                 ),
-                                const SizedBox(height: 8),
-                                // Quantity counter
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: [
-                                    const Text(
-                                      'Quantity: ',
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                        color: Colors.grey,
-                                      ),
-                                    ),
-                                    Container(
-                                      decoration: BoxDecoration(
-                                        color: Colors.grey.shade100,
-                                        borderRadius: BorderRadius.circular(8),
-                                      ),
-                                      child: Row(
-                                        children: [
-                                          IconButton(
-                                            onPressed: () {
-                                              setState(() {
-                                                if (item.count > 0) {
-                                                  item.count--;
-                                                }
-                                              });
-                                            },
-                                            icon: const Icon(
-                                              Icons.remove,
-                                              size: 18,
-                                            ),
-                                            color: Colors.redAccent,
-                                          ),
-                                          Text(
-                                            '${item.count}',
-                                            style: const TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                          IconButton(
-                                            onPressed: () {
-                                              setState(() {
-                                                item.count++;
-                                              });
-                                            },
-                                            icon: const Icon(
-                                              Icons.add,
-                                              size: 18,
-                                            ),
-                                            color: AppColors.secoundryColor,
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
-                        );
-                      }),
-                    ],
+                              ),
+                            );
+                          }),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                  ],
+
+                  // ── Step 3: category, sizes and availability ─────────────
+                  _StepHeader(index: 3, title: l10n.dashStepDetails),
+                  _buildClothingAttributes(),
+                  const SizedBox(height: 16),
+
+                  // ── Availability Toggle ──────────────────────────────────
+                  IsFeaturedCheckBox(
+                    value: isAvailable,
+                    onChanged: (v) => setState(() => isAvailable = v),
                   ),
-                ),
-                const SizedBox(height: 16),
-              ],
-
-              // ── Category & Sizes ─────────────────────────────────────
-              _buildClothingAttributes(),
-              const SizedBox(height: 16),
-
-              // ── Availability Toggle ──────────────────────────────────
-              IsFeaturedCheckBox(
-                value: isAvailable,
-                onChanged: (v) => setState(() => isAvailable = v),
+                  const SizedBox(height: 24),
+                ],
               ),
-              const SizedBox(height: 20),
-
-              CustomButton(
-                onPressed: () {
-                  if (selectedRestaurant == null) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Please select a store first'),
-                        backgroundColor: Colors.red,
-                      ),
-                    );
-                    return;
-                  }
-                  if (image == null) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Please scan your clothes first'),
-                        backgroundColor: Colors.red,
-                      ),
-                    );
-                    return;
-                  }
-                  // Auto-calculate bag data from detected items
-                  final activeItems = detectedItems
-                      .where((i) => !i.isDeleted && i.count > 0)
-                      .toList();
-
-                  if (activeItems.isEmpty) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          AppLocalizations.of(context)!.noItemsToSave,
-                        ),
-                        backgroundColor: Colors.red,
-                      ),
-                    );
-                    return;
-                  }
-
-                  // Auto-generate title from item names
-                  final List<String> itemNames = activeItems
-                      .map((i) => i.nameController.text.trim())
-                      .toList();
-                  final autoTitle = itemNames.length == 1
-                      ? itemNames.first
-                      : '${itemNames.first} +${itemNames.length - 1}';
-
-                  // Calculate total price (sum of all new prices)
-                  final totalPrice = activeItems.fold<double>(0, (sum, i) {
-                    final newPrice =
-                        double.tryParse(i.priceController.text) ?? 0.0;
-                    return sum + (newPrice * i.count);
-                  });
-
-                  // Total quantity
-                  final totalQuantity = activeItems.fold<int>(
-                    0,
-                    (sum, i) => sum + i.count,
-                  );
-
-                  // Calculate total old price
-                  final totalOldPrice = activeItems.fold<double>(0, (sum, i) {
-                    final old =
-                        double.tryParse(i.oldPriceController.text) ?? 0.0;
-                    return sum + (old * i.count);
-                  });
-
-                  // Filter out deleted items and format with prices
-                  final List<String> finalItems = activeItems.map((i) {
-                    final name = i.nameController.text.trim();
-                    final oldPrice =
-                        double.tryParse(i.oldPriceController.text) ?? 0.0;
-                    final newPrice =
-                        double.tryParse(i.priceController.text) ?? 0.0;
-                    if (oldPrice > 0 && newPrice > 0) {
-                      return "${i.count}x $name (EGP ${newPrice.toStringAsFixed(0)}~)";
-                    }
-                    return "${i.count}x $name";
-                  }).toList();
-
-                  final input = AddProductInputEntity(
-                    isAvailable: isAvailable,
-                    title: autoTitle,
-                    price: totalPrice,
-                    oldPrice: totalOldPrice > 0 ? totalOldPrice : null,
-                    bagsLeft: totalQuantity,
-                    image: image!,
-                    detectedItems: finalItems,
-                    restaurantId: selectedRestaurant!.docId,
-                    restaurantName: selectedRestaurant!.name,
-                    userEmail: UserSession.instance.currentEmail,
-                    pickupTime: 'Pickup 9:00 AM - 11:59 PM',
-                    sizes: _allSizes
-                        .where(selectedSizes.contains)
-                        .toList(),
-                    category: selectedCategory,
-                  );
-                  context.read<AddProductCubit>().addProduct(input);
-                },
-                text: 'Add Style Box',
-              ),
-              const SizedBox(height: 32),
-            ],
+            ),
           ),
         ),
-      ),
+        _PublishBar(
+          label: l10n.dashAddStyleBox,
+          step: l10n.dashStepPublish,
+          onPressed: _submit,
+        ),
+      ],
     );
+  }
+
+  void _submit() {
+    if (selectedRestaurant == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please select a store first'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+    if (image == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please scan your clothes first'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+    // Auto-calculate bag data from detected items
+    final activeItems = detectedItems
+        .where((i) => !i.isDeleted && i.count > 0)
+        .toList();
+
+    if (activeItems.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.noItemsToSave),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    // Auto-generate title from item names
+    final List<String> itemNames = activeItems
+        .map((i) => i.nameController.text.trim())
+        .toList();
+    final autoTitle = itemNames.length == 1
+        ? itemNames.first
+        : '${itemNames.first} +${itemNames.length - 1}';
+
+    // Calculate total price (sum of all new prices)
+    final totalPrice = activeItems.fold<double>(0, (sum, i) {
+      final newPrice = double.tryParse(i.priceController.text) ?? 0.0;
+      return sum + (newPrice * i.count);
+    });
+
+    // Total quantity
+    final totalQuantity = activeItems.fold<int>(0, (sum, i) => sum + i.count);
+
+    // Calculate total old price
+    final totalOldPrice = activeItems.fold<double>(0, (sum, i) {
+      final old = double.tryParse(i.oldPriceController.text) ?? 0.0;
+      return sum + (old * i.count);
+    });
+
+    // Filter out deleted items and format with prices
+    final List<String> finalItems = activeItems.map((i) {
+      final name = i.nameController.text.trim();
+      final oldPrice = double.tryParse(i.oldPriceController.text) ?? 0.0;
+      final newPrice = double.tryParse(i.priceController.text) ?? 0.0;
+      if (oldPrice > 0 && newPrice > 0) {
+        return "${i.count}x $name (EGP ${newPrice.toStringAsFixed(0)}~)";
+      }
+      return "${i.count}x $name";
+    }).toList();
+
+    final input = AddProductInputEntity(
+      isAvailable: isAvailable,
+      title: autoTitle,
+      price: totalPrice,
+      oldPrice: totalOldPrice > 0 ? totalOldPrice : null,
+      bagsLeft: totalQuantity,
+      image: image!,
+      detectedItems: finalItems,
+      restaurantId: selectedRestaurant!.docId,
+      restaurantName: selectedRestaurant!.name,
+      userEmail: UserSession.instance.currentEmail,
+      pickupTime: 'Pickup 9:00 AM - 11:59 PM',
+      sizes: _allSizes.where(selectedSizes.contains).toList(),
+      category: selectedCategory,
+    );
+    context.read<AddProductCubit>().addProduct(input);
   }
 
   Widget _buildClothingAttributes() {
@@ -701,7 +711,7 @@ class _AddProductViewBodyState extends State<AddProductViewBody> {
           Row(
             children: [
               const Icon(
-                Icons.restaurant,
+                Icons.storefront_outlined,
                 color: AppColors.primaryColor,
                 size: 20,
               ),
@@ -788,7 +798,9 @@ class _AddProductViewBodyState extends State<AddProductViewBody> {
                                 vertical: 2,
                               ),
                               decoration: BoxDecoration(
-                                color: AppColors.secoundryColor.withOpacity(0.1),
+                                color: AppColors.secoundryColor.withOpacity(
+                                  0.1,
+                                ),
                                 borderRadius: BorderRadius.circular(4),
                               ),
                               child: const Text(
@@ -860,5 +872,121 @@ class DetectedItem {
     nameController.dispose();
     oldPriceController.dispose();
     priceController.dispose();
+  }
+}
+
+/// Numbered step marker: champagne-ringed number, title and a hairline.
+class _StepHeader extends StatelessWidget {
+  const _StepHeader({required this.index, required this.title});
+
+  final int index;
+  final String title;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 10, bottom: 12),
+      child: Row(
+        children: [
+          Container(
+            width: 30,
+            height: 30,
+            alignment: Alignment.center,
+            decoration: const BoxDecoration(
+              color: AppColors.black,
+              shape: BoxShape.circle,
+            ),
+            child: Text(
+              '$index',
+              style: const TextStyle(
+                color: AppColors.accentColor,
+                fontWeight: FontWeight.w800,
+                fontSize: 14,
+              ),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Text(
+            title,
+            style: const TextStyle(
+              fontSize: 17,
+              fontWeight: FontWeight.w800,
+              color: AppColors.black,
+            ),
+          ),
+          const SizedBox(width: 12),
+          const Expanded(child: Divider(color: AppColors.divider)),
+        ],
+      ),
+    );
+  }
+}
+
+/// Docked footer with the final publish step.
+class _PublishBar extends StatelessWidget {
+  const _PublishBar({
+    required this.label,
+    required this.step,
+    required this.onPressed,
+  });
+
+  final String label;
+  final String step;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: const BoxDecoration(
+        color: AppColors.surface,
+        border: Border(top: BorderSide(color: AppColors.divider)),
+      ),
+      child: SafeArea(
+        top: false,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
+          child: Row(
+            children: [
+              Container(
+                width: 30,
+                height: 30,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(color: AppColors.accentColor),
+                ),
+                child: const Text(
+                  '4',
+                  style: TextStyle(
+                    color: AppColors.secoundryDark,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Text(
+                step,
+                style: const TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.textSecondary,
+                ),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: SizedBox(
+                  height: 52,
+                  child: ElevatedButton.icon(
+                    onPressed: onPressed,
+                    icon: const Icon(Icons.cloud_upload_outlined, size: 20),
+                    label: Text(label),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }

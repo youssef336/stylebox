@@ -44,11 +44,11 @@ class AvailableBagsList extends StatelessWidget {
         const SizedBox(height: 10),
         LayoutBuilder(
           builder: (context, constraints) {
-            final cardWidth = (constraints.maxWidth * 0.72).clamp(230.0, 270.0);
+            final cardWidth = (constraints.maxWidth * 0.46).clamp(150.0, 190.0);
 
             return SizedBox(
               width: constraints.maxWidth,
-              height: 222,
+              height: 262,
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
                 physics: const BouncingScrollPhysics(),

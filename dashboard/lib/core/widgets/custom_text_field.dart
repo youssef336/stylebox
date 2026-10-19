@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:stylebox_dashboard/core/utils/app_colors.dart';
 import 'package:stylebox_dashboard/core/utils/app_text_style.dart';
 
 class CustomTextFormField extends StatefulWidget {
@@ -12,7 +13,7 @@ class CustomTextFormField extends StatefulWidget {
     this.obscureText = false,
     this.prefixIcon,
     this.validator,
-    this.controller,  // ← added
+    this.controller, // ← added
   });
 
   final String hintText;
@@ -52,7 +53,8 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
       obscureText: widget.obscureText,
       onSaved: widget.onSaved,
       focusNode: _focusNode,
-      validator: widget.validator ??
+      validator:
+          widget.validator ??
           (value) {
             if (value == null || value.isEmpty) {
               return 'هذا الحقل مطلوب';
@@ -73,20 +75,23 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
                 child: widget.suffixIcon,
               )
             : null,
-        hintStyle: TextStyles.bold13.copyWith(color: const Color(0xFF949D9E)),
+        hintStyle: TextStyles.semiBold13.copyWith(
+          color: AppColors.textSecondary,
+          fontWeight: FontWeight.w500,
+        ),
         hintText: widget.hintText,
         filled: true,
-        fillColor: const Color(0xFFF9FAFA),
-        border: _buildBorder(borderColor: const Color(0xFFE6E9E9)),
-        enabledBorder: _buildBorder(borderColor: const Color(0xFFE6E9E9)),
+        fillColor: AppColors.lightGrey,
+        border: _buildBorder(borderColor: Colors.transparent),
+        enabledBorder: _buildBorder(borderColor: Colors.transparent),
         focusedBorder: _buildBorder(
-          borderColor: const Color(0xFF5B3DF5),
-          width: 2,
+          borderColor: AppColors.primaryColor,
+          width: 1.4,
         ),
-        errorBorder: _buildBorder(borderColor: const Color(0xFFE53935)),
+        errorBorder: _buildBorder(borderColor: AppColors.errorColor),
         contentPadding: const EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: 14,
+          horizontal: 18,
+          vertical: 16,
         ),
       ),
     );
@@ -97,8 +102,10 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
     double width = 1,
   }) {
     return OutlineInputBorder(
-      borderRadius: BorderRadius.circular(12),
-      borderSide: BorderSide(width: width, color: borderColor),
+      borderRadius: BorderRadius.circular(AppColors.radiusField),
+      borderSide: borderColor == Colors.transparent
+          ? BorderSide.none
+          : BorderSide(width: width, color: borderColor),
     );
   }
 }

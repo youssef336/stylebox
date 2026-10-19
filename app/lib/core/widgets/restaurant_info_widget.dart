@@ -51,7 +51,7 @@ class RestaurantInfoWidget extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
         color: scheme.primaryContainer,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(KradiusCard),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,

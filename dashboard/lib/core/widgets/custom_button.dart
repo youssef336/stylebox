@@ -10,11 +10,11 @@ class CustomButton extends StatelessWidget {
     required this.text,
     this.backgroundColor,
     this.textColor = Colors.white,
-    this.borderRadius = 16,
+    this.borderRadius = 28,
     this.padding,
     this.fontSize = 16,
     this.useGradient = false,
-    this.elevation = 4,
+    this.elevation = 0,
   });
 
   final VoidCallback onPressed;
@@ -70,8 +70,8 @@ class CustomButton extends StatelessWidget {
         gradient: AppColors.primaryGradient,
         boxShadow: [
           BoxShadow(
-            color: bgColor.withOpacity(0.3),
-            blurRadius: 12,
+            color: AppColors.primaryDark.withOpacity(0.18),
+            blurRadius: 14,
             offset: const Offset(0, 6),
           ),
         ],

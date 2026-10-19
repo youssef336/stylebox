@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:stylebox/constant.dart';
 import 'package:stylebox/generated/l10n.dart';
 import 'feature_home_item_buttom.dart';
 
@@ -9,7 +10,7 @@ class FeatureHomeItem extends StatelessWidget {
   Widget build(BuildContext context) {
     var itemwidth = MediaQuery.of(context).size.width - 32;
     return ClipRRect(
-      borderRadius: BorderRadius.circular(4),
+      borderRadius: BorderRadius.circular(KradiusCard),
       child: SizedBox(
         width: itemwidth,
         child: AspectRatio(
@@ -17,7 +18,7 @@ class FeatureHomeItem extends StatelessWidget {
           child: Stack(
             children: [
               Container(
-                color: Colors.blue,
+                color: KprimaryColor,
                 width: itemwidth * 0.5,
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),

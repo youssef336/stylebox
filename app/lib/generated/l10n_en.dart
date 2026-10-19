@@ -879,4 +879,80 @@ class SEn extends S {
 
   @override
   String get mapMyLocation => 'My location';
+
+  @override
+  String get authHeroTitle => 'Your wardrobe, refreshed.';
+
+  @override
+  String get authHeroSubtitle =>
+      'Sign in to reserve surprise Style Boxes from stores near you.';
+
+  @override
+  String get authSignupHeroTitle => 'Join StyleBox';
+
+  @override
+  String get authSignupHeroSubtitle =>
+      'Create an account and start saving on fashion today.';
+
+  @override
+  String get authContinueWith => 'or continue with';
+
+  @override
+  String get onBoardingNext => 'Next';
+
+  @override
+  String get homeCategoryAll => 'All';
+
+  @override
+  String get homeNewArrivalsTitle => 'New arrivals';
+
+  @override
+  String get homeAllBoxesTitle => 'All Style Boxes';
+
+  @override
+  String get homeShopByStoreTitle => 'Shop by store';
+
+  @override
+  String get homeAiSlideTitle => 'Your AI stylist';
+
+  @override
+  String get homeAiSlideSubtitle =>
+      'Ask for outfit ideas and the right box for you.';
+
+  @override
+  String get homeNoResults => 'No boxes match your search';
+
+  @override
+  String get cartSubtotal => 'Subtotal';
+
+  @override
+  String get cartTotal => 'Total';
+
+  @override
+  String cartItemsCount(String count) {
+    return '$count items';
+  }
+
+  @override
+  String get cartCheckout => 'Checkout';
+
+  @override
+  String checkoutStepOf(String current, String total) {
+    return 'Step $current of $total';
+  }
+
+  @override
+  String get profileSectionAccount => 'Account';
+
+  @override
+  String get profileSectionPreferences => 'Preferences';
+
+  @override
+  String get profileEditProfile => 'Edit';
+
+  @override
+  String get profileDarkMode => 'Dark mode';
+
+  @override
+  String get detailsStockLabel => 'In stock';
 }

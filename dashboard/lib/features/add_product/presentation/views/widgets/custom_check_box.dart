@@ -25,7 +25,7 @@ class CustomCheckBox extends StatelessWidget {
           shape: RoundedRectangleBorder(
             side: BorderSide(
               width: 1.50,
-              color: isChecked ? Colors.transparent : const Color(0xFFDCDEDE),
+              color: isChecked ? Colors.transparent : AppColors.divider,
             ),
             borderRadius: BorderRadius.circular(8),
           ),

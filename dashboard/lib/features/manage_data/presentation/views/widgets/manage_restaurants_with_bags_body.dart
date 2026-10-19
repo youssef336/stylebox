@@ -1,9 +1,11 @@
+import 'package:stylebox_dashboard/core/helper_functions/parse_price.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:stylebox_dashboard/core/repos/product_repo/products_repo.dart';
 import 'package:stylebox_dashboard/core/services/get_it_services.dart';
 import 'package:stylebox_dashboard/core/services/user_session.dart';
 import 'package:stylebox_dashboard/core/utils/app_colors.dart';
+import 'package:stylebox_dashboard/core/widgets/store_visuals.dart';
 import 'package:stylebox_dashboard/features/add_product/domain/entities/add_product_input_entity.dart';
 import 'package:stylebox_dashboard/features/manage_data/domain/entities/restaurant_entity.dart';
 import 'package:stylebox_dashboard/features/manage_data/presentation/cubit/restaurant_cubit.dart';
@@ -267,14 +269,6 @@ class _ManageRestaurantsWithBagsBodyState
     );
     bool isAvailable = bag.isAvailable;
 
-    // Helper to parse price (handles both comma and dot as decimal separator)
-    double? parsePrice(String text) {
-      if (text.trim().isEmpty) return null;
-      // Replace comma with dot for Arabic locale compatibility
-      final normalized = text.trim().replaceAll(',', '.');
-      return double.tryParse(normalized);
-    }
-
     final result = await showDialog<bool>(
       context: context,
       builder: (dialogContext) {
@@ -377,6 +371,7 @@ class _ManageRestaurantsWithBagsBodyState
     );
 
     if (result == true) {
+      if (!context.mounted) return;
       final price = parsePrice(priceCtrl.text) ?? 0.0;
       final oldPrice = parsePrice(oldPriceCtrl.text);
       final bagsLeft = int.tryParse(bagsLeftCtrl.text) ?? 0;
@@ -632,113 +627,100 @@ class _RestaurantWithBagsCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: 20),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      elevation: 2,
+    final l10n = AppLocalizations.of(context)!;
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(22),
+        border: Border.all(color: AppColors.divider),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // ── Restaurant Header ─────────────────────────────────────
           _RestaurantHeader(
             restaurant: restaurant,
             isBusy: isBusy,
             onEdit: onEdit,
             onDelete: onDelete,
           ),
-
-          // ── Available Bags Section ─────────────────────────────────
-          if (isLoadingBags) ...[
-            // Loading indicator
-            Padding(
-              padding: const EdgeInsets.all(16),
+          const Divider(height: 1, color: AppColors.divider),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+            child: Row(
+              children: [
+                Text(
+                  l10n.availableBags.toUpperCase(),
+                  style: const TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: 1.2,
+                    color: AppColors.textSecondary,
+                  ),
+                ),
+                const Spacer(),
+                if (!isLoadingBags)
+                  Text(
+                    l10n.dashBoxesCount('${bags.length}'),
+                    style: const TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.primaryColor,
+                    ),
+                  ),
+              ],
+            ),
+          ),
+          if (isLoadingBags)
+            const Padding(
+              padding: EdgeInsets.all(16),
               child: Center(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const SizedBox(
-                      width: 16,
-                      height: 16,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        color: AppColors.primaryColor,
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      'Loading Style Boxes...',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.grey.shade600,
-                      ),
-                    ),
-                  ],
+                child: SizedBox(
+                  width: 18,
+                  height: 18,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: AppColors.primaryColor,
+                  ),
                 ),
               ),
-            ),
-          ] else if (bags.isNotEmpty) ...[
+            )
+          else if (bags.isEmpty)
             Padding(
-              padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-              child: Row(
+              padding: const EdgeInsets.fromLTRB(16, 6, 16, 16),
+              child: Text(
+                l10n.dashNoBoxesYet,
+                style: const TextStyle(color: AppColors.textSecondary),
+              ),
+            )
+          else
+            Padding(
+              padding: const EdgeInsets.fromLTRB(8, 4, 8, 8),
+              child: Column(
                 children: [
-                  const Text(
-                    'Available Style Boxes',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF14121F),
+                  for (var i = 0; i < bags.length; i++) ...[
+                    if (i > 0)
+                      const Divider(
+                        height: 1,
+                        indent: 84,
+                        color: AppColors.divider,
+                      ),
+                    _BagCard(
+                      bag: bags[i],
+                      onDelete: () => onDeleteProduct(
+                        context,
+                        restaurant.docId,
+                        bags[i].productId,
+                      ),
+                      onEdit: () =>
+                          onEditBag(context, restaurant.docId, bags[i]),
+                      onRestock: () =>
+                          onRestockBag(context, restaurant.docId, bags[i]),
                     ),
-                  ),
-                  const Spacer(),
-                  Text(
-                    '${bags.length} box${bags.length > 1 ? 'es' : ''}',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.orange.shade600,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
+                  ],
                 ],
               ),
             ),
-
-            // ── Vertical List of Bag Cards ───────────────────────────
-            ...bags.map(
-              (bag) => _BagCard(
-                bag: bag,
-                onDelete: () =>
-                    onDeleteProduct(context, restaurant.docId, bag.productId),
-                onEdit: () => onEditBag(context, restaurant.docId, bag),
-                onRestock: () => onRestockBag(context, restaurant.docId, bag),
-              ),
-            ),
-
-            const SizedBox(height: 12),
-          ] else ...[
-            Padding(
-              padding: const EdgeInsets.all(16),
-              child: Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade100,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.inventory_2_outlined,
-                      color: Colors.grey.shade400,
-                    ),
-                    const SizedBox(width: 12),
-                    Text(
-                      'No Style Boxes available yet',
-                      style: TextStyle(color: Colors.grey.shade600),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
         ],
       ),
     );
@@ -760,214 +742,87 @@ class _RestaurantHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
-        image: restaurant.RestaurantimageUrl != null
-            ? DecorationImage(
-                image: NetworkImage(restaurant.RestaurantimageUrl!),
-                fit: BoxFit.cover,
-                colorFilter: ColorFilter.mode(
-                  Colors.black.withValues(alpha: 0.3),
-                  BlendMode.darken,
-                ),
-              )
-            : null,
-        gradient: restaurant.RestaurantimageUrl == null
-            ? const LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [Color(0xFF5B3DF5), Color(0xFF9B6BFF)],
-              )
-            : null,
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // ── Badges Row ────────────────────────────────────────────
-            Row(
+    final l10n = AppLocalizations.of(context)!;
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(14, 14, 6, 14),
+      child: Row(
+        children: [
+          StoreThumbnail(imageUrl: restaurant.RestaurantimageUrl, size: 58),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Available Badge
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 6,
-                  ),
-                  decoration: BoxDecoration(
-                    color: restaurant.isAvailable ? Colors.green : Colors.grey,
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Icon(
-                        Icons.check_circle,
-                        color: Colors.white,
-                        size: 14,
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        restaurant.isAvailable ? 'Available' : 'Unavailable',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ],
+                Text(
+                  restaurant.displayName,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.black,
                   ),
                 ),
-                const SizedBox(width: 8),
-                // Now Badge (Open/Closed)
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 6,
-                  ),
-                  decoration: BoxDecoration(
-                    color: restaurant.isOpend
-                        ? Colors.orange
-                        : Colors.grey.shade700,
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        restaurant.isOpend
-                            ? Icons.access_time_filled
-                            : Icons.access_time,
-                        color: Colors.white,
-                        size: 14,
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        restaurant.isOpend ? 'Now' : 'Closed',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-
-            // ── Logo + Name Row ───────────────────────────────────────
-            Row(
-              children: [
-                // Logo placeholder or actual logo
-                Container(
-                  width: 50,
-                  height: 50,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(8),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.1),
-                        blurRadius: 4,
-                      ),
-                    ],
-                  ),
-                  child: restaurant.RestaurantimageUrl != null
-                      ? ClipRRect(
-                          borderRadius: BorderRadius.circular(8),
-                          child: Image.network(
-                            restaurant.RestaurantimageUrl!,
-                            fit: BoxFit.cover,
-                            width: 50,
-                            height: 50,
-                          ),
-                        )
-                      : const Icon(Icons.restaurant, color: Color(0xFF2C3E50)),
-                ),
-                const SizedBox(width: 12),
-                // Name and Info
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        restaurant.displayName,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Row(
-                        children: [
-                          const Icon(
-                            Icons.store,
-                            color: Colors.white70,
-                            size: 14,
-                          ),
-                          const SizedBox(width: 4),
-                          Flexible(
-                            child: Text(
-                              restaurant.branchesDisplay,
-                              style: const TextStyle(
-                                color: Colors.white70,
-                                fontSize: 12,
-                              ),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                          const SizedBox(width: 16),
-                          const Icon(
-                            Icons.location_on,
-                            color: Colors.white70,
-                            size: 14,
-                          ),
-                          const SizedBox(width: 4),
-                          Flexible(
-                            child: Text(
-                              restaurant.branchLocation,
-                              style: const TextStyle(
-                                color: Colors.white70,
-                                fontSize: 12,
-                              ),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-                // Actions
                 Row(
-                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    IconButton(
-                      onPressed: isBusy ? null : onEdit,
-                      icon: const Icon(
-                        Icons.edit,
-                        color: Colors.white70,
-                        size: 20,
+                    const Icon(
+                      Icons.location_on_outlined,
+                      size: 13,
+                      color: AppColors.textSecondary,
+                    ),
+                    const SizedBox(width: 3),
+                    Expanded(
+                      child: Text(
+                        restaurant.branchLocation,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          fontSize: 12.5,
+                          color: AppColors.textSecondary,
+                        ),
                       ),
                     ),
-                    IconButton(
-                      onPressed: isBusy ? null : onDelete,
-                      icon: const Icon(
-                        Icons.delete_outline,
-                        color: Colors.white70,
-                        size: 20,
-                      ),
+                  ],
+                ),
+                const SizedBox(height: 6),
+                Wrap(
+                  spacing: 6,
+                  runSpacing: 4,
+                  children: [
+                    StatusPill(
+                      label: restaurant.isAvailable
+                          ? l10n.available
+                          : l10n.notAvailable,
+                      positive: restaurant.isAvailable,
+                    ),
+                    StatusPill(
+                      label: restaurant.isOpend ? l10n.open : l10n.closed,
+                      positive: restaurant.isOpend,
                     ),
                   ],
                 ),
               ],
             ),
-          ],
-        ),
+          ),
+          IconButton(
+            tooltip: l10n.edit,
+            onPressed: isBusy ? null : onEdit,
+            icon: const Icon(
+              Icons.edit_outlined,
+              size: 20,
+              color: AppColors.darkGrey,
+            ),
+          ),
+          IconButton(
+            tooltip: l10n.delete,
+            onPressed: isBusy ? null : onDelete,
+            icon: const Icon(
+              Icons.delete_outline_rounded,
+              size: 20,
+              color: AppColors.errorColor,
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -988,222 +843,144 @@ class _BagCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final oldPrice = bag.oldPrice;
+    final low = bag.bagsLeft <= 3;
 
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 10),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          // ── Bag Image ─────────────────────────────────────────────
           ClipRRect(
-            borderRadius: BorderRadius.circular(12),
-            child: bag.imageUrl != null
-                ? Image.network(
-                    bag.imageUrl!,
-                    width: 80,
-                    height: 80,
-                    fit: BoxFit.cover,
-                  )
-                : Container(
-                    width: 80,
-                    height: 80,
-                    color: Colors.grey.shade200,
-                    child: const Icon(Icons.fastfood, color: Colors.grey),
-                  ),
+            borderRadius: BorderRadius.circular(14),
+            child: SizedBox(
+              width: 64,
+              height: 64,
+              child: bag.imageUrl != null && bag.imageUrl!.startsWith('http')
+                  ? Image.network(bag.imageUrl!, fit: BoxFit.cover)
+                  : const DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: AppColors.secondaryContainer,
+                      ),
+                      child: Icon(
+                        Icons.checkroom_rounded,
+                        color: AppColors.secoundryDark,
+                      ),
+                    ),
+            ),
           ),
           const SizedBox(width: 12),
-
-          // ── Bag Info ──────────────────────────────────────────────
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
               children: [
-                // Title
                 Text(
                   bag.title,
-                  style: const TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF14121F),
-                  ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontSize: 14.5,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.black,
+                  ),
                 ),
-                const SizedBox(height: 4),
-
-                // Pickup Time
+                const SizedBox(height: 2),
                 Row(
                   children: [
-                    Icon(
-                      Icons.access_time,
-                      size: 12,
-                      color: Colors.grey.shade500,
-                    ),
-                    const SizedBox(width: 4),
-                    Expanded(
-                      child: Text(
-                        bag.pickupTime ?? 'Pickup 9:00 AM - 11:59 PM',
-                        style: TextStyle(
-                          fontSize: 11,
-                          color: Colors.grey.shade600,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
+                    Text(
+                      '${bag.price.toStringAsFixed(0)} EGP',
+                      textDirection: TextDirection.ltr,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w800,
+                        color: AppColors.primaryColor,
                       ),
                     ),
+                    if (oldPrice != null && oldPrice > bag.price) ...[
+                      const SizedBox(width: 6),
+                      Text(
+                        oldPrice.toStringAsFixed(0),
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: AppColors.grey,
+                          decoration: TextDecoration.lineThrough,
+                        ),
+                      ),
+                    ],
                   ],
                 ),
-                const SizedBox(height: 8),
-
-                // ── Price & Bags Left Row ────────────────────────────
+                const SizedBox(height: 4),
                 Row(
                   children: [
-                    // Bags Left Badge
                     Container(
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 6,
-                        vertical: 3,
+                        horizontal: 8,
+                        vertical: 2,
                       ),
                       decoration: BoxDecoration(
-                        color: Colors.orange.shade50,
-                        borderRadius: BorderRadius.circular(12),
+                        color:
+                            (low
+                                    ? AppColors.warningColor
+                                    : AppColors.successColor)
+                                .withValues(alpha: 0.12),
+                        borderRadius: BorderRadius.circular(10),
                       ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            Icons.shopping_bag_outlined,
-                            size: 12,
-                            color: Colors.orange.shade600,
-                          ),
-                          const SizedBox(width: 2),
-                          Text(
-                            '${bag.bagsLeft} left',
-                            style: TextStyle(
-                              fontSize: 11,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.orange.shade700,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-
-                    // Old Price
-                    if (oldPrice != null && oldPrice > bag.price)
-                      Flexible(
-                        child: Padding(
-                          padding: const EdgeInsets.only(right: 4),
-                          child: Text(
-                            oldPrice.toStringAsFixed(0),
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.grey.shade500,
-                              decoration: TextDecoration.lineThrough,
-                            ),
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      ),
-
-                    // New Price
-                    Flexible(
                       child: Text(
-                        '${bag.price.toStringAsFixed(0)} EGP',
+                        '${bag.bagsLeft} ${l10n.bagsLeft}',
                         style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.green.shade700,
+                          fontSize: 11,
+                          fontWeight: FontWeight.w700,
+                          color: low
+                              ? AppColors.warningColor
+                              : AppColors.successColor,
                         ),
-                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
+                    if (onRestock != null) ...[
+                      const SizedBox(width: 8),
+                      InkWell(
+                        onTap: onRestock,
+                        borderRadius: BorderRadius.circular(10),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 4,
+                            vertical: 2,
+                          ),
+                          child: Text(
+                            '+ ${l10n.dashRestock}',
+                            style: const TextStyle(
+                              fontSize: 11.5,
+                              fontWeight: FontWeight.w800,
+                              color: AppColors.primaryColor,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ],
                 ),
               ],
             ),
           ),
-
-          // ── Actions ──────────────────────────────────────────────
-          Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              // Quick Restock Button
-              if (onRestock != null)
-                InkWell(
-                  onTap: onRestock,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 4,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.green.shade50,
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: Colors.green.shade200),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          Icons.add_circle_outline,
-                          size: 14,
-                          color: Colors.green.shade700,
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          'Restock',
-                          style: TextStyle(
-                            fontSize: 11,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.green.shade700,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              const SizedBox(height: 4),
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  IconButton(
-                    tooltip: 'Edit Style Box',
-                    onPressed: onEdit,
-                    icon: const Icon(
-                      Icons.edit_outlined,
-                      color: AppColors.primaryColor,
-                      size: 20,
-                    ),
-                  ),
-                  IconButton(
-                    tooltip: 'Delete product',
-                    onPressed: onDelete,
-                    icon: const Icon(
-                      Icons.delete_outline,
-                      color: Colors.redAccent,
-                      size: 20,
-                    ),
-                  ),
-                ],
-              ),
-            ],
+          IconButton(
+            tooltip: 'Edit Style Box',
+            onPressed: onEdit,
+            visualDensity: VisualDensity.compact,
+            icon: const Icon(
+              Icons.edit_outlined,
+              color: AppColors.darkGrey,
+              size: 20,
+            ),
+          ),
+          IconButton(
+            tooltip: 'Delete product',
+            onPressed: onDelete,
+            visualDensity: VisualDensity.compact,
+            icon: const Icon(
+              Icons.delete_outline_rounded,
+              color: AppColors.errorColor,
+              size: 20,
+            ),
           ),
         ],
       ),

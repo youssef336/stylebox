@@ -2,7 +2,6 @@
 
 import 'package:flutter/material.dart';
 
-import 'package:stylebox/constant.dart';
 import 'package:stylebox/core/utils/text_styles.dart';
 import 'package:stylebox/features/auth/presentation/views/widgets/custom_chek_box.dart';
 import 'package:stylebox/generated/l10n.dart';
@@ -30,52 +29,50 @@ class _TermsAndConditionsWidgetState extends State<TermsAndConditionsWidget> {
           },
           isChecked: isTermsAccepted,
         ),
-        const SizedBox(width: 16),
-        SizedBox(
-          width:
-              MediaQuery.of(context).size.width - (KhorzontalPadding * 2) - 48,
+        const SizedBox(width: 12),
+        Expanded(
           child: Text.rich(
             TextSpan(
               children: [
                 TextSpan(
                   text: S.of(context)!.onSignupTermsandConditions,
                   style: AppTextStyles.bodySmallSemibold.copyWith(
-                    color: const Color(0xFF949D9E) /* Grayscale-600 */,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
                 ),
                 TextSpan(
                   text: S.of(context)!.onSignupTermsandConditionsText,
                   style: AppTextStyles.bodySmallSemibold.copyWith(
-                    color: KprimaryColorLight /* Green1-600 */,
+                    color: Theme.of(context).colorScheme.primary,
                   ),
                 ),
                 TextSpan(
                   text: ' ',
                   style: AppTextStyles.bodySmallSemibold.copyWith(
-                    color: const Color(0xFF616A6B) /* Grayscale-600 */,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
                 ),
                 TextSpan(
                   text: S.of(context)!.onSignupTermsandConditionsText2,
                   style: AppTextStyles.bodySmallSemibold.copyWith(
-                    color: KprimaryColorLight /* Green1-600 */,
+                    color: Theme.of(context).colorScheme.primary,
                   ),
                 ),
                 TextSpan(
                   text: ' ',
                   style: AppTextStyles.bodySmallSemibold.copyWith(
-                    color: const Color(0xFF616A6B) /* Grayscale-600 */,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
                 ),
                 TextSpan(
                   text: S.of(context)!.onSignupTermsandConditionsText3,
                   style: AppTextStyles.bodySmallSemibold.copyWith(
-                    color: KprimaryColorLight /* Green1-600 */,
+                    color: Theme.of(context).colorScheme.primary,
                   ),
                 ),
               ],
             ),
-            textAlign: TextAlign.left,
+            textAlign: TextAlign.start,
           ),
         ),
       ],
